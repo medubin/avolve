@@ -1,0 +1,34 @@
+{
+  "name": "avolve",
+  "version": "0.0.1",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config webpack.prod.js",
+    "start": "webpack --config webpack.dev.js",
+    "watch": "webpack --watch --config webpack.dev.js",
+    "lint": "tslint 'src/**/*.ts?(x)'"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/es6-shim": "^0.31.37",
+    "@types/matter-js": "^0.10.2",
+    "@types/pixi.js": "^4.8.0",
+    "matter-js": "^0.14.2",
+    "pixi.js": "^4.8.1",
+    "tslint": "^5.10.0",
+    "tslint-config-airbnb": "^5.9.2"
+  },
+  "devDependencies": {
+    "file-loader": "^1.1.11",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
+    "ts-loader": "^4.4.2",
+    "typescript": "^2.9.2",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.1",
+    "webpack-node-externals": "^1.7.2"
+  }
+}
