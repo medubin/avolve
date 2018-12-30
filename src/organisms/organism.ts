@@ -2,6 +2,7 @@ import * as Matter from 'matter-js'
 import Genome from './genome'
 import BodyType from '../constants/body_type'
 import Database from '../databases/database'
+import { rngFloat } from '../utilities/random';
 
 export default class Organism {
   protected body : Matter.Composite
@@ -64,8 +65,8 @@ export default class Organism {
       this.energy -= offspringEnergy
       database.organisms.addOrganism(
         new Organism(
-          this.body.bodies[0].position.x,
-          this.body.bodies[0].position.y,
+          this.body.bodies[0].position.x + rngFloat(-2, 2),
+          this.body.bodies[0].position.y + rngFloat(-2, 2),
           this.world,
           this.genome.replicate(),
           offspringEnergy))

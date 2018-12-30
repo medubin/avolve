@@ -52,7 +52,6 @@ Matter.Events.on(engine, 'beforeTick', (_) => {
   }
   camera.scrollX()
   camera.scrollY()
-  console.log(database.world.co2)
 })
 
 // run the renderer

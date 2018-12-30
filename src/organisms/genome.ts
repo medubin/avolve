@@ -15,13 +15,30 @@ export default class Genome {
     return genome
   }
 
-  public replicate() : Genome {
+  public replicate(mutationRate : number = .05) : Genome {
     const genome = new Genome()
     const newGenes = []
     for (const gene of this.genes) {
-      newGenes.push(gene.replicate())
+      newGenes.push(gene.replicate(mutationRate))
     }
     genome.genes = newGenes
+    if (Math.random() < mutationRate) {
+      return this.mutate(genome)
+    }
+    return genome
+  }
+
+  protected mutate(genome : Genome) : Genome {
+    if (rng(0, 2) && genome.genes.length < 10) {
+      // duplicate gene
+      const dupe = rng(0, genome.genes.length)
+      const target = rng(0, genome.genes.length)
+      genome.genes.splice(target, 0, genome.genes[dupe])
+    } else if (genome.genes.length > 1) {
+      // delete gene
+      genome.genes.splice(rng(0, genome.genes.length), 1)
+    }
+    console.log(genome)
     return genome
   }
 

@@ -30,7 +30,7 @@ export default class Gene {
     return  Matter.Bodies.polygon(x + this.x, y + this.y, this.sides, this.radius, options)
   }
 
-  public replicate() : Gene {
+  public replicate(mutationRate : number = .05) : Gene {
     const gene = new Gene()
     gene.type = this.type
     gene.x = this.x
@@ -38,10 +38,34 @@ export default class Gene {
     gene.sides = this.sides
     gene.radius = this.radius
     gene.isBranch = this.isBranch
+    if (Math.random() < mutationRate) {
+      return this.mutate(gene)
+    }
     return gene
   }
-  protected rng(min : number, max : number) : number {
-    return Math.floor(Math.random() * (max - min) + min)
+
+  protected mutate(gene : Gene) : Gene {
+    const mutation = rng(0, 6)
+    switch (mutation) {
+      case(0):
+        gene.type = rng(0, 4)
+        return gene
+      case(1):
+        gene.x = rng(-100, 100) / 10
+        return gene
+      case(2):
+        gene.y = rng(-100, 100) / 10
+        return gene
+      case(3):
+        gene.sides = rng(3, 9)
+        return gene
+      case(4):
+        gene.radius = rng(30, 100) / 10
+        return gene
+      case(5):
+        gene.isBranch = Math.random() > .5
+        return gene
+    }
   }
 
   protected getBodyColor(bodyType : number) : string {
