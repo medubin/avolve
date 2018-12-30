@@ -1,16 +1,15 @@
 import Organism from '../organisms/organism'
-import PixiService from '../services/pixi_service'
 
 export interface OrganismsInterface {
   [uuid : string]: Organism
 }
 
 export default class Organisms {
+  protected maxUuid : number
   protected _organisms : OrganismsInterface
-  protected pixi : PixiService
 
-  constructor(pixi : PixiService) {
-    this.pixi = pixi
+  constructor() {
+    this.maxUuid = 0
     this._organisms = {}
   }
 
@@ -18,7 +17,17 @@ export default class Organisms {
     return this._organisms[uuid]
   }
 
-  // public addOrganism(organism : Organism) : void {
-//
-  // }
+  public addOrganism(organism : Organism) {
+    this.maxUuid += 1
+    organism.uuid = this.maxUuid
+    this._organisms[organism.uuid] = organism
+  }
+
+  public deleteOrganism(uuid : number) {
+    delete this._organisms[uuid]
+  }
+
+  public get organisms() : OrganismsInterface {
+    return this._organisms
+  }
 }

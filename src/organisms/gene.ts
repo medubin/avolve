@@ -8,14 +8,16 @@ export default class Gene {
   public y : number
   public sides : number
   public radius : number
+  public isBranch : boolean
 
   public static random() : Gene {
     const gene = new Gene()
-    gene.type = rng(0, 1)
+    gene.type = rng(0, 4)
     gene.x = rng(-100, 100) / 10
     gene.y = rng(-100, 100) / 10
     gene.sides = rng(3, 9)
-    gene.radius = rng(1, 100) / 10
+    gene.radius = rng(30, 100) / 10
+    gene.isBranch = Math.random() > .5
     return gene
   }
 
@@ -28,6 +30,16 @@ export default class Gene {
     return  Matter.Bodies.polygon(x + this.x, y + this.y, this.sides, this.radius, options)
   }
 
+  public replicate() : Gene {
+    const gene = new Gene()
+    gene.type = this.type
+    gene.x = this.x
+    gene.y = this.y
+    gene.sides = this.sides
+    gene.radius = this.radius
+    gene.isBranch = this.isBranch
+    return gene
+  }
   protected rng(min : number, max : number) : number {
     return Math.floor(Math.random() * (max - min) + min)
   }

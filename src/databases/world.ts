@@ -6,5 +6,6 @@ export default class World {
   constructor(total : number) {
     this._total = total
     this._co2 = total
+    this._o2 = 0
   }
 }

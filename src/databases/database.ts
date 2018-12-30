@@ -1,13 +1,12 @@
 import Organisms from './organisms'
 import World from './world'
-import PixiService from '../services/pixi_service'
 
 export default class Database {
-  protected _organisms : Organisms
+  public organisms : Organisms
   protected _world : World
 
-  constructor(pixi : PixiService) {
-    this._organisms = new Organisms(pixi)
+  constructor() {
+    this.organisms = new Organisms()
     this._world = new World(1000)
   }
 }

@@ -3,7 +3,7 @@ import { rng } from '../utilities/random'
 import * as Matter from 'matter-js'
 
 export default class Genome {
-  protected genes : Gene[]
+  public genes : Gene[]
 
   public static random() : Genome {
     const genome = new Genome()
@@ -15,15 +15,33 @@ export default class Genome {
     return genome
   }
 
+  public replicate() : Genome {
+    const genome = new Genome()
+    const newGenes = []
+    for (const gene of this.genes) {
+      newGenes.push(gene.replicate())
+    }
+    genome.genes = newGenes
+    return genome
+  }
+
   public createBody(x : number, y : number) : Matter.Composite {
     const composite = Matter.Composite.create()
     for (const gene of this.genes) {
       Matter.Composite.add(composite, gene.createBodyPart(x, y))
+      if (composite.bodies.length > 1) {
+        Matter.Composite.add(composite, Matter.Constraint.create({
+          bodyA: composite.bodies[composite.bodies.length - 1],
+          // bodyB: gene.isBranch ? composite.bodies[0] : composite.bodies[composite.bodies.length - 2],
+          bodyB: composite.bodies[0],
+          stiffness: .1,
+          damping: .1,
+          length: 10,
+          render: { strokeStyle: '#000000', lineWidth: .5, visible: true },
+
+        }))
+      }
     }
-    const opts = {
-      stiffness: .1,
-      damping: .1,
-      render: { strokeStyle: '#000000', lineWidth: .5, type: 'line' } }
-    return Matter.Composites.chain(composite, 0.1, 0, -0.1, 0, opts)
+    return composite
   }
 }
