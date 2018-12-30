@@ -16,9 +16,10 @@ export default class Organism {
   public age : number
   public maxAge : number
 
-  constructor(x : number, y : number, world : Matter.World, genome : Genome) {
+  constructor(x : number, y : number, world : Matter.World, genome : Genome, energy : number) {
     this.world = world
     this.genome = genome
+    this.energy = energy
     this.body = this.genome.createBody(x, y)
     Matter.World.add(world, this.body)
 
@@ -35,7 +36,6 @@ export default class Organism {
       this.bodySize += body.area
     }
     this.reproduceAt = this.bodySize * 10
-    this.energy = this.bodySize
 
     this.age = 0
     this.maxAge = this.bodySize * 10
@@ -60,13 +60,15 @@ export default class Organism {
 
   protected reproduce(database: Database) {
     if (this.energy > this.reproduceAt) {
-      this.energy -= (this.reproduceAt / 2)
+      const offspringEnergy = this.reproduceAt / 2
+      this.energy -= offspringEnergy
       database.organisms.addOrganism(
         new Organism(
           this.body.bodies[0].position.x,
           this.body.bodies[0].position.y,
           this.world,
-          this.genome.replicate()))
+          this.genome.replicate(),
+          offspringEnergy))
     }
   }
 
