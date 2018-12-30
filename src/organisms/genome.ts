@@ -38,7 +38,6 @@ export default class Genome {
       // delete gene
       genome.genes.splice(rng(0, genome.genes.length), 1)
     }
-    console.log(genome)
     return genome
   }
 

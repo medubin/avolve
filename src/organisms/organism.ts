@@ -2,7 +2,7 @@ import * as Matter from 'matter-js'
 import Genome from './genome'
 import BodyType from '../constants/body_type'
 import Database from '../databases/database'
-import { rngFloat } from '../utilities/random';
+import { rngFloat } from '../utilities/random'
 
 export default class Organism {
   protected body : Matter.Composite
@@ -91,8 +91,8 @@ export default class Organism {
       if (moves < .99) {
         continue
       }
-      const vx = (Math.random() - .5) * .5
-      const vy = (Math.random() - .5) * .5
+      const vx = (Math.random() - .5) * 10
+      const vy = (Math.random() - .5) * 10
       Matter.Body.setVelocity(moveable, { x: vx, y: vy })
     }
   }
