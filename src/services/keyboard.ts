@@ -1,8 +1,6 @@
-import PixiService from './pixi_service'
 import Camera from './camera'
 
 export default class Keyboard {
-  protected pixi : PixiService
   protected camera : Camera
 
   public left : any
@@ -10,8 +8,7 @@ export default class Keyboard {
   public right : any
   public down : any
 
-  constructor(pixi : PixiService, camera : Camera) {
-    this.pixi = pixi
+  constructor(camera : Camera) {
     this.camera = camera
     this.left = this.keyboard(37)
     this.up = this.keyboard(38)

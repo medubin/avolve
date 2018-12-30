@@ -13,6 +13,8 @@ export default class Organism {
   protected reproduceAt : number
   protected energy : number
   public uuid : number
+  public age : number
+  public maxAge : number
 
   constructor(x : number, y : number, world : Matter.World, genome : Genome) {
     this.world = world
@@ -34,19 +36,24 @@ export default class Organism {
     }
     this.reproduceAt = this.bodySize * 10
     this.energy = this.bodySize
+
+    this.age = 0
+    this.maxAge = this.bodySize * 10
   }
 
   public update(database : Database) {
+    this.age += 1
     this.move()
-    this.synthesize()
-    this.respirate()
+    this.synthesize(database)
+    this.respirate(database)
     this.reproduce(database)
     this.healthCheck(database)
   }
 
   protected healthCheck(database : Database) {
-    if (this.energy < 0) {
+    if (this.energy < 0 || this.age > this.maxAge) {
       Matter.World.remove(this.world, this.body)
+      database.world.releaseCO2(this.energy)
       database.organisms.deleteOrganism(this.uuid)
     }
   }
@@ -63,12 +70,16 @@ export default class Organism {
     }
   }
 
-  protected synthesize() {
-    this.energy += this.synthesizers / 5
+  protected synthesize(database : Database) {
+    const newEnergy = (this.synthesizers / 5) * database.world.fraction
+    database.world.consumeCO2(newEnergy)
+    this.energy += newEnergy
   }
 
-  protected respirate() {
-    this.energy -= this.bodySize / 10
+  protected respirate(database : Database) {
+    const energyLoss = this.bodySize / 100
+    database.world.releaseCO2(energyLoss)
+    this.energy -= energyLoss
   }
 
   protected move() : void {
