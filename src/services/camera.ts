@@ -2,12 +2,14 @@ import * as Matter from 'matter-js'
 
 export default class Camera {
   // public baseScale : number
-  // protected _x : number
-  // protected _y : number
+  protected _scrollX : number
+  protected _scrollY : number
   protected render : Matter.Render
 
   constructor(render : Matter.Render) {
     this.render = render
+    this._scrollX = 0
+    this._scrollY = 0
     // this._x = 0
     // this._y = 0
     // this.pixi.app.renderer.view.style.position = 'absolute'
@@ -38,13 +40,25 @@ export default class Camera {
   //   this.pixi.world.position.y = this.pixi.app.renderer.height / 2
   // }
 
+  public scrollX() {
+    if (this._scrollX) {
+      const translate = { x : this._scrollX, y : 0 }
+      Matter.Bounds.translate(this.render.bounds, translate)
+    }
+  }
+
+  public scrollY() {
+    if (this._scrollY) {
+      const translate = { x : 0, y : this._scrollY }
+      Matter.Bounds.translate(this.render.bounds, translate)
+    }
+  }
+
   public moveX(dX : number) : void {
-    const translate = { x : dX, y : 0 }
-    Matter.Bounds.translate(this.render.bounds, translate)
+    this._scrollX = dX
   }
 
   public moveY(dY : number) : void {
-    const translate = { x : 0, y : dY }
-    Matter.Bounds.translate(this.render.bounds, translate)
+    this._scrollY = dY
   }
 }

@@ -61,6 +61,7 @@ export default class Keyboard {
 
     this.left.release = () => {
       if (!this.right.isDown) {
+        this.camera.moveX(0)
       }
     }
 
@@ -70,6 +71,7 @@ export default class Keyboard {
 
     this.up.release = () => {
       if (!this.down.isDown) {
+        this.camera.moveY(0)
       }
     }
 
@@ -79,6 +81,7 @@ export default class Keyboard {
 
     this.right.release = () => {
       if (!this.left.isDown) {
+        this.camera.moveX(0)
       }
     }
 
@@ -88,6 +91,7 @@ export default class Keyboard {
 
     this.down.release = () => {
       if (!this.up.isDown) {
+        this.camera.moveY(0)
       }
     }
   }
