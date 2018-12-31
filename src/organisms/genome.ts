@@ -41,15 +41,15 @@ export default class Genome {
     return genome
   }
 
-  public createBody(x : number, y : number) : Matter.Composite {
+  public createBody(x : number, y : number, uuid : number) : Matter.Composite {
     const composite = Matter.Composite.create()
     for (const gene of this.genes) {
-      Matter.Composite.add(composite, gene.createBodyPart(x, y))
+      Matter.Composite.add(composite, gene.createBodyPart(x, y, uuid))
       if (composite.bodies.length > 1) {
+        const length = composite.bodies.length
         Matter.Composite.add(composite, Matter.Constraint.create({
-          bodyA: composite.bodies[composite.bodies.length - 1],
-          // bodyB: gene.isBranch ? composite.bodies[0] : composite.bodies[composite.bodies.length - 2],
-          bodyB: composite.bodies[0],
+          bodyA: composite.bodies[length - 1],
+          bodyB: gene.isBranch ? composite.bodies[0] : composite.bodies[length - 2],
           stiffness: .1,
           damping: .1,
           length: 10,

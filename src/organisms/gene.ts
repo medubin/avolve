@@ -21,9 +21,9 @@ export default class Gene {
     return gene
   }
 
-  public createBodyPart(x : number, y : number) : Matter.Body {
+  public createBodyPart(x : number, y : number, uuid : number) : Matter.Body {
     const options = {
-      label: this.type.toString(),
+      label: `${uuid}:${this.type}` ,
       // frictionAir: 0.8,
       render: { strokeStyle: this.getBodyColor(this.type), fillStyle: 'transparent', lineWidth: 1 },
     }

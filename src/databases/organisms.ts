@@ -7,10 +7,12 @@ export interface OrganismsInterface {
 export default class Organisms {
   protected maxUuid : number
   protected _organisms : OrganismsInterface
+  public length : number
 
   constructor() {
     this.maxUuid = 0
     this._organisms = {}
+    this.length = 0
   }
 
   public getOrganism(uuid : string) : Organism {
@@ -18,16 +20,21 @@ export default class Organisms {
   }
 
   public addOrganism(organism : Organism) {
-    this.maxUuid += 1
-    organism.uuid = this.maxUuid
     this._organisms[organism.uuid] = organism
+    this.length += 1
   }
 
   public deleteOrganism(uuid : number) {
     delete this._organisms[uuid]
+    this.length -= 1
   }
 
   public get organisms() : OrganismsInterface {
     return this._organisms
+  }
+
+  public get newUuid() : number {
+    this.maxUuid += 1
+    return this.maxUuid
   }
 }

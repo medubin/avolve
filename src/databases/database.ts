@@ -7,6 +7,6 @@ export default class Database {
 
   constructor() {
     this.organisms = new Organisms()
-    this.world = new World(100000)
+    this.world = new World(1000000)
   }
 }
