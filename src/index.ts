@@ -55,7 +55,7 @@ Matter.Events.on(engine, 'beforeTick', (_) => {
   camera.scrollY()
 })
 
-Matter.Events.on(engine, 'collisionStart', (event) => {
+Matter.Events.on(engine, 'collisionActive', (event) => {
   for (const pair of event.pairs) {
     const bodyA = pair.bodyA.label.split(':')
     const bodyB = pair.bodyB.label.split(':')
