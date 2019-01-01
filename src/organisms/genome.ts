@@ -8,14 +8,14 @@ export default class Genome {
   public static random() : Genome {
     const genome = new Genome()
     const genes = []
-    for (let i = rng(1, 10); i > 0; i -= 1) {
+    for (let i = rng(1, 3); i > 0; i -= 1) {
       genes.push(Gene.random())
     }
     genome.genes = genes
     return genome
   }
 
-  public replicate(mutationRate : number = .05) : Genome {
+  public replicate(mutationRate : number = .1) : Genome {
     const genome = new Genome()
     const newGenes = []
     for (const gene of this.genes) {
@@ -50,9 +50,9 @@ export default class Genome {
         Matter.Composite.add(composite, Matter.Constraint.create({
           bodyA: composite.bodies[length - 1],
           bodyB: gene.isBranch ? composite.bodies[0] : composite.bodies[length - 2],
-          stiffness: .1,
+          stiffness: .01,
           damping: .1,
-          length: 10,
+          length: gene.length,
           render: { strokeStyle: '#000000', lineWidth: .5, visible: true },
 
         }))

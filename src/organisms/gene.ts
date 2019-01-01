@@ -1,4 +1,4 @@
-import { rng } from '../utilities/random'
+import { rng, rngFloat } from '../utilities/random'
 import * as Matter from 'matter-js'
 import BodyType from '../constants/body_type'
 
@@ -9,6 +9,7 @@ export default class Gene {
   public sides : number
   public radius : number
   public isBranch : boolean
+  public length : number
 
   public static random() : Gene {
     const gene = new Gene()
@@ -16,8 +17,9 @@ export default class Gene {
     gene.x = rng(-100, 100) / 10
     gene.y = rng(-100, 100) / 10
     gene.sides = rng(3, 9)
-    gene.radius = rng(30, 100) / 10
+    gene.radius = rng(30, 150) / 10
     gene.isBranch = Math.random() > .5
+    gene.length = rngFloat(8, 12)
     return gene
   }
 
@@ -27,7 +29,9 @@ export default class Gene {
       // frictionAir: .01,
       render: { strokeStyle: this.getBodyColor(this.type), fillStyle: 'transparent', lineWidth: 1 },
     }
-    return  Matter.Bodies.polygon(x + this.x, y + this.y, this.sides, this.radius, options)
+    const body = Matter.Bodies.polygon(x + this.x, y + this.y, this.sides, this.radius, options)
+    body.friction = 1
+    return body
   }
 
   public replicate(mutationRate : number = .05) : Gene {
@@ -45,7 +49,7 @@ export default class Gene {
   }
 
   protected mutate(gene : Gene) : Gene {
-    const mutation = rng(0, 6)
+    const mutation = rng(0, 7)
     switch (mutation) {
       case(0):
         gene.type = rng(1, 6)
@@ -64,6 +68,9 @@ export default class Gene {
         return gene
       case(5):
         gene.isBranch = Math.random() > .5
+        return gene
+      case(6):
+        gene.length = rngFloat(8, 12)
         return gene
     }
   }

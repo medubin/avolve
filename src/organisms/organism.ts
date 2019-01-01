@@ -75,7 +75,7 @@ export default class Organism {
   }
 
   public absorb(area : number, victim : Organism) {
-    const energyDrain = victim.energy > area * 2 ? area * 2 : victim.energy
+    const energyDrain = victim.energy > area * 3 ? area * 3 : victim.energy
 
     victim.energy -= energyDrain
     this.energy += energyDrain * .9
