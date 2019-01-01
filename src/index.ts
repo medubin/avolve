@@ -35,10 +35,10 @@ keyboard.attachKeys()
 
 const database = new Database()
 
-for (let i = 0; i < 10; i += 1) {
-  for (let j = 0; j < 10; j += 1) {
+for (let i = 1; i < 11; i += 1) {
+  for (let j = 1; j < 11; j += 1) {
     database.organisms.addOrganism(
-      new Organism(i * 100 + 100, j * 100 + 100, engine.world, Genome.random(), 1000, database))
+      new Organism(i * 100, j * 100, engine.world, Genome.random(), 1000, null, database))
   }
 }
 
@@ -67,8 +67,8 @@ Matter.Events.on(engine, 'collisionActive', (event) => {
       continue
     }
 
-    if (typeA !== BodyType.RED && typeB !== BodyType.RED
-      && typeA !== BodyType.GRAY && typeB !== BodyType.GRAY) {
+    if (typeA !== BodyType.RED && typeB !== BodyType.RED &&
+        typeA !== BodyType.GRAY && typeB !== BodyType.GRAY) {
       continue
     }
     if (typeA === BodyType.RED && typeB === BodyType.RED) {
@@ -82,6 +82,16 @@ Matter.Events.on(engine, 'collisionActive', (event) => {
     const organismA = database.organisms.getOrganism(bodyA[0])
     const organismB = database.organisms.getOrganism(bodyB[0])
     if (!organismA || ! organismB) {
+      continue
+    }
+
+    // prevent parents from eating children and vice versa
+    if (organismA.parentUuid === organismB.uuid || organismA.uuid === organismB.parentUuid) {
+      continue
+    }
+
+      // prevent siblings from eating eachother
+    if (organismA.parentUuid === organismB.parentUuid) {
       continue
     }
     if (typeA === BodyType.GRAY) {

@@ -18,6 +18,7 @@ export default class Organism {
   public age : number
   public maxAge : number
   public isAlive : boolean
+  public parentUuid : number
 
   constructor(
     x : number,
@@ -25,6 +26,7 @@ export default class Organism {
     world : Matter.World,
     genome : Genome,
     energy : number,
+    parent : Organism,
     database : Database,
     ) {
     this.database = database
@@ -35,6 +37,7 @@ export default class Organism {
     this.uuid = database.organisms.newUuid
     this.body = this.genome.createBody(x, y, this.uuid)
     Matter.World.add(world, this.body)
+    this.parentUuid = parent ? parent.uuid : null
 
     this.moveables = []
     this.synthesizers = 0
@@ -109,6 +112,7 @@ export default class Organism {
           this.world,
           this.genome.replicate(),
           offspringEnergy,
+          this,
           database))
     }
   }
