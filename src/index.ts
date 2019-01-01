@@ -85,14 +85,16 @@ Matter.Events.on(engine, 'collisionActive', (event) => {
       continue
     }
 
-    // prevent parents from eating children and vice versa
-    if (organismA.parentUuid === organismB.uuid || organismA.uuid === organismB.parentUuid) {
-      continue
-    }
+    if (organismA.isAlive && organismB.isAlive) {
+      // prevent parents from eating children and vice versa
+      if (organismA.parentUuid === organismB.uuid || organismA.uuid === organismB.parentUuid) {
+        continue
+      }
 
-      // prevent siblings from eating eachother
-    if (organismA.parentUuid === organismB.parentUuid) {
-      continue
+        // prevent siblings from eating eachother
+      if (organismA.parentUuid && organismA.parentUuid === organismB.parentUuid) {
+        continue
+      }
     }
     if (typeA === BodyType.GRAY) {
       organismB.die()
