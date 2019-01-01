@@ -24,11 +24,10 @@ const render = Matter.Render.create({
   options: {
     width: window.innerWidth,
     height: window.innerHeight,
+    hasBounds: true,
     wireframes: false,
   },
 })
-
-render.options.hasBounds = true
 
 const camera = new Camera(render)
 const keyboard = new Keyboard(camera)
