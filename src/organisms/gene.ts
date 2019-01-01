@@ -24,7 +24,7 @@ export default class Gene {
   public createBodyPart(x : number, y : number, uuid : number) : Matter.Body {
     const options = {
       label: `${uuid}:${this.type}`,
-      // frictionAir: 0.8,
+      // frictionAir: .01,
       render: { strokeStyle: this.getBodyColor(this.type), fillStyle: 'transparent', lineWidth: 1 },
     }
     return  Matter.Bodies.polygon(x + this.x, y + this.y, this.sides, this.radius, options)

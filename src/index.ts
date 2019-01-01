@@ -5,16 +5,22 @@ import Genome from './organisms/genome'
 import Camera from './services/camera'
 import Keyboard from './services/keyboard'
 import BodyType from './constants/body_type'
+import World from './parameters/world_parameters'
+import { rng } from './utilities/random'
 
 // create an engine
 const engine = Matter.Engine.create()
 engine.world.gravity.y = 0
 
 Matter.World.add(engine.world, [
-  Matter.Bodies.rectangle(1000, 0, 2000, 50, { isStatic: true }),
-  Matter.Bodies.rectangle(1000, 2000, 2000, 50, { isStatic: true }),
-  Matter.Bodies.rectangle(0, 1000, 50, 2000, { isStatic: true }),
-  Matter.Bodies.rectangle(2000, 1000, 50, 2000, { isStatic: true }),
+  // top
+  Matter.Bodies.rectangle(World.WIDTH / 2, 0, World.WIDTH, 50, { isStatic: true }),
+  // bottom
+  Matter.Bodies.rectangle(World.WIDTH / 2, World.HEIGHT, World.WIDTH, 50, { isStatic: true }),
+  // left
+  Matter.Bodies.rectangle(0, World.HEIGHT / 2, 50, World.HEIGHT, { isStatic: true }),
+  // right
+  Matter.Bodies.rectangle(World.WIDTH, World.HEIGHT / 2, 50, World.HEIGHT, { isStatic: true }),
 ])
 
 // create a renderer
@@ -35,11 +41,11 @@ keyboard.attachKeys()
 
 const database = new Database()
 
-for (let i = 1; i < 11; i += 1) {
-  for (let j = 1; j < 11; j += 1) {
-    database.organisms.addOrganism(
-      new Organism(i * 100, j * 100, engine.world, Genome.random(), 1000, null, database))
-  }
+for (let i = 0; i < World.STARTING_ORGANISMS; i += 1) {
+  const x = rng(50, World.WIDTH - 50)
+  const y = rng(50, World.HEIGHT - 50)
+  const organism = new Organism(x, y, engine.world, Genome.random(), 1000, null, database)
+  database.organisms.addOrganism(organism)
 }
 
 // run the engine
@@ -100,9 +106,9 @@ Matter.Events.on(engine, 'collisionActive', (event) => {
       organismB.die()
     } else if (typeB === BodyType.GRAY) {
       organismA.die()
-    } else if (typeA === BodyType.RED) {
+    } else if (typeA === BodyType.RED && typeB !== BodyType.CYAN) {
       organismA.absorb(pair.bodyA.area, organismB)
-    } else if (typeB === BodyType.RED) {
+    } else if (typeB === BodyType.RED && typeA !== BodyType.CYAN) {
       organismB.absorb(pair.bodyB.area, organismA)
     }
   }

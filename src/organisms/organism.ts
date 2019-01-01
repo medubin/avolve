@@ -51,7 +51,9 @@ export default class Organism {
       if (gene.type === BodyType.GREEN) {
         this.synthesizers += body.area
       }
+
       this.bodySize += body.area
+
     }
     this.reproduceAt = this.bodySize * 10
 
@@ -132,11 +134,11 @@ export default class Organism {
   protected move() : void {
     for (const moveable of this.moveables) {
       const moves = Math.random()
-      if (moves < .98) {
+      if (moves < .95) {
         continue
       }
-      const vx = (Math.random() - .5) * 20
-      const vy = (Math.random() - .5) * 20
+      const vx = rngFloat(-10, 10)
+      const vy = rngFloat(-10, 10)
       Matter.Body.setVelocity(moveable, { x: vx, y: vy })
     }
   }
