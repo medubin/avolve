@@ -7,6 +7,7 @@ import Keyboard from './services/keyboard'
 import BodyType from './constants/body_type'
 import World from './parameters/world_parameters'
 import { rng } from './utilities/random'
+import { collidesWith } from './utilities/collision_interaction'
 
 // create an engine
 const engine = Matter.Engine.create()
@@ -64,24 +65,20 @@ Matter.Events.on(engine, 'collisionActive', (event) => {
   for (const pair of event.pairs) {
     const bodyA = pair.bodyA.label.split(':')
     const bodyB = pair.bodyB.label.split(':')
+    if (bodyA.length === 1 || bodyB.length === 1) {
+      continue
+    }
+
     if (bodyA[0] === bodyB[0]) {
       continue
     }
     const typeA = parseInt(bodyA[1], 10)
     const typeB = parseInt(bodyB[1], 10)
-    if (typeA === BodyType.BLUE || typeB === BodyType.BLUE) {
-      continue
-    }
 
-    if (typeA !== BodyType.RED && typeB !== BodyType.RED &&
-        typeA !== BodyType.GRAY && typeB !== BodyType.GRAY) {
-      continue
-    }
-    if (typeA === BodyType.RED && typeB === BodyType.RED) {
-      continue
-    }
+    const aCollidesB = collidesWith(typeA, typeB)
+    const bCollidesA = collidesWith(typeB, typeA)
 
-    if (typeA === BodyType.GRAY && typeB === BodyType.GRAY) {
+    if (!aCollidesB && !bCollidesA) {
       continue
     }
 
@@ -102,13 +99,14 @@ Matter.Events.on(engine, 'collisionActive', (event) => {
         continue
       }
     }
+
     if (typeA === BodyType.GRAY) {
       organismB.die()
     } else if (typeB === BodyType.GRAY) {
       organismA.die()
-    } else if (typeA === BodyType.RED && typeB !== BodyType.CYAN) {
+    } else if (typeA === BodyType.RED) {
       organismA.absorb(pair.bodyA.area, organismB)
-    } else if (typeB === BodyType.RED && typeA !== BodyType.CYAN) {
+    } else if (typeB === BodyType.RED) {
       organismB.absorb(pair.bodyB.area, organismA)
     }
   }
