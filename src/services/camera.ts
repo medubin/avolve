@@ -10,38 +10,31 @@ export default class Camera {
     this.render = render
     this._scrollX = 0
     this._scrollY = 0
-    // this._x = 0
-    // this._y = 0
-    // this.pixi.app.renderer.view.style.position = 'absolute'
-    // this.pixi.app.renderer.view.style.display = 'block'
-    // this.pixi.app.renderer.autoResize = true
-    // this.pixi.app.stage.interactive = true
-    // this.scaleToWindow()
-    // this.scaleToWindow = this.scaleToWindow.bind(this)
-    // window.addEventListener('resize', this.scaleToWindow)
+    this.scaleToWindow = this.scaleToWindow.bind(this)
+    window.addEventListener('resize', this.scaleToWindow)
   }
 
-  // scaleToWindow() : void {
-  //   this.pixi.app.renderer.resize(window.innerWidth, window.innerHeight)
-  //   const wRatio = window.innerWidth / 1440
-  //   const hRatio = window.innerHeight / 900
-  //   this.baseScale = Math.max(wRatio, hRatio)
-  //   this.scale()
-  //   // this.centerCamera()
-  // }
+  public scaleToWindow() {
+    // TODO get this working
+    this.render.canvas.height = window.innerHeight
+    this.render.canvas.width = window.innerWidth
+    // @ts-ignore
+    this.render.bounds.max.x = this.render.bounds.min.x + window.innerWidth
+    // @ts-ignore
+    this.render.bounds.max.y = this.render.bounds.min.y + window.innerHeight
 
-  // protected scale() : void {
-  //   this.pixi.world.scale.x = this.baseScale
-  //   this.pixi.world.scale.y = this.baseScale
-  // }
-
-  // protected centerCamera() {
-  //   this.pixi.world.position.x = this.pixi.app.renderer.width / 2
-  //   this.pixi.world.position.y = this.pixi.app.renderer.height / 2
-  // }
+  }
 
   public scrollX() {
     if (this._scrollX) {
+      // @ts-ignore
+      if (this._scrollX < 0 && this.render.bounds.min.x < 0) {
+        return
+      }
+      // @ts-ignore
+      if (this._scrollX > 0 && this.render.bounds.max.x > 2000) {
+        return
+      }
       const translate = { x : this._scrollX, y : 0 }
       Matter.Bounds.translate(this.render.bounds, translate)
     }
@@ -49,6 +42,14 @@ export default class Camera {
 
   public scrollY() {
     if (this._scrollY) {
+      // @ts-ignore
+      if (this._scrollY < 0 && this.render.bounds.min.y < 0) {
+        return
+      }
+      // @ts-ignore
+      if (this._scrollY > 0 && this.render.bounds.max.y > 2000) {
+        return
+      }
       const translate = { x : 0, y : this._scrollY }
       Matter.Bounds.translate(this.render.bounds, translate)
     }
