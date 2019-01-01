@@ -19,6 +19,7 @@ export default class Organism {
   public maxAge : number
   public isAlive : boolean
   public parentUuid : number
+  public broodSize : number
 
   constructor(
     x : number,
@@ -42,20 +43,24 @@ export default class Organism {
     this.moveables = []
     this.synthesizers = 0
     this.bodySize = 0
+    let yellowArea = 0
     for (const idx in this.body.bodies) {
       const gene = this.genome.genes[idx]
       const body = this.body.bodies[idx]
       if (gene.type === BodyType.CYAN) {
         this.moveables.push(body)
-      }
-      if (gene.type === BodyType.GREEN) {
+      } else if (gene.type === BodyType.GREEN) {
         this.synthesizers += body.area
+      } else if  (gene.type === BodyType.YELLOW) {
+        yellowArea += body.area
       }
 
       this.bodySize += body.area
 
     }
     this.reproduceAt = this.bodySize * 10
+
+    this.broodSize = 1 + Math.ceil(yellowArea * 5 / this.bodySize)
 
     this.age = 0
     this.maxAge = this.bodySize * 10
@@ -105,17 +110,19 @@ export default class Organism {
 
   protected reproduce(database: Database) {
     if (this.energy > this.reproduceAt) {
-      const offspringEnergy = this.reproduceAt / 2
-      this.energy -= offspringEnergy
-      database.organisms.addOrganism(
-        new Organism(
-          this.body.bodies[0].position.x + rngFloat(-10, 10),
-          this.body.bodies[0].position.y + rngFloat(-10, 10),
-          this.world,
-          this.genome.replicate(),
-          offspringEnergy,
-          this,
-          database))
+      const offspringEnergy = this.reproduceAt / (this.broodSize + 1)
+      for (let i = 0; i < this.broodSize; i += 1) {
+        this.energy -= offspringEnergy
+        database.organisms.addOrganism(
+          new Organism(
+            this.body.bodies[0].position.x + rngFloat(-10, 10),
+            this.body.bodies[0].position.y + rngFloat(-10, 10),
+            this.world,
+            this.genome.replicate(),
+            offspringEnergy,
+            this,
+            database))
+      }
     }
   }
 

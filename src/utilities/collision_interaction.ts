@@ -10,6 +10,7 @@ const BLUE = BodyType.BLUE
 const RED = BodyType.RED
 const CYAN = BodyType.CYAN
 const GRAY = BodyType.GRAY
+const YELLOW = BodyType.YELLOW
 
 const COLLISION_CHECK : {[key : number]: number[]} = {
   [DEAD]: [],
@@ -17,5 +18,6 @@ const COLLISION_CHECK : {[key : number]: number[]} = {
   [BLUE]: [],
   [RED]: [DEAD, GREEN],
   [CYAN]: [],
-  [GRAY]: [GREEN, RED, CYAN],
+  [GRAY]: [GREEN, RED, CYAN, YELLOW],
+  [YELLOW]: [],
 }
