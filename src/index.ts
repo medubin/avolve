@@ -66,10 +66,16 @@ Matter.Events.on(engine, 'collisionActive', (event) => {
     if (typeA === BodyType.BLUE || typeB === BodyType.BLUE) {
       continue
     }
-    if (typeA !== BodyType.RED && typeB !== BodyType.RED) {
+
+    if (typeA !== BodyType.RED && typeB !== BodyType.RED
+      && typeA !== BodyType.GRAY && typeB !== BodyType.GRAY) {
       continue
     }
     if (typeA === BodyType.RED && typeB === BodyType.RED) {
+      continue
+    }
+
+    if (typeA === BodyType.GRAY && typeB === BodyType.GRAY) {
       continue
     }
 
@@ -78,7 +84,11 @@ Matter.Events.on(engine, 'collisionActive', (event) => {
     if (!organismA || ! organismB) {
       continue
     }
-    if (typeA === BodyType.RED) {
+    if (typeA === BodyType.GRAY) {
+      organismB.die()
+    } else if (typeB === BodyType.GRAY) {
+      organismA.die()
+    } else if (typeA === BodyType.RED) {
       organismA.absorb(pair.bodyA.area, organismB)
     } else if (typeB === BodyType.RED) {
       organismB.absorb(pair.bodyB.area, organismA)

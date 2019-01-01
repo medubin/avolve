@@ -12,7 +12,7 @@ export default class Gene {
 
   public static random() : Gene {
     const gene = new Gene()
-    gene.type = rng(1, 5)
+    gene.type = rng(1, 6)
     gene.x = rng(-100, 100) / 10
     gene.y = rng(-100, 100) / 10
     gene.sides = rng(3, 9)
@@ -23,7 +23,7 @@ export default class Gene {
 
   public createBodyPart(x : number, y : number, uuid : number) : Matter.Body {
     const options = {
-      label: `${uuid}:${this.type}` ,
+      label: `${uuid}:${this.type}`,
       // frictionAir: 0.8,
       render: { strokeStyle: this.getBodyColor(this.type), fillStyle: 'transparent', lineWidth: 1 },
     }
@@ -78,6 +78,8 @@ export default class Gene {
         return '#FF0000'
       case(BodyType.CYAN):
         return '#00FFFF'
+      case(BodyType.GRAY):
+        return '#808080'
     }
   }
 }

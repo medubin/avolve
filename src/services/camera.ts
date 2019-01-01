@@ -1,7 +1,6 @@
 import * as Matter from 'matter-js'
 
 export default class Camera {
-  // public baseScale : number
   protected _scrollX : number
   protected _scrollY : number
   protected render : Matter.Render

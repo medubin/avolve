@@ -77,17 +77,24 @@ export default class Organism {
     this.database.world.releaseCO2(energyDrain * .1)
   }
 
+  public die() {
+    if (!this.isAlive) {
+      return
+    }
+    this.isAlive = false
+    for (const body of this.body.bodies) {
+      body.render.strokeStyle = '#5c3317'
+      body.label = `${this.uuid}:${BodyType.DEAD}`
+    }
+  }
+
   protected healthCheck(database : Database) {
     if (this.energy <= 0) {
       Matter.World.remove(this.world, this.body)
       database.world.releaseCO2(this.energy)
       database.organisms.deleteOrganism(this.uuid)
-    } else if (this.age > this.maxAge && this.isAlive) {
-      this.isAlive = false
-      for (const body of this.body.bodies) {
-        body.render.strokeStyle = '#5c3317'
-        body.label = `${this.uuid}:${BodyType.DEAD}`
-      }
+    } else if (this.age > this.maxAge) {
+      this.die()
     }
   }
 
