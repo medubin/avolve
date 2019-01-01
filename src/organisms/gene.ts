@@ -48,7 +48,7 @@ export default class Gene {
     const mutation = rng(0, 6)
     switch (mutation) {
       case(0):
-        gene.type = rng(0, 4)
+        gene.type = rng(1, 6)
         return gene
       case(1):
         gene.x = rng(-100, 100) / 10
