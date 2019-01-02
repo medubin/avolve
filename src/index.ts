@@ -27,7 +27,7 @@ Matter.World.add(engine.world, [
 // create a renderer
 const render = Matter.Render.create({
   engine,
-  element: document.body,
+  element: document.getElementById('avolve'),
   options: {
     width: window.innerWidth,
     height: window.innerHeight,

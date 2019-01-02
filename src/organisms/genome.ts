@@ -4,6 +4,7 @@ import * as Matter from 'matter-js'
 
 export default class Genome {
   public genes : Gene[]
+  public symmetry : number
 
   public static random() : Genome {
     const genome = new Genome()
@@ -12,6 +13,7 @@ export default class Genome {
       genes.push(Gene.random())
     }
     genome.genes = genes
+    genome.symmetry = rng(1, 3)
     return genome
   }
 
@@ -22,6 +24,7 @@ export default class Genome {
       newGenes.push(gene.replicate(mutationRate))
     }
     genome.genes = newGenes
+    genome.symmetry = this.symmetry
     if (Math.random() < mutationRate) {
       return this.mutate(genome)
     }
@@ -29,33 +32,39 @@ export default class Genome {
   }
 
   protected mutate(genome : Genome) : Genome {
-    if (rng(0, 2) && genome.genes.length < 10) {
+    const mutation = rng(0, 3)
+    if (mutation === 3 && genome.genes.length < 10) {
       // duplicate gene
       const dupe = rng(0, genome.genes.length)
       const target = rng(0, genome.genes.length)
       genome.genes.splice(target, 0, genome.genes[dupe])
-    } else if (genome.genes.length > 1) {
+    } else if (mutation === 2 && genome.genes.length > 1) {
       // delete gene
       genome.genes.splice(rng(0, genome.genes.length), 1)
+    } else {
+      // change symmetry
+      genome.symmetry = rng(1, 3)
     }
     return genome
   }
 
   public createBody(x : number, y : number, uuid : number) : Matter.Composite {
     const composite = Matter.Composite.create()
-    for (const gene of this.genes) {
-      Matter.Composite.add(composite, gene.createBodyPart(x, y, uuid))
-      if (composite.bodies.length > 1) {
-        const length = composite.bodies.length
-        Matter.Composite.add(composite, Matter.Constraint.create({
-          bodyA: composite.bodies[length - 1],
-          bodyB: gene.isBranch ? composite.bodies[0] : composite.bodies[length - 2],
-          stiffness: .01,
-          damping: .1,
-          length: gene.length,
-          render: { strokeStyle: '#000000', lineWidth: .5, visible: true },
+    for (let i = 0; i < this.symmetry; i += 1) {
+      for (const gene of this.genes) {
+        Matter.Composite.add(composite, gene.createBodyPart(x, y, uuid))
+        if (composite.bodies.length > 1) {
+          const length = composite.bodies.length
+          Matter.Composite.add(composite, Matter.Constraint.create({
+            bodyA: composite.bodies[length - 1],
+            bodyB: gene.isBranch ? composite.bodies[0] : composite.bodies[length - 2],
+            stiffness: .01,
+            damping: .1,
+            length: gene.length,
+            render: { strokeStyle: '#000000', lineWidth: .5, visible: true },
 
-        }))
+          }))
+        }
       }
     }
     return composite

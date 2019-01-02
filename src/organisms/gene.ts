@@ -17,7 +17,7 @@ export default class Gene {
     gene.x = rng(-100, 100) / 10
     gene.y = rng(-100, 100) / 10
     gene.sides = rng(3, 9)
-    gene.radius = rng(40, 150) / 10
+    gene.radius = rngFloat(3, 15)
     gene.isBranch = Math.random() > .5
     gene.length = rngFloat(8, 12)
     return gene
@@ -65,7 +65,7 @@ export default class Gene {
         gene.sides = rng(3, 9)
         return gene
       case(4):
-        gene.radius = rng(40, 150) / 10
+        gene.radius = rngFloat(3, 15)
         return gene
       case(5):
         gene.isBranch = Math.random() > .5

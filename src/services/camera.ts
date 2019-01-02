@@ -1,4 +1,5 @@
 import * as Matter from 'matter-js'
+import World from '../parameters/world_parameters'
 
 export default class Camera {
   protected _scrollX : number
@@ -31,7 +32,7 @@ export default class Camera {
         return
       }
       // @ts-ignore
-      if (this._scrollX > 0 && this.render.bounds.max.x > 2000) {
+      if (this._scrollX > 0 && this.render.bounds.max.x > World.WIDTH) {
         return
       }
       const translate = { x : this._scrollX, y : 0 }
@@ -46,7 +47,7 @@ export default class Camera {
         return
       }
       // @ts-ignore
-      if (this._scrollY > 0 && this.render.bounds.max.y > 2000) {
+      if (this._scrollY > 0 && this.render.bounds.max.y > World.HEIGHT) {
         return
       }
       const translate = { x : 0, y : this._scrollY }
@@ -56,9 +57,12 @@ export default class Camera {
 
   public moveX(dX : number) : void {
     this._scrollX = dX
+    this.scrollX()
+
   }
 
   public moveY(dY : number) : void {
     this._scrollY = dY
+    this.scrollX()
   }
 }

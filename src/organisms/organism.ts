@@ -46,16 +46,15 @@ export default class Organism {
     this.bodySize = 0
     this.repellent = 0
     let yellowArea = 0
-    for (const idx in this.body.bodies) {
-      const gene = this.genome.genes[idx]
-      const body = this.body.bodies[idx]
-      if (gene.type === BodyType.CYAN) {
+    for (const body of this.body.bodies) {
+      const genotype : number = parseInt(body.label.split(':')[1], 10)
+      if (genotype === BodyType.CYAN) {
         this.moveables.push(body)
-      } else if (gene.type === BodyType.GREEN) {
+      } else if (genotype === BodyType.GREEN) {
         this.synthesizers += body.area
-      } else if (gene.type === BodyType.YELLOW) {
+      } else if (genotype === BodyType.YELLOW) {
         yellowArea += body.area
-      } else if (gene.type === BodyType.BLUE) {
+      } else if (genotype === BodyType.BLUE) {
         this.repellent += body.area
       }
 
@@ -63,6 +62,7 @@ export default class Organism {
 
     }
     this.reproduceAt = this.bodySize * 10
+    this.reproduceAt = Math.max(this.reproduceAt - yellowArea, this.reproduceAt / 2)
 
     this.broodSize = 1 + Math.ceil(yellowArea * 5 / this.bodySize)
 
@@ -146,7 +146,9 @@ export default class Organism {
 
   protected respirate(database : Database) {
     let energyLoss = this.isAlive ? this.bodySize / 500 : this.bodySize / 100
-    energyLoss = energyLoss / (database.world.o2Fraction + 1)
+    if (this.isAlive) {
+      energyLoss = energyLoss / (database.world.o2Fraction + 1)
+    }
     database.world.releaseCO2(energyLoss)
     this.energy -= energyLoss
   }
