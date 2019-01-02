@@ -13,11 +13,11 @@ export default class Gene {
 
   public static random() : Gene {
     const gene = new Gene()
-    gene.type = rng(1, 7)
+    gene.type = rng(1, 8)
     gene.x = rng(-100, 100) / 10
     gene.y = rng(-100, 100) / 10
     gene.sides = rng(3, 9)
-    gene.radius = rng(30, 150) / 10
+    gene.radius = rng(40, 150) / 10
     gene.isBranch = Math.random() > .5
     gene.length = rngFloat(8, 12)
     return gene
@@ -31,6 +31,7 @@ export default class Gene {
     }
     const body = Matter.Bodies.polygon(x + this.x, y + this.y, this.sides, this.radius, options)
     body.friction = 1
+    body.restitution = 0
     return body
   }
 
@@ -52,7 +53,7 @@ export default class Gene {
     const mutation = rng(0, 7)
     switch (mutation) {
       case(0):
-        gene.type = rng(1, 7)
+        gene.type = rng(1, 8)
         return gene
       case(1):
         gene.x = rng(-100, 100) / 10
@@ -64,7 +65,7 @@ export default class Gene {
         gene.sides = rng(3, 9)
         return gene
       case(4):
-        gene.radius = rng(30, 100) / 10
+        gene.radius = rng(40, 150) / 10
         return gene
       case(5):
         gene.isBranch = Math.random() > .5
@@ -81,14 +82,16 @@ export default class Gene {
         return '#7CFC00'
       case(BodyType.BLUE):
         return '#0000CD'
-      case(BodyType.RED):
-        return '#FF0000'
+      case(BodyType.MAROON):
+        return '#5D0F0D'
       case(BodyType.CYAN):
         return '#00FFFF'
       case(BodyType.GRAY):
         return '#808080'
       case(BodyType.YELLOW):
         return '#FFFF00'
+      case(BodyType.RED):
+        return '#FF0000'
     }
   }
 }

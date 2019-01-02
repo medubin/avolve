@@ -18,9 +18,9 @@ export default class Camera {
     this.render.canvas.height = window.innerHeight
     this.render.canvas.width = window.innerWidth
     // @ts-ignore
-    this.render.bounds.max.x = this.render.bounds.min.x + window.innerWidth
+    // this.render.bounds.max.x = this.render.bounds.min.x + window.innerWidth
     // @ts-ignore
-    this.render.bounds.max.y = this.render.bounds.min.y + window.innerHeight
+    // this.render.bounds.max.y = this.render.bounds.min.y + window.innerHeight
 
   }
 

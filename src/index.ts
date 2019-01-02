@@ -100,13 +100,25 @@ Matter.Events.on(engine, 'collisionActive', (event) => {
       }
     }
 
-    if (typeA === BodyType.GRAY) {
+    if (typeA === BodyType.BLUE) {
+      const vX = pair.bodyA.velocity.x
+      const vY = pair.bodyA.velocity.y
+      organismA.reverse(vX, vY)
+    } else if (typeB === BodyType.BLUE) {
+      const vX = pair.bodyB.velocity.x
+      const vY = pair.bodyB.velocity.y
+      organismB.reverse(vX, vY)
+    } else if (typeA === BodyType.GRAY) {
       organismB.die()
     } else if (typeB === BodyType.GRAY) {
       organismA.die()
     } else if (typeA === BodyType.RED) {
       organismA.absorb(pair.bodyA.area, organismB)
     } else if (typeB === BodyType.RED) {
+      organismB.absorb(pair.bodyB.area, organismA)
+    } else if (typeA === BodyType.MAROON) {
+      organismA.absorb(pair.bodyA.area, organismB)
+    } else if (typeB === BodyType.MAROON) {
       organismB.absorb(pair.bodyB.area, organismA)
     }
   }

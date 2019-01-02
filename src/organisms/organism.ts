@@ -20,6 +20,7 @@ export default class Organism {
   public isAlive : boolean
   public parentUuid : number
   public broodSize : number
+  public repellent : number
 
   constructor(
     x : number,
@@ -43,6 +44,7 @@ export default class Organism {
     this.moveables = []
     this.synthesizers = 0
     this.bodySize = 0
+    this.repellent = 0
     let yellowArea = 0
     for (const idx in this.body.bodies) {
       const gene = this.genome.genes[idx]
@@ -51,8 +53,10 @@ export default class Organism {
         this.moveables.push(body)
       } else if (gene.type === BodyType.GREEN) {
         this.synthesizers += body.area
-      } else if  (gene.type === BodyType.YELLOW) {
+      } else if (gene.type === BodyType.YELLOW) {
         yellowArea += body.area
+      } else if (gene.type === BodyType.BLUE) {
+        this.repellent += body.area
       }
 
       this.bodySize += body.area
@@ -80,7 +84,7 @@ export default class Organism {
   }
 
   public absorb(area : number, victim : Organism) {
-    const energyDrain = victim.energy > area * 3 ? area * 3 : victim.energy
+    const energyDrain = victim.energy > area * 4 ? area * 4 : victim.energy
 
     victim.energy -= energyDrain
     this.energy += energyDrain * .9
@@ -96,6 +100,14 @@ export default class Organism {
       body.render.strokeStyle = '#5c3317'
       body.label = `${this.uuid}:${BodyType.DEAD}`
     }
+  }
+
+  public reverse(vX : number, vY : number) {
+    let x = -vX * (this.repellent / 10)
+    let y = -vY * (this.repellent / 10)
+    x = Math.abs(x) > 10 ? 10 * (x / Math.abs(x)) : x
+    y = Math.abs(y) > 10 ? 10 * (y / Math.abs(y)) : y
+    Matter.Body.setVelocity(this.body.bodies[0], { x, y })
   }
 
   protected healthCheck(database : Database) {
@@ -127,13 +139,14 @@ export default class Organism {
   }
 
   protected synthesize(database : Database) {
-    const newEnergy = (this.synthesizers / 5) * database.world.fraction
+    const newEnergy = (this.synthesizers / 5) * database.world.co2Fraction
     database.world.consumeCO2(newEnergy)
     this.energy += newEnergy
   }
 
   protected respirate(database : Database) {
-    const energyLoss = this.isAlive ? this.bodySize / 200 : this.bodySize / 100
+    let energyLoss = this.isAlive ? this.bodySize / 500 : this.bodySize / 100
+    energyLoss = energyLoss / (database.world.o2Fraction + 1)
     database.world.releaseCO2(energyLoss)
     this.energy -= energyLoss
   }

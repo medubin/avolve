@@ -9,8 +9,12 @@ export default class World {
     this.o2 = 0
   }
 
-  public get fraction() : number {
+  public get co2Fraction() : number {
     return this.co2 / this.total
+  }
+
+  public get o2Fraction() : number {
+    return this.o2 / this.total
   }
 
   public consumeCO2(co2 : number) {
