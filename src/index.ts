@@ -29,13 +29,12 @@ const render = Matter.Render.create({
   engine,
   element: document.getElementById('avolve'),
   options: {
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: 1440,
+    height: 900,
     hasBounds: true,
     wireframes: false,
   },
 })
-
 const camera = new Camera(render)
 const keyboard = new Keyboard(camera)
 keyboard.attachKeys()

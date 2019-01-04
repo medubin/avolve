@@ -10,19 +10,6 @@ export default class Camera {
     this.render = render
     this._scrollX = 0
     this._scrollY = 0
-    this.scaleToWindow = this.scaleToWindow.bind(this)
-    window.addEventListener('resize', this.scaleToWindow)
-  }
-
-  public scaleToWindow() {
-    // TODO get this working
-    this.render.canvas.height = window.innerHeight
-    this.render.canvas.width = window.innerWidth
-    // @ts-ignore
-    // this.render.bounds.max.x = this.render.bounds.min.x + window.innerWidth
-    // @ts-ignore
-    // this.render.bounds.max.y = this.render.bounds.min.y + window.innerHeight
-
   }
 
   public scrollX() {
@@ -58,7 +45,6 @@ export default class Camera {
   public moveX(dX : number) : void {
     this._scrollX = dX
     this.scrollX()
-
   }
 
   public moveY(dY : number) : void {
