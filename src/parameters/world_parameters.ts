@@ -1,6 +1,6 @@
 enum World {
-  WIDTH = 3000,
-  HEIGHT = 3000,
+  WIDTH = 2000,
+  HEIGHT = 2000,
   CO2 = 1500000,
   STARTING_ORGANISMS = 10,
 }

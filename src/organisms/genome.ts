@@ -9,7 +9,7 @@ export default class Genome {
   public static random() : Genome {
     const genome = new Genome()
     const genes = []
-    for (let i = rng(1, 3); i > 0; i -= 1) {
+    for (let i = rng(1, 6); i > 0; i -= 1) {
       genes.push(Gene.random())
     }
     genome.genes = genes
