@@ -15,11 +15,11 @@ export default class Camera {
   public scrollX() {
     if (this._scrollX) {
       // @ts-ignore
-      if (this._scrollX < 0 && this.render.bounds.min.x < -World.WALL * 2) {
+      if (this._scrollX < 0 && this.render.bounds.min.x < -World.WALL / 2) {
         return
       }
       // @ts-ignore
-      if (this._scrollX > 0 && this.render.bounds.max.x > World.WIDTH) {
+      if (this._scrollX > 0 && this.render.bounds.max.x > World.WIDTH + (World.WALL / 2)) {
         return
       }
       const translate = { x : this._scrollX, y : 0 }
@@ -30,11 +30,11 @@ export default class Camera {
   public scrollY() {
     if (this._scrollY) {
       // @ts-ignore
-      if (this._scrollY < 0 && this.render.bounds.min.y < -World.WALL * 2) {
+      if (this._scrollY < 0 && this.render.bounds.min.y < -World.WALL / 2) {
         return
       }
       // @ts-ignore
-      if (this._scrollY > 0 && this.render.bounds.max.y > World.HEIGHT) {
+      if (this._scrollY > 0 && this.render.bounds.max.y > World.HEIGHT + (World.WALL * 2)) {
         return
       }
       const translate = { x : 0, y : this._scrollY }
