@@ -16,13 +16,15 @@ engine.world.gravity.y = 0
 
 Matter.World.add(engine.world, [
   // top
-  Matter.Bodies.rectangle(World.WIDTH / 2, 0, World.WIDTH, 50, { isStatic: true }),
+  Matter.Bodies.rectangle(World.WIDTH / 2, 0, World.WIDTH, World.WALL, { isStatic: true }),
   // bottom
-  Matter.Bodies.rectangle(World.WIDTH / 2, World.HEIGHT, World.WIDTH, 50, { isStatic: true }),
+  Matter.Bodies.rectangle(World.WIDTH / 2, World.HEIGHT, World.WIDTH, World.WALL,
+                          { isStatic: true }),
   // left
-  Matter.Bodies.rectangle(0, World.HEIGHT / 2, 50, World.HEIGHT, { isStatic: true }),
+  Matter.Bodies.rectangle(0, World.HEIGHT / 2, World.WALL, World.HEIGHT, { isStatic: true }),
   // right
-  Matter.Bodies.rectangle(World.WIDTH, World.HEIGHT / 2, 50, World.HEIGHT, { isStatic: true }),
+  Matter.Bodies.rectangle(World.WIDTH, World.HEIGHT / 2, World.WALL, World.HEIGHT,
+                          { isStatic: true }),
 ])
 
 // create a renderer
