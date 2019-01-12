@@ -12,3 +12,15 @@ body, html {
   display: none;
   pointer-events: none;
 }
+
+
+#stats {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: black;
+  color: white;
+  display: flex;
+  justify-content: space-evenly;
+
+}

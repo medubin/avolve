@@ -1,4 +1,5 @@
 export default class World {
+  public tickNumber : number
   public total : number
   public co2 : number
   public o2 : number
@@ -7,6 +8,7 @@ export default class World {
     this.total = total
     this.co2 = total
     this.o2 = 0
+    this.tickNumber = 0
   }
 
   public get co2Fraction() : number {

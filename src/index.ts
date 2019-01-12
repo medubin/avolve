@@ -8,6 +8,7 @@ import BodyType from './constants/body_type'
 import World from './parameters/world_parameters'
 import { rng } from './utilities/random'
 import { collidesWith } from './utilities/collision_interaction'
+import WorldDisplay from './services/world_display'
 
 // create an engine
 const engine = Matter.Engine.create()
@@ -41,6 +42,8 @@ keyboard.attachKeys()
 
 const database = new Database()
 
+const worldDisplay = new WorldDisplay(database)
+
 for (let i = 0; i < World.STARTING_ORGANISMS; i += 1) {
   const x = rng(50, World.WIDTH - 50)
   const y = rng(50, World.HEIGHT - 50)
@@ -58,6 +61,8 @@ Matter.Events.on(engine, 'beforeTick', (_) => {
   }
   camera.scrollX()
   camera.scrollY()
+  database.world.tickNumber += 1
+  worldDisplay.tick()
 })
 
 Matter.Events.on(engine, 'collisionActive', (event) => {
