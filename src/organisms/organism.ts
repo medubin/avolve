@@ -43,7 +43,7 @@ export default class Organism {
 
     this.moveables = []
     this.synthesizers = 0
-    this.bodySize = 0
+    this.bodySize = 100
     this.repellent = 0
     let yellowArea = 0
     for (const body of this.body.bodies) {
@@ -59,7 +59,6 @@ export default class Organism {
       }
 
       this.bodySize += body.area
-
     }
     this.reproduceAt = this.bodySize * 10
     this.reproduceAt = Math.max(this.reproduceAt - yellowArea, this.reproduceAt / 2)
@@ -96,6 +95,8 @@ export default class Organism {
       return
     }
     this.isAlive = false
+    this.database.organisms.alive -= 1
+    this.database.organisms.dead += 1
     for (const body of this.body.bodies) {
       body.render.strokeStyle = '#5c3317'
       body.label = `${this.uuid}:${BodyType.DEAD}`
