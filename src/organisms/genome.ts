@@ -13,7 +13,7 @@ export default class Genome {
       genes.push(Gene.random())
     }
     genome.genes = genes
-    genome.symmetry = rng(1, 3)
+    genome.symmetry = rng(1, 4)
     return genome
   }
 
@@ -33,17 +33,17 @@ export default class Genome {
 
   protected mutate(genome : Genome) : Genome {
     const mutation = rng(0, 3)
-    if (mutation === 3 && genome.genes.length < 10) {
+    if (mutation === 0 && genome.genes.length < 10) {
       // duplicate gene
       const dupe = rng(0, genome.genes.length)
       const target = rng(0, genome.genes.length)
       genome.genes.splice(target, 0, genome.genes[dupe])
-    } else if (mutation === 2 && genome.genes.length > 1) {
+    } else if (mutation === 1 && genome.genes.length > 1) {
       // delete gene
       genome.genes.splice(rng(0, genome.genes.length), 1)
     } else {
       // change symmetry
-      genome.symmetry = rng(1, 3)
+      genome.symmetry = rng(1, 4)
     }
     return genome
   }
