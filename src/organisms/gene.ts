@@ -1,4 +1,4 @@
-import { rng, rngFloat } from '../utilities/random'
+import { rng, rngFloat, rngBool } from '../utilities/random'
 import * as Matter from 'matter-js'
 import BodyType from '../constants/body_type'
 
@@ -18,7 +18,7 @@ export default class Gene {
     gene.y = rng(-100, 100) / 10
     gene.sides = rng(3, 9)
     gene.radius = rngFloat(3, 15)
-    gene.isBranch = Math.random() > .5
+    gene.isBranch = rngBool()
     gene.length = rngFloat(8, 12)
     return gene
   }
@@ -68,7 +68,7 @@ export default class Gene {
         gene.radius = rngFloat(3, 15)
         return gene
       case(5):
-        gene.isBranch = Math.random() > .5
+        gene.isBranch = rngBool()
         return gene
       case(6):
         gene.length = rngFloat(8, 12)

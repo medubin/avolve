@@ -6,3 +6,7 @@ export function rng(min : number, max : number) : number {
 export function rngFloat(min : number, max : number) : number {
   return Math.random() * (max - min) + min
 }
+
+export function rngBool() : boolean {
+  return Math.random() >= 0.5
+}
