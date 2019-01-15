@@ -7,7 +7,7 @@ import Keyboard from './services/keyboard'
 import BodyType from './constants/body_type'
 import World from './parameters/world_parameters'
 import { rng } from './utilities/random'
-import { collidesWith } from './utilities/collision_interaction'
+import { resolveCollision } from './utilities/collision_interaction'
 import WorldDisplay from './services/world_display'
 
 // create an engine
@@ -68,66 +68,11 @@ Matter.Events.on(engine, 'beforeTick', (_) => {
 })
 
 Matter.Events.on(engine, 'collisionActive', (event) => {
-  for (const pair of event.pairs) {
-    const bodyA = pair.bodyA.label.split(':')
-    const bodyB = pair.bodyB.label.split(':')
-    if (bodyA.length === 1 || bodyB.length === 1) {
-      continue
-    }
+  resolveCollision(event, database)
+})
 
-    if (bodyA[0] === bodyB[0]) {
-      continue
-    }
-    const typeA = parseInt(bodyA[1], 10)
-    const typeB = parseInt(bodyB[1], 10)
-
-    const aCollidesB = collidesWith(typeA, typeB)
-    const bCollidesA = collidesWith(typeB, typeA)
-
-    if (!aCollidesB && !bCollidesA) {
-      continue
-    }
-
-    const organismA = database.organisms.getOrganism(bodyA[0])
-    const organismB = database.organisms.getOrganism(bodyB[0])
-    if (!organismA || ! organismB) {
-      continue
-    }
-
-    if (organismA.isAlive && organismB.isAlive) {
-      // prevent parents from eating children and vice versa
-      if (organismA.parentUuid === organismB.uuid || organismA.uuid === organismB.parentUuid) {
-        continue
-      }
-
-        // prevent siblings from eating eachother
-      if (organismA.parentUuid && organismA.parentUuid === organismB.parentUuid) {
-        continue
-      }
-    }
-
-    if (typeA === BodyType.BLUE) {
-      const vX = pair.bodyA.velocity.x
-      const vY = pair.bodyA.velocity.y
-      organismA.reverse(vX, vY)
-    } else if (typeB === BodyType.BLUE) {
-      const vX = pair.bodyB.velocity.x
-      const vY = pair.bodyB.velocity.y
-      organismB.reverse(vX, vY)
-    } else if (typeA === BodyType.GRAY) {
-      organismB.die()
-    } else if (typeB === BodyType.GRAY) {
-      organismA.die()
-    } else if (typeA === BodyType.RED) {
-      organismA.absorb(pair.bodyA.area, organismB)
-    } else if (typeB === BodyType.RED) {
-      organismB.absorb(pair.bodyB.area, organismA)
-    } else if (typeA === BodyType.MAROON) {
-      organismA.absorb(pair.bodyA.area, organismB)
-    } else if (typeB === BodyType.MAROON) {
-      organismB.absorb(pair.bodyB.area, organismA)
-    }
-  }
+Matter.Events.on(engine, 'collisionStart', (event) => {
+  resolveCollision(event, database)
 })
 
 // run the renderer
