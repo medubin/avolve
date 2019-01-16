@@ -1,6 +1,7 @@
 import { rng, rngFloat, rngBool } from '../utilities/random'
 import * as Matter from 'matter-js'
 import BodyType from '../constants/body_type'
+import Color from '../constants/color'
 
 export default class Gene {
   public type : number
@@ -79,19 +80,19 @@ export default class Gene {
   protected getBodyColor(bodyType : number) : string {
     switch (bodyType){
       case(BodyType.GREEN):
-        return '#7CFC00'
+        return Color.GREEN
       case(BodyType.BLUE):
-        return '#0000CD'
+        return Color.BLUE
       case(BodyType.MAROON):
-        return '#5D0F0D'
+        return Color.MAROON
       case(BodyType.CYAN):
-        return '#00FFFF'
+        return Color.CYAN
       case(BodyType.GRAY):
-        return '#808080'
+        return Color.GRAY
       case(BodyType.YELLOW):
-        return '#FFFF00'
+        return Color.YELLOW
       case(BodyType.RED):
-        return '#FF0000'
+        return Color.RED
     }
   }
 }

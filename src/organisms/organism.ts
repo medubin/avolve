@@ -3,6 +3,7 @@ import Genome from './genome'
 import BodyType from '../constants/body_type'
 import Database from '../databases/database'
 import { rngFloat } from '../utilities/random'
+import Color from '../constants/color'
 
 export default class Organism {
   protected body : Matter.Composite
@@ -98,7 +99,7 @@ export default class Organism {
     this.database.organisms.alive -= 1
     this.database.organisms.dead += 1
     for (const body of this.body.bodies) {
-      body.render.strokeStyle = '#5c3317'
+      body.render.strokeStyle = Color.DEAD
       body.label = `${this.uuid}:${BodyType.DEAD}`
     }
   }
