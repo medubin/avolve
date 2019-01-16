@@ -1,6 +1,6 @@
 import BodyType from '../constants/body_type'
 import Database from '../databases/database'
-import { IEventCollision, IPair } from 'matter-js'
+import { IEventCollision, Body } from 'matter-js'
 import Organism from '../organisms/organism'
 
 function collidesWith(type : number, target : number) {
@@ -70,28 +70,28 @@ export function resolveCollision(event : IEventCollision<any>, database : Databa
         continue
       }
       if (aCollidesB) {
-        onContact(organismA, organismB, typeA, pair)
+        onContact(organismA, organismB, typeA, pair.bodyA, pair.bodyB)
       }
 
       if (bCollidesA) {
-        onContact(organismB, organismA, typeB, pair)
+        onContact(organismB, organismA, typeB, pair.bodyB, pair.bodyA)
       }
     }
   }
 }
 
-function onContact(organismA : Organism, organismB : Organism, typeA : number, pair : IPair) {
+function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Body, bodyB : Body) {
   if (typeA === BodyType.BLUE) {
-    organismB.flee(pair.bodyB.position, pair.bodyA.position)
+    orgB.flee(bodyB.position, bodyA.position)
   } else if (typeA === BodyType.GRAY) {
-    organismB.die()
+    orgB.die()
   } else if (typeA === BodyType.RED) {
-    organismA.absorb(pair.bodyA.area, organismB)
+    orgA.absorb(bodyA.area, orgB)
   } else if (typeA === BodyType.MAROON) {
-    organismA.absorb(pair.bodyA.area, organismB)
+    orgA.absorb(bodyA.area, orgB)
   } else if (typeA === BodyType.ORANGE) {
-    organismA.absorb(pair.bodyA.area, organismB)
+    orgA.absorb(bodyA.area, orgB)
   } else if (typeA === BodyType.TEAL) {
-    organismA.flee(pair.bodyA.position, pair.bodyB.position)
+    orgA.flee(bodyA.position, bodyB.position)
   }
 }
