@@ -51,6 +51,8 @@ export default class Organism {
         this.moveables.push(body)
       } else if (genotype === BodyType.GREEN) {
         this.synthesizers += body.area
+      } else if (genotype === BodyType.BARK) {
+        this.synthesizers += (body.area * 0.8)
       } else if (genotype === BodyType.YELLOW) {
         yellowArea += body.area
       }
@@ -108,6 +110,12 @@ export default class Organism {
     const xVel = xRatio * 10
     const yVel = yRatio * 10
     Matter.Body.setVelocity(this.body.bodies[0], { x: xVel, y: yVel })
+  }
+
+  public harden(bark : Matter.Body) {
+    bark.label = `${this.uuid}:${BodyType.DEAD_BARK}`
+    bark.render.strokeStyle = Color.DEAD_BARK
+    this.synthesizers -= (bark.area * 0.8)
   }
 
   protected healthCheck(database : Database) {

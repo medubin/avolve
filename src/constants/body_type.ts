@@ -1,14 +1,16 @@
 enum BodyType {
   DEAD = 0,
-  GREEN = 1,
-  BLUE = 9,
-  MAROON = 3,
-  RED = 4,
-  CYAN = 5,
-  GRAY = 6,
-  YELLOW = 7,
-  ORANGE = 8,
-  TEAL = 2,
+  DEAD_BARK = 1,
+  GREEN = 2,
+  BLUE = 3,
+  MAROON = 4,
+  RED = 5,
+  CYAN = 6,
+  GRAY = 7,
+  YELLOW = 8,
+  ORANGE = 9,
+  TEAL = 10,
+  BARK = 11,
 }
 
 export default BodyType

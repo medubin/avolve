@@ -9,6 +9,8 @@ enum Color {
   YELLOW = '#FFFF00',
   ORANGE = '#FF7F00',
   TEAL = '#008080',
+  BARK = '#556B2F',
+  DEAD_BARK = '#2E3A19',
 }
 
 export default Color

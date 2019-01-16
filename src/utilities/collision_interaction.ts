@@ -17,19 +17,23 @@ const YELLOW = BodyType.YELLOW
 const MAROON = BodyType.MAROON
 const ORANGE = BodyType.ORANGE
 const TEAL = BodyType.TEAL
-const ALL = [DEAD, GREEN, BLUE, RED, CYAN, GRAY, YELLOW, MAROON, ORANGE, TEAL]
+const BARK = BodyType.BARK
+const DEAD_BARK = BodyType.DEAD_BARK
+const ALL = [DEAD, GREEN, BLUE, RED, CYAN, GRAY, YELLOW, MAROON, ORANGE, TEAL, BARK, DEAD_BARK]
 
 const COLLISION_CHECK : {[key : number]: number[]} = {
   [DEAD]: [],
   [GREEN]: [],
   [BLUE]: ALL,
-  [MAROON]: [DEAD, GREEN],
+  [MAROON]: [DEAD, GREEN, BARK, DEAD_BARK],
   [CYAN]: [],
   [GRAY]: [GREEN, MAROON, CYAN, YELLOW, RED, ORANGE],
   [YELLOW]: [],
   [RED]: [MAROON, ORANGE],
-  [ORANGE]: [BLUE, YELLOW, CYAN, DEAD, TEAL],
+  [ORANGE]: [BLUE, YELLOW, CYAN, DEAD, TEAL, GREEN, BARK],
   [TEAL]: ALL,
+  [BARK]: [MAROON, ORANGE],
+  [DEAD_BARK]: [],
 }
 
 export function resolveCollision(event : IEventCollision<any>, database : Database) {
@@ -93,5 +97,7 @@ function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Bod
     orgA.absorb(bodyA.area, orgB)
   } else if (typeA === BodyType.TEAL) {
     orgA.flee(bodyA.position, bodyB.position)
+  } else if (typeA === BodyType.BARK) {
+    orgA.harden(bodyA)
   }
 }
