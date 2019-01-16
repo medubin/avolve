@@ -14,7 +14,7 @@ export default class Gene {
 
   public static random() : Gene {
     const gene = new Gene()
-    gene.type = rng(1, 8)
+    gene.type = rng(1, 9)
     gene.x = rng(-100, 100) / 10
     gene.y = rng(-100, 100) / 10
     gene.sides = rng(3, 9)
@@ -54,7 +54,7 @@ export default class Gene {
     const mutation = rng(0, 7)
     switch (mutation) {
       case(0):
-        gene.type = rng(1, 8)
+        gene.type = rng(1, 9)
         return gene
       case(1):
         gene.x = rng(-100, 100) / 10
@@ -93,6 +93,8 @@ export default class Gene {
         return Color.YELLOW
       case(BodyType.RED):
         return Color.RED
+      case(BodyType.ORANGE):
+        return Color.ORANGE
     }
   }
 }

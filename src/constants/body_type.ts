@@ -7,6 +7,7 @@ enum BodyType {
   CYAN = 5,
   GRAY = 6,
   YELLOW = 7,
+  ORANGE = 8,
 }
 
 export default BodyType
