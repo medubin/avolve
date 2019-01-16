@@ -13,7 +13,7 @@
 [] Bark: hardens on antagonistic contact to become shield
 [] Fix Blue: repels on touch
 [] Sky Blue: immobilizes on touch
-[] Teal: run away on touch
+[x] Teal: run away on touch
 [] Turqoise: move towards on touch
 [] Black: turns into whatever it touches
 

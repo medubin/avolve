@@ -112,6 +112,16 @@ export default class Organism {
     Matter.Body.setVelocity(this.body.bodies[0], { x, y })
   }
 
+  public flee(self : Matter.Vector, other : Matter.Vector) {
+    const x = self.x - other.x
+    const y = self.y - other.y
+    const xRatio = x / (Math.abs(x) + Math.abs(y))
+    const yRatio = y / (Math.abs(x) + Math.abs(y))
+    const xVel = xRatio * 10
+    const yVel = yRatio * 10
+    Matter.Body.setVelocity(this.body.bodies[0], { x: xVel, y: yVel })
+  }
+
   protected healthCheck(database : Database) {
     if (this.energy <= 0) {
       Matter.World.remove(this.world, this.body)

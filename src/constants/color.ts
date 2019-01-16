@@ -8,6 +8,7 @@ enum Color {
   GRAY = '#808080',
   YELLOW = '#FFFF00',
   ORANGE = '#FF7F00',
+  TEAL = '#008080',
 }
 
 export default Color
