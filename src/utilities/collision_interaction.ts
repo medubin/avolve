@@ -1,6 +1,7 @@
 import BodyType from '../constants/body_type'
 import Database from '../databases/database'
-import { IEventCollision } from 'matter-js'
+import { IEventCollision, IPair } from 'matter-js'
+import Organism from '../organisms/organism'
 
 function collidesWith(type : number, target : number) {
   return COLLISION_CHECK[type].indexOf(target) !== -1
@@ -68,36 +69,29 @@ export function resolveCollision(event : IEventCollision<any>, database : Databa
       if (organismA.parentUuid && organismA.parentUuid === organismB.parentUuid) {
         continue
       }
-    }
+      if (aCollidesB) {
+        onContact(organismA, organismB, typeA, pair)
+      }
 
-    if (typeA === BodyType.BLUE) {
-      const vX = pair.bodyA.velocity.x
-      const vY = pair.bodyA.velocity.y
-      organismA.reverse(vX, vY)
-    } else if (typeB === BodyType.BLUE) {
-      const vX = pair.bodyB.velocity.x
-      const vY = pair.bodyB.velocity.y
-      organismB.reverse(vX, vY)
-    } else if (typeA === BodyType.GRAY) {
-      organismB.die()
-    } else if (typeB === BodyType.GRAY) {
-      organismA.die()
-    } else if (typeA === BodyType.RED) {
-      organismA.absorb(pair.bodyA.area, organismB)
-    } else if (typeB === BodyType.RED) {
-      organismB.absorb(pair.bodyB.area, organismA)
-    } else if (typeA === BodyType.MAROON) {
-      organismA.absorb(pair.bodyA.area, organismB)
-    } else if (typeB === BodyType.MAROON) {
-      organismB.absorb(pair.bodyB.area, organismA)
-    } else if (typeA === BodyType.ORANGE) {
-      organismA.absorb(pair.bodyA.area, organismB)
-    } else if (typeB === BodyType.ORANGE) {
-      organismB.absorb(pair.bodyB.area, organismA)
-    } else if (typeA === BodyType.TEAL) {
-      organismA.flee(pair.bodyA.position, pair.bodyB.position)
-    } else if (typeB === BodyType.TEAL) {
-      organismB.flee(pair.bodyB.position, pair.bodyA.position)
+      if (bCollidesA) {
+        onContact(organismB, organismA, typeB, pair)
+      }
     }
+  }
+}
+
+function onContact(organismA : Organism, organismB : Organism, typeA : number, pair : IPair) {
+  if (typeA === BodyType.BLUE) {
+    organismB.flee(pair.bodyB.position, pair.bodyA.position)
+  } else if (typeA === BodyType.GRAY) {
+    organismB.die()
+  } else if (typeA === BodyType.RED) {
+    organismA.absorb(pair.bodyA.area, organismB)
+  } else if (typeA === BodyType.MAROON) {
+    organismA.absorb(pair.bodyA.area, organismB)
+  } else if (typeA === BodyType.ORANGE) {
+    organismA.absorb(pair.bodyA.area, organismB)
+  } else if (typeA === BodyType.TEAL) {
+    organismA.flee(pair.bodyA.position, pair.bodyB.position)
   }
 }

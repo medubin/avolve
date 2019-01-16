@@ -21,7 +21,6 @@ export default class Organism {
   public isAlive : boolean
   public parentUuid : number
   public broodSize : number
-  public repellent : number
 
   constructor(
     x : number,
@@ -45,7 +44,6 @@ export default class Organism {
     this.moveables = []
     this.synthesizers = 0
     this.bodySize = 100
-    this.repellent = 0
     let yellowArea = 0
     for (const body of this.body.bodies) {
       const genotype : number = parseInt(body.label.split(':')[1], 10)
@@ -55,8 +53,6 @@ export default class Organism {
         this.synthesizers += body.area
       } else if (genotype === BodyType.YELLOW) {
         yellowArea += body.area
-      } else if (genotype === BodyType.BLUE) {
-        this.repellent += body.area
       }
 
       this.bodySize += body.area
@@ -102,14 +98,6 @@ export default class Organism {
       body.render.strokeStyle = Color.DEAD
       body.label = `${this.uuid}:${BodyType.DEAD}`
     }
-  }
-
-  public reverse(vX : number, vY : number) {
-    let x = -vX * (this.repellent / 10)
-    let y = -vY * (this.repellent / 10)
-    x = Math.abs(x) > 10 ? 10 * (x / Math.abs(x)) : x
-    y = Math.abs(y) > 10 ? 10 * (y / Math.abs(y)) : y
-    Matter.Body.setVelocity(this.body.bodies[0], { x, y })
   }
 
   public flee(self : Matter.Vector, other : Matter.Vector) {
