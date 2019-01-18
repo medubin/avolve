@@ -21,6 +21,7 @@ export default class Organism {
   public isAlive : boolean
   public parentUuid : number
   public broodSize : number
+  public infection : Genome
 
   constructor(
     x : number,
@@ -40,6 +41,7 @@ export default class Organism {
     this.body = this.genome.createBody(x, y, this.uuid)
     Matter.World.add(world, this.body)
     this.parentUuid = parent ? parent.uuid : null
+    this.infection = null
 
     this.moveables = []
     this.synthesizers = 0
@@ -122,6 +124,10 @@ export default class Organism {
     this.synthesizers -= (bark.area * 0.8)
   }
 
+  public infect(org : Organism) {
+    org.infection = this.genome
+  }
+
   protected healthCheck(database : Database) {
     if (this.energy <= 0) {
       Matter.World.remove(this.world, this.body)
@@ -136,13 +142,15 @@ export default class Organism {
     if (this.energy > this.reproduceAt) {
       const offspringEnergy = this.reproduceAt / (this.broodSize + 1)
       for (let i = 0; i < this.broodSize; i += 1) {
+        const genome = this.infection ? this.infection : this.genome
+        this.infection = null
         this.energy -= offspringEnergy
         database.organisms.addOrganism(
           new Organism(
             this.body.bodies[0].position.x + rngFloat(-10, 10),
             this.body.bodies[0].position.y + rngFloat(-10, 10),
             this.world,
-            this.genome.replicate(),
+            genome.replicate(),
             offspringEnergy,
             this,
             database))

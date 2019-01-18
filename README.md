@@ -16,7 +16,7 @@
 - [x] Teal: run away on touch
 - [x] Turqoise: move towards on touch
 - [ ] Black: turns into whatever it touches
-- [ ] White: infect
+- [x] White: infect
 
 ### BUGS
 - O2 can become negative if there are no photosynthesizers
