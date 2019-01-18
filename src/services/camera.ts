@@ -7,9 +7,18 @@ export default class Camera {
   protected render : Matter.Render
 
   constructor(render : Matter.Render) {
+    render.canvas.width = window.innerWidth
+    render.canvas.height = window.innerHeight
     this.render = render
     this._scrollX = 0
     this._scrollY = 0
+    this.scaleToWindow = this.scaleToWindow.bind(this)
+    window.addEventListener('resize', this.scaleToWindow)
+  }
+
+  public scaleToWindow() {
+    this.render.canvas.height = window.innerHeight
+    this.render.canvas.width = window.innerWidth
   }
 
   public scrollX() {
@@ -18,8 +27,9 @@ export default class Camera {
       if (this._scrollX < 0 && this.render.bounds.min.x < -World.WALL / 2) {
         return
       }
-      // @ts-ignore
-      if (this._scrollX > 0 && this.render.bounds.max.x > World.WIDTH + (World.WALL / 2)) {
+      if (this._scrollX > 0 &&
+        // @ts-ignore
+        (this.render.bounds.min.x + this.render.canvas.width) > World.WIDTH + (World.WALL / 2)) {
         return
       }
       const translate = { x : this._scrollX, y : 0 }
@@ -33,8 +43,9 @@ export default class Camera {
       if (this._scrollY < 0 && this.render.bounds.min.y < -World.WALL / 2) {
         return
       }
-      // @ts-ignore
-      if (this._scrollY > 0 && this.render.bounds.max.y > World.HEIGHT + (World.WALL * 2)) {
+      if (this._scrollY > 0 &&
+        // @ts-ignore
+        (this.render.bounds.min.y + this.render.canvas.height) > World.HEIGHT + (World.WALL / 2)) {
         return
       }
       const translate = { x : 0, y : this._scrollY }

@@ -37,6 +37,7 @@ const render = Matter.Render.create({
     wireframes: false,
   },
 })
+
 const camera = new Camera(render)
 const keyboard = new Keyboard(camera)
 keyboard.attachKeys()
