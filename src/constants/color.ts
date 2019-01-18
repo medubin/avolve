@@ -11,6 +11,7 @@ enum Color {
   TEAL = '#008080',
   BARK = '#556B2F',
   DEAD_BARK = '#2E3A19',
+  SKY = '#66C5D9',
 }
 
 export default Color

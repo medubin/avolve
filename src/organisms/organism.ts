@@ -102,14 +102,18 @@ export default class Organism {
     }
   }
 
-  public flee(self : Matter.Vector, other : Matter.Vector) {
+  public flee(body : Matter.Body, self : Matter.Vector, other : Matter.Vector) {
     const x = self.x - other.x
     const y = self.y - other.y
     const xRatio = x / (Math.abs(x) + Math.abs(y))
     const yRatio = y / (Math.abs(x) + Math.abs(y))
     const xVel = xRatio * 10
     const yVel = yRatio * 10
-    Matter.Body.setVelocity(this.body.bodies[0], { x: xVel, y: yVel })
+    Matter.Body.setVelocity(body, { x: xVel, y: yVel })
+  }
+
+  public stop(body : Matter.Body) {
+    Matter.Body.setVelocity(body, { x: 0, y: 0  })
   }
 
   public harden(bark : Matter.Body) {
