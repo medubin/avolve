@@ -15,10 +15,7 @@
   "dependencies": {
     "@types/es6-shim": "^0.31.37",
     "@types/matter-js": "^0.10.2",
-    "@types/pixi.js": "^4.8.0",
     "matter-js": "^0.14.2",
-    "matter-lines": "^0.1.0",
-    "pixi.js": "^4.8.1",
     "tslint": "^5.10.0",
     "tslint-config-airbnb": "^5.9.2"
   },
