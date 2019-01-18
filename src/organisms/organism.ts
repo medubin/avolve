@@ -10,7 +10,7 @@ export default class Organism {
   protected database : Database
   protected world : Matter.World
   protected genome : Genome
-  protected moveables : Matter.Body[]
+  protected moveables : Matter.Body[][]
   protected synthesizers : number
   protected bodySize : number
   protected reproduceAt : number
@@ -42,15 +42,17 @@ export default class Organism {
     Matter.World.add(world, this.body)
     this.parentUuid = parent ? parent.uuid : null
     this.infection = null
-
-    this.moveables = []
+    // CYAN, INDIGO
+    this.moveables = [[], []]
     this.synthesizers = 0
     this.bodySize = 100
     let yellowArea = 0
     for (const body of this.body.bodies) {
       const genotype : number = parseInt(body.label.split(':')[1], 10)
       if (genotype === BodyType.CYAN) {
-        this.moveables.push(body)
+        this.moveables[0].push(body)
+      } else if (genotype === BodyType.INDIGO) {
+        this.moveables[1].push(body)
       } else if (genotype === BodyType.GREEN) {
         this.synthesizers += body.area
       } else if (genotype === BodyType.BARK) {
@@ -175,14 +177,21 @@ export default class Organism {
   }
 
   protected move() : void {
-    for (const moveable of this.moveables) {
-      const moves = Math.random()
-      if (moves < .95) {
-        continue
-      }
-      const vx = rngFloat(-10, 10)
-      const vy = rngFloat(-10, 10)
-      Matter.Body.setVelocity(moveable, { x: vx, y: vy })
+    for (const moveable of this.moveables[0]) {
+      this.moveBodyPart(moveable, 10)
     }
+    for (const moveable of this.moveables[1]) {
+      this.moveBodyPart(moveable, 3)
+    }
+  }
+
+  protected moveBodyPart(moveable : Matter.Body, speed : number) {
+    const moves = Math.random()
+    if (moves < .95) {
+      return
+    }
+    const vx = rngFloat(-speed, speed)
+    const vy = rngFloat(-speed, speed)
+    Matter.Body.setVelocity(moveable, { x: vx, y: vy })
   }
 }

@@ -36,13 +36,13 @@ const COLLISION_CHECK : {[key : number]: number[]} = {
   [CYAN]: [],
   [GRAY]: [GREEN, RED, CYAN, YELLOW, MAROON, ORANGE, TEAL, BARK, SKY, INDIGO, WHITE],
   [YELLOW]: [],
-  [RED]: [MAROON, ORANGE, PINK],
-  [ORANGE]: [BLUE, YELLOW, CYAN, DEAD, TEAL, GREEN, SKY, INDIGO, WHITE],
+  [RED]: [MAROON, ORANGE, PINK, INDIGO],
+  [ORANGE]: [BLUE, YELLOW, CYAN, DEAD, TEAL, GREEN, SKY, WHITE],
   [TEAL]: ALL,
   [BARK]: [MAROON],
   [DEAD_BARK]: [],
   [SKY]: ALL,
-  [INDIGO]: ALL,
+  [INDIGO]: [BLUE, YELLOW, CYAN, DEAD, TEAL, GREEN, SKY, WHITE],
   [WHITE]: [GREEN, RED, MAROON, ORANGE, BARK],
   [PINK]: [DEAD, WHITE],
 }
@@ -110,10 +110,10 @@ function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Bod
     orgA.flee(bodyA, bodyA.position, bodyB.position)
   } else if (typeA === BARK) {
     orgA.harden(bodyA)
-  } else if (typeA === SKY) {
-    orgB.stop(bodyB)
   } else if (typeA === INDIGO) {
-    orgA.flee(bodyA, bodyB.position, bodyA.position, 1)
+    orgA.absorb(bodyA.area * .2, orgB)
+  } else if (typeA === SKY) {
+    orgA.flee(bodyA, bodyB.position, bodyA.position, 2)
   } else if (typeA === WHITE) {
     orgA.infect(orgB)
   } else if (typeA === PINK) {
