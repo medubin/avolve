@@ -7,7 +7,7 @@
 ### TODO
 #### NEW GENES
 - [x] Orange: eats non-bark
-- [ ] pink: eats everything poorly
+- [x] pink: eats white
 - [ ] Bright Red: eats green poorly, immune to Red
 - [ ] Forest: Improved photosynthesis when touching another forest
 - [x] Bark: hardens on antagonistic contact to become shield

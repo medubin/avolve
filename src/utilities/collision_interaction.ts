@@ -22,9 +22,10 @@ const DEAD_BARK = BodyType.DEAD_BARK
 const SKY = BodyType.SKY
 const INDIGO = BodyType.INDIGO
 const WHITE = BodyType.WHITE
+const PINK = BodyType.PINK
 const ALL = [
   DEAD, GREEN, BLUE, RED, CYAN, GRAY, YELLOW, MAROON, ORANGE, TEAL, BARK, DEAD_BARK, SKY, INDIGO,
-  WHITE,
+  WHITE, PINK,
 ]
 
 const COLLISION_CHECK : {[key : number]: number[]} = {
@@ -35,14 +36,15 @@ const COLLISION_CHECK : {[key : number]: number[]} = {
   [CYAN]: [],
   [GRAY]: [GREEN, RED, CYAN, YELLOW, MAROON, ORANGE, TEAL, BARK, SKY, INDIGO, WHITE],
   [YELLOW]: [],
-  [RED]: [MAROON, ORANGE],
+  [RED]: [MAROON, ORANGE, PINK],
   [ORANGE]: [BLUE, YELLOW, CYAN, DEAD, TEAL, GREEN, SKY, INDIGO, WHITE],
   [TEAL]: ALL,
-  [BARK]: [MAROON, ORANGE],
+  [BARK]: [MAROON],
   [DEAD_BARK]: [],
   [SKY]: ALL,
   [INDIGO]: ALL,
   [WHITE]: [GREEN, RED, CYAN, YELLOW, MAROON, ORANGE, TEAL, BARK, SKY, INDIGO],
+  [PINK]: [DEAD, WHITE],
 }
 
 export function resolveCollision(event : IEventCollision<any>, database : Database) {
@@ -114,5 +116,7 @@ function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Bod
     orgA.flee(bodyA, bodyB.position, bodyA.position, 1)
   } else if (typeA === WHITE) {
     orgA.infect(orgB)
+  } else if (typeA === PINK) {
+    orgA.absorb(bodyA.area, orgB)
   }
 }

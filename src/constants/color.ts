@@ -14,6 +14,7 @@ enum Color {
   SKY = '#66C5D9',
   INDIGO = '#28205C',
   WHITE = '#FFFFFF',
+  PINK = '#FFC0CB',
 }
 
 export default Color
