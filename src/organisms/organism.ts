@@ -102,13 +102,13 @@ export default class Organism {
     }
   }
 
-  public flee(body : Matter.Body, self : Matter.Vector, other : Matter.Vector) {
+  public flee(body : Matter.Body, self : Matter.Vector, other : Matter.Vector, speed = 10) {
     const x = self.x - other.x
     const y = self.y - other.y
     const xRatio = x / (Math.abs(x) + Math.abs(y))
     const yRatio = y / (Math.abs(x) + Math.abs(y))
-    const xVel = xRatio * 10
-    const yVel = yRatio * 10
+    const xVel = xRatio * speed
+    const yVel = yRatio * speed
     Matter.Body.setVelocity(body, { x: xVel, y: yVel })
   }
 

@@ -31,7 +31,7 @@ const COLLISION_CHECK : {[key : number]: number[]} = {
   [BLUE]: ALL,
   [MAROON]: [DEAD, GREEN, BARK, DEAD_BARK],
   [CYAN]: [],
-  [GRAY]: [GREEN, MAROON, CYAN, YELLOW, RED, ORANGE],
+  [GRAY]: [GREEN, RED, CYAN, YELLOW, MAROON, ORANGE, TEAL, BARK, SKY, INDIGO],
   [YELLOW]: [],
   [RED]: [MAROON, ORANGE],
   [ORANGE]: [BLUE, YELLOW, CYAN, DEAD, TEAL, GREEN],
@@ -108,6 +108,6 @@ function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Bod
   } else if (typeA === SKY) {
     orgB.stop(bodyB)
   } else if (typeA === INDIGO) {
-    orgB.flee(bodyA, bodyB.position, bodyA.position)
+    orgA.flee(bodyA, bodyB.position, bodyA.position, 1)
   }
 }
