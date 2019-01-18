@@ -60,7 +60,7 @@ Matter.Engine.run(engine)
 Matter.Events.on(engine, 'beforeTick', (_) => {
   const organisms = database.organisms.organisms
   for (const uuid in organisms) {
-    organisms[uuid].update(database)
+    organisms[uuid].update()
   }
   camera.scrollX()
   camera.scrollY()

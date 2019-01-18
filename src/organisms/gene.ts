@@ -2,6 +2,7 @@ import { rng, rngFloat, rngBool } from '../utilities/random'
 import * as Matter from 'matter-js'
 import BodyType from '../constants/body_type'
 import Color from '../constants/color'
+import Organism from '../parameters/organism_parameters'
 
 export default class Gene {
   public type : number
@@ -36,7 +37,7 @@ export default class Gene {
     return body
   }
 
-  public replicate(mutationRate : number = .1) : Gene {
+  public replicate(mutationRate : number = Organism.MUTATION_RATE) : Gene {
     const gene = new Gene()
     gene.type = this.type
     gene.x = this.x

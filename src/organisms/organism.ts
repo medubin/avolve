@@ -70,16 +70,16 @@ export default class Organism {
     this.maxAge = this.bodySize * 10
   }
 
-  public update(database : Database) {
+  public update() {
     this.age += 1
-    this.healthCheck(database)
+    this.healthCheck()
     if (this.isAlive) {
       this.move()
-      this.synthesize(database)
-      this.respirate(database)
-      this.reproduce(database)
+      this.synthesize()
+      this.respirate()
+      this.reproduce()
     } else {
-      this.respirate(database)
+      this.respirate()
     }
   }
 
@@ -126,26 +126,27 @@ export default class Organism {
 
   public infect(org : Organism) {
     org.infection = this.genome
+    this.respirate()
   }
 
-  protected healthCheck(database : Database) {
+  protected healthCheck() {
     if (this.energy <= 0) {
       Matter.World.remove(this.world, this.body)
-      database.world.releaseCO2(this.energy)
-      database.organisms.deleteOrganism(this.uuid)
+      this.database.world.releaseCO2(this.energy)
+      this.database.organisms.deleteOrganism(this.uuid)
     } else if (this.age > this.maxAge) {
       this.die()
     }
   }
 
-  protected reproduce(database: Database) {
+  protected reproduce() {
     if (this.energy > this.reproduceAt) {
       const offspringEnergy = this.reproduceAt / (this.broodSize + 1)
       for (let i = 0; i < this.broodSize; i += 1) {
         const genome = this.infection ? this.infection : this.genome
         this.infection = null
         this.energy -= offspringEnergy
-        database.organisms.addOrganism(
+        this.database.organisms.addOrganism(
           new Organism(
             this.body.bodies[0].position.x + rngFloat(-10, 10),
             this.body.bodies[0].position.y + rngFloat(-10, 10),
@@ -153,23 +154,23 @@ export default class Organism {
             genome.replicate(),
             offspringEnergy,
             this,
-            database))
+            this.database))
       }
     }
   }
 
-  protected synthesize(database : Database) {
-    const newEnergy = (this.synthesizers / 5) * database.world.co2Fraction
-    database.world.consumeCO2(newEnergy)
+  protected synthesize() {
+    const newEnergy = (this.synthesizers / 5) * this.database.world.co2Fraction
+    this.database.world.consumeCO2(newEnergy)
     this.energy += newEnergy
   }
 
-  protected respirate(database : Database) {
+  protected respirate() {
     let energyLoss = this.isAlive ? this.bodySize / 500 : this.bodySize / 100
     if (this.isAlive) {
-      energyLoss = energyLoss / (database.world.o2Fraction + 1)
+      energyLoss = energyLoss / (this.database.world.o2Fraction + 1)
     }
-    database.world.releaseCO2(energyLoss)
+    this.database.world.releaseCO2(energyLoss)
     this.energy -= energyLoss
   }
 

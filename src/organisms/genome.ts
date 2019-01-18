@@ -1,6 +1,7 @@
 import Gene from './gene'
 import { rng } from '../utilities/random'
 import * as Matter from 'matter-js'
+import Organism from '../parameters/organism_parameters'
 
 export default class Genome {
   public genes : Gene[]
@@ -17,7 +18,7 @@ export default class Genome {
     return genome
   }
 
-  public replicate(mutationRate : number = .1) : Genome {
+  public replicate(mutationRate : number = Organism.MUTATION_RATE) : Genome {
     const genome = new Genome()
     const newGenes = []
     for (const gene of this.genes) {

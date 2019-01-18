@@ -43,7 +43,7 @@ const COLLISION_CHECK : {[key : number]: number[]} = {
   [DEAD_BARK]: [],
   [SKY]: ALL,
   [INDIGO]: ALL,
-  [WHITE]: [GREEN, RED, CYAN, YELLOW, MAROON, ORANGE, TEAL, BARK, SKY, INDIGO],
+  [WHITE]: [GREEN, RED, MAROON, ORANGE, BARK],
   [PINK]: [DEAD, WHITE],
 }
 
