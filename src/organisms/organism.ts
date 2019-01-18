@@ -14,7 +14,7 @@ export default class Organism {
   protected synthesizers : number
   protected bodySize : number
   protected reproduceAt : number
-  protected energy : number
+  public energy : number
   public uuid : number
   public age : number
   public maxAge : number

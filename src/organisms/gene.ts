@@ -36,7 +36,7 @@ export default class Gene {
     return body
   }
 
-  public replicate(mutationRate : number = .05) : Gene {
+  public replicate(mutationRate : number = .1) : Gene {
     const gene = new Gene()
     gene.type = this.type
     gene.x = this.x

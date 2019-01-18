@@ -51,6 +51,7 @@ for (let i = 0; i < World.STARTING_ORGANISMS; i += 1) {
   const y = rng(50, World.HEIGHT - 50)
   const organism = new Organism(x, y, engine.world, Genome.random(), 1000, null, database)
   database.organisms.addOrganism(organism)
+  database.world.consumeCO2(organism.energy)
 }
 
 // run the engine
