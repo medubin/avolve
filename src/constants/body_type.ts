@@ -12,6 +12,7 @@ enum BodyType {
   TEAL = 10,
   BARK = 11,
   SKY = 12,
+  INDIGO = 13,
 }
 
 export default BodyType
