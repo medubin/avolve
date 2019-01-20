@@ -33,13 +33,17 @@ export default class Genome {
   }
 
   protected mutate(genome : Genome) : Genome {
-    const mutation = rng(0, 3)
+    const mutation = rng(0, 4)
     if (mutation === 0 && genome.genes.length < 10) {
       // duplicate gene
       const dupe = rng(0, genome.genes.length)
       const target = rng(0, genome.genes.length)
       genome.genes.splice(target, 0, genome.genes[dupe])
-    } else if (mutation === 1 && genome.genes.length > 1) {
+    } else if (mutation === 1 && genome.genes.length < 10) {
+       // insert random gene
+      const target = rng(0, genome.genes.length)
+      genome.genes.splice(target, 0, Gene.random())
+    } else if (mutation === 2 && genome.genes.length > 1) {
       // delete gene
       genome.genes.splice(rng(0, genome.genes.length), 1)
     } else {
