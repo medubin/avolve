@@ -2,7 +2,7 @@ import * as Matter from 'matter-js'
 import Genome from './genome'
 import BodyType from '../constants/body_type'
 import Database from '../databases/database'
-import { rngFloat } from '../utilities/random'
+import { rngFloat, rngBool } from '../utilities/random'
 import Color from '../constants/color'
 
 export default class Organism {
@@ -145,7 +145,7 @@ export default class Organism {
     if (this.energy > this.reproduceAt) {
       const offspringEnergy = this.reproduceAt / (this.broodSize + 1)
       for (let i = 0; i < this.broodSize; i += 1) {
-        const genome = this.infection ? this.infection : this.genome
+        const genome = this.infection && rngBool() ? this.infection : this.genome
         this.infection = null
         this.energy -= offspringEnergy
         this.database.organisms.addOrganism(
