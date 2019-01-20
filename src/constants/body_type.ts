@@ -15,6 +15,8 @@ enum BodyType {
   INDIGO = 13,
   WHITE = 14,
   PINK = 15,
+  MAHOGANY = 16,
+  OCHRE = 17,
 }
 
 export default BodyType

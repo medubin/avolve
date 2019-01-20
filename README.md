@@ -8,7 +8,7 @@
 #### NEW GENES
 - [x] Orange: eats non-bark
 - [x] pink: eats white
-- [ ] Bright Red: eats green poorly, immune to Red
+- [x] MAHAGONY: eats green poorly, immune to Red
 - [ ] Forest: Improved photosynthesis when touching another forest
 - [x] Bark: hardens on antagonistic contact to become shield
 - [x] Fix Blue: repels on touch

@@ -68,13 +68,12 @@ Matter.Events.on(engine, 'beforeTick', (_) => {
   worldDisplay.tick()
 })
 
-Matter.Events.on(engine, 'collisionActive', (event) => {
-  resolveCollision(event, database)
-})
+Matter.Events.on(engine, 'collisionActive', collisionResolver)
+Matter.Events.on(engine, 'collisionStart', collisionResolver)
 
-Matter.Events.on(engine, 'collisionStart', (event) => {
+function collisionResolver(event : Matter.IEventCollision<Event>) {
   resolveCollision(event, database)
-})
+}
 
 // run the renderer
 Matter.Render.run(render)

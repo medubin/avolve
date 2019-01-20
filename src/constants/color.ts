@@ -15,6 +15,8 @@ enum Color {
   INDIGO = '#28205C',
   WHITE = '#FFFFFF',
   PINK = '#FFC0CB',
+  MAHOGANY = '#420C09',
+  OCHRE = '#CC7722',
 }
 
 export default Color

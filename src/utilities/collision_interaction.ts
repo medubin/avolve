@@ -23,9 +23,11 @@ const SKY = BodyType.SKY
 const INDIGO = BodyType.INDIGO
 const WHITE = BodyType.WHITE
 const PINK = BodyType.PINK
+const MAHOGANY = BodyType.MAHOGANY
+const OCHRE = BodyType.OCHRE
 const ALL = [
   DEAD, GREEN, BLUE, RED, CYAN, GRAY, YELLOW, MAROON, ORANGE, TEAL, BARK, DEAD_BARK, SKY, INDIGO,
-  WHITE, PINK,
+  WHITE, PINK, MAHOGANY, OCHRE,
 ]
 
 const COLLISION_CHECK : {[key : number]: number[]} = {
@@ -36,15 +38,17 @@ const COLLISION_CHECK : {[key : number]: number[]} = {
   [CYAN]: [],
   [GRAY]: [GREEN, RED, CYAN, YELLOW, MAROON, ORANGE, TEAL, BARK, SKY, INDIGO, WHITE],
   [YELLOW]: [],
-  [RED]: [MAROON, ORANGE, PINK, INDIGO],
+  [RED]: [MAROON, ORANGE, PINK, INDIGO, OCHRE],
   [ORANGE]: [BLUE, YELLOW, CYAN, DEAD, TEAL, GREEN, SKY, WHITE],
   [TEAL]: ALL,
-  [BARK]: [MAROON],
+  [BARK]: [MAROON, MAHOGANY],
   [DEAD_BARK]: [],
   [SKY]: ALL,
   [INDIGO]: [BLUE, YELLOW, CYAN, DEAD, TEAL, GREEN, SKY, WHITE],
   [WHITE]: [GREEN, RED, MAROON, ORANGE, BARK],
-  [PINK]: [DEAD, WHITE],
+  [PINK]: [DEAD, WHITE, GREEN],
+  [OCHRE]: [DEAD, GREEN, BLUE, CYAN, YELLOW, TEAL, BARK, DEAD_BARK, SKY, INDIGO, WHITE],
+  [MAHOGANY]: [DEAD, GREEN, BARK, DEAD_BARK],
 }
 
 export function resolveCollision(event : IEventCollision<any>, database : Database) {
@@ -118,5 +122,9 @@ function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Bod
     orgA.infect(orgB)
   } else if (typeA === PINK) {
     orgA.absorb(bodyA.area, orgB)
+  } else if (typeA === MAHOGANY) {
+    orgA.absorb(bodyA.area * .2, orgB)
+  } else if (typeA === OCHRE) {
+    orgA.absorb(bodyA.area * .2, orgB)
   }
 }
