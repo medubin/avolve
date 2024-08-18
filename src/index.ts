@@ -53,7 +53,7 @@ for (let i = 0; i < World.STARTING_ORGANISMS; i += 1) {
   database.organisms.addOrganism(organism)
   database.world.consumeCO2(organism.energy)
 }
-
+console.log('hi')
 // run the engine
 Matter.Engine.run(engine)
 
