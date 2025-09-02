@@ -4,6 +4,7 @@ import BodyType from '../constants/body_type'
 import Database from '../databases/database'
 import { rngFloat, rngBool } from '../utilities/random'
 import Color from '../constants/color'
+import { getGenePhotosynthesis, getGeneMovementSpeed, getGeneMovementType, getGeneReproductionBonus, hasGeneMagneticAttraction } from '../constants/gene_types'
 
 export default class Organism {
   protected body : Matter.Composite
@@ -52,15 +53,24 @@ export default class Organism {
     let yellowArea = 0
     for (const body of this.body.bodies) {
       const genotype : number = parseInt(body.label.split(':')[1], 10)
-      if (genotype === BodyType.CYAN) {
-        this.moveables[0].push(body)
-      } else if (genotype === BodyType.INDIGO) {
-        this.moveables[1].push(body)
-      } else if (genotype === BodyType.GREEN) {
-        this.synthesizers += body.area
-      } else if (genotype === BodyType.BARK) {
-        this.synthesizers += (body.area * 0.8)
-      } else if (genotype === BodyType.YELLOW) {
+      
+      // Movement assignment based on centralized traits
+      const movementType = getGeneMovementType(genotype)
+      if (movementType === 'fast') {
+        this.moveables[0].push(body) // Fast movement (index 0)
+      } else if (movementType === 'slow') {
+        this.moveables[1].push(body) // Slow movement (index 1)
+      }
+      
+      // Photosynthesis based on centralized traits
+      const photosynthesis = getGenePhotosynthesis(genotype)
+      if (photosynthesis > 0) {
+        this.synthesizers += (body.area * photosynthesis)
+      }
+      
+      // Reproduction bonus from YELLOW
+      const reproductionBonus = getGeneReproductionBonus(genotype)
+      if (reproductionBonus > 0) {
         yellowArea += body.area
       }
 
@@ -185,11 +195,17 @@ export default class Organism {
   }
 
   protected move() : void {
+    // Fast movement bodies (index 0)
     for (const moveable of this.moveables[0]) {
-      this.moveBodyPart(moveable, 10)
+      const genotype = parseInt(moveable.label.split(':')[1], 10)
+      const speed = getGeneMovementSpeed(genotype) || 10 // Default to 10 if not set
+      this.moveBodyPart(moveable, speed)
     }
+    // Slow movement bodies (index 1) 
     for (const moveable of this.moveables[1]) {
-      this.moveBodyPart(moveable, 3)
+      const genotype = parseInt(moveable.label.split(':')[1], 10)
+      const speed = getGeneMovementSpeed(genotype) || 3 // Default to 3 if not set
+      this.moveBodyPart(moveable, speed)
     }
   }
 
@@ -204,13 +220,13 @@ export default class Organism {
   }
 
   protected magneticAttraction() {
-    // Only TURQUOISE organisms create magnetic fields
-    const turquoiseParts = this.body.bodies.filter(body => {
+    // Find all body parts with magnetic attraction trait
+    const magneticParts = this.body.bodies.filter(body => {
       const bodyType = parseInt(body.label.split(':')[1], 10)
-      return bodyType === BodyType.TURQUOISE
+      return hasGeneMagneticAttraction(bodyType)
     })
 
-    if (turquoiseParts.length === 0) return
+    if (magneticParts.length === 0) return
 
     // Get all organisms in the database
     const allOrganisms = this.database.organisms.organisms
@@ -220,8 +236,8 @@ export default class Organism {
     // Calculate attraction strength based on energy (more energy = stronger attraction)
     const attractionStrength = baseForce * (this.energy / 5000) // Much reduced energy scaling
 
-    for (const turquoisePart of turquoiseParts) {
-      const turquoisePos = turquoisePart.position
+    for (const magneticPart of magneticParts) {
+      const magneticPos = magneticPart.position
 
       // Attract nearby organisms
       for (const uuid in allOrganisms) {
@@ -233,7 +249,7 @@ export default class Organism {
         // Check each body part of the target organism
         for (const targetBody of targetOrg.body.bodies) {
           const distance = Matter.Vector.magnitude(
-            Matter.Vector.sub(targetBody.position, turquoisePos)
+            Matter.Vector.sub(targetBody.position, magneticPos)
           )
 
           // Only attract within radius, with minimum distance to prevent extreme forces
@@ -245,9 +261,9 @@ export default class Organism {
             const maxForce = 0.01 // Much lower force cap
             const cappedForce = Math.min(force, maxForce)
             
-            // Calculate direction vector from target to TURQUOISE
+            // Calculate direction vector from target to magnetic part
             const direction = Matter.Vector.normalise(
-              Matter.Vector.sub(turquoisePos, targetBody.position)
+              Matter.Vector.sub(magneticPos, targetBody.position)
             )
 
             // Apply attraction force
@@ -257,8 +273,8 @@ export default class Organism {
         }
       }
       
-      // TURQUOISE consumes energy for magnetic field (higher cost to balance benefits)
-      this.energy -= 0.2 * turquoiseParts.length
+      // Magnetic parts consume energy for magnetic field (higher cost to balance benefits)
+      this.energy -= 0.2 * magneticParts.length
     }
   }
 }

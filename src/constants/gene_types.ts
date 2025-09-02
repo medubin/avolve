@@ -6,32 +6,145 @@ export interface GeneTypeInfo {
   name: string
   color: string
   displayColor: string // Color for UI display
+  
+  // Movement traits
+  movementSpeed?: number // Speed for movement (0 = no movement)
+  movementType?: 'fast' | 'slow' | 'none' // Movement category
+  
+  // Energy traits
+  photosynthesis?: number // Energy production rate (0 = none)
+  energyAbsorption?: number // Energy drain on contact (0 = none)
+  energyAbsorptionEfficiency?: number // Percentage of absorbed energy retained
+  
+  // Behavioral traits
+  collisionBehavior?: 'flee' | 'kill' | 'absorb' | 'heal' | 'infect' | 'harden' | 'stick' | 'attract' | 'none'
+  collisionTargets?: number[] // Which body types this gene interacts with
+  
+  // Special abilities
+  fleeFromAll?: boolean // Like TEAL  
+  contactsAll?: boolean // Like SKY
+  
+  // Reproduction modifiers
+  reproductionBonus?: number // Multiplier for reproduction (YELLOW)
+  
+  // Magnetic/physics traits
+  magneticAttraction?: boolean // Creates attraction field (TURQUOISE)
+  orbitalForce?: boolean // Creates orbital mechanics
 }
 
 // Centralized gene type mapping - ADD NEW GENES HERE
 export const GENE_TYPES: GeneTypeInfo[] = [
-  { id: BodyType.DEAD, name: 'DEAD', color: Color.DEAD, displayColor: '#5C3317' },
-  { id: BodyType.DEAD_BARK, name: 'DEAD_BARK', color: Color.DEAD_BARK, displayColor: '#2E3A19' },
-  { id: BodyType.GREEN, name: 'GREEN', color: Color.GREEN, displayColor: '#00FF00' },
-  { id: BodyType.BLUE, name: 'BLUE', color: Color.BLUE, displayColor: '#0000FF' },
-  { id: BodyType.MAROON, name: 'MAROON', color: Color.MAROON, displayColor: '#800000' },
-  { id: BodyType.RED, name: 'RED', color: Color.RED, displayColor: '#FF0000' },
-  { id: BodyType.CYAN, name: 'CYAN', color: Color.CYAN, displayColor: '#00FFFF' },
-  { id: BodyType.GRAY, name: 'GRAY', color: Color.GRAY, displayColor: '#808080' },
-  { id: BodyType.YELLOW, name: 'YELLOW', color: Color.YELLOW, displayColor: '#FFFF00' },
-  { id: BodyType.ORANGE, name: 'ORANGE', color: Color.ORANGE, displayColor: '#FFA500' },
-  { id: BodyType.TEAL, name: 'TEAL', color: Color.TEAL, displayColor: '#008080' },
-  { id: BodyType.BARK, name: 'BARK', color: Color.BARK, displayColor: '#8B4513' },
-  { id: BodyType.SKY, name: 'SKY', color: Color.SKY, displayColor: '#87CEEB' },
-  { id: BodyType.INDIGO, name: 'INDIGO', color: Color.INDIGO, displayColor: '#4B0082' },
-  { id: BodyType.WHITE, name: 'WHITE', color: Color.WHITE, displayColor: '#FFFFFF' },
-  { id: BodyType.PINK, name: 'PINK', color: Color.PINK, displayColor: '#FFC0CB' },
-  { id: BodyType.MAHOGANY, name: 'MAHOGANY', color: Color.MAHOGANY, displayColor: '#C04000' },
-  { id: BodyType.OCHRE, name: 'OCHRE', color: Color.OCHRE, displayColor: '#CC7722' },
-  { id: BodyType.VIOLET, name: 'VIOLET', color: Color.VIOLET, displayColor: '#8A2BE2' },
-  { id: BodyType.TURQUOISE, name: 'TURQUOISE', color: Color.TURQUOISE, displayColor: '#00CED1' },
-  { id: BodyType.STEEL, name: 'STEEL', color: Color.STEEL, displayColor: '#708090' },
-  { id: BodyType.BURGUNDY, name: 'BURGUNDY', color: Color.BURGUNDY, displayColor: '#800020' },
+  // Dead types
+  { 
+    id: BodyType.DEAD, name: 'DEAD', color: Color.DEAD, displayColor: '#5C3317',
+    collisionBehavior: 'none'
+  },
+  { 
+    id: BodyType.DEAD_BARK, name: 'DEAD_BARK', color: Color.DEAD_BARK, displayColor: '#2E3A19',
+    collisionBehavior: 'none'
+  },
+  
+  // Green Spectrum - Energy Production
+  { 
+    id: BodyType.GREEN, name: 'GREEN', color: Color.GREEN, displayColor: '#00FF00',
+    photosynthesis: 1.0, collisionBehavior: 'none'
+  },
+  { 
+    id: BodyType.BARK, name: 'BARK', color: Color.BARK, displayColor: '#8B4513',
+    photosynthesis: 0.8, collisionBehavior: 'harden',
+    collisionTargets: [BodyType.MAROON, BodyType.MAHOGANY]
+  },
+  
+  // Blue Spectrum - Movement Domain  
+  { 
+    id: BodyType.BLUE, name: 'BLUE', color: Color.BLUE, displayColor: '#0000FF',
+    collisionBehavior: 'flee', contactsAll: true
+  },
+  { 
+    id: BodyType.CYAN, name: 'CYAN', color: Color.CYAN, displayColor: '#00FFFF',
+    movementSpeed: 10, movementType: 'fast', collisionBehavior: 'none'
+  },
+  { 
+    id: BodyType.INDIGO, name: 'INDIGO', color: Color.INDIGO, displayColor: '#4B0082',
+    movementSpeed: 3, movementType: 'slow', 
+    collisionBehavior: 'absorb', energyAbsorption: 0.2, energyAbsorptionEfficiency: 1.0,
+    collisionTargets: [BodyType.BLUE, BodyType.YELLOW, BodyType.CYAN, BodyType.DEAD, BodyType.TEAL, BodyType.GREEN, BodyType.SKY, BodyType.WHITE]
+  },
+  { 
+    id: BodyType.SKY, name: 'SKY', color: Color.SKY, displayColor: '#87CEEB',
+    movementSpeed: 2, movementType: 'slow', collisionBehavior: 'flee', contactsAll: true
+  },
+  { 
+    id: BodyType.TEAL, name: 'TEAL', color: Color.TEAL, displayColor: '#008080',
+    collisionBehavior: 'flee', fleeFromAll: true
+  },
+  { 
+    id: BodyType.TURQUOISE, name: 'TURQUOISE', color: Color.TURQUOISE, displayColor: '#00CED1',
+    magneticAttraction: true, orbitalForce: true, collisionBehavior: 'attract',
+    collisionTargets: [BodyType.GREEN, BodyType.BLUE, BodyType.CYAN, BodyType.YELLOW, BodyType.RED, BodyType.MAROON, BodyType.ORANGE, BodyType.TEAL, BodyType.BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE, BodyType.PINK, BodyType.OCHRE, BodyType.VIOLET, BodyType.TURQUOISE]
+  },
+  
+  // Red/Orange Spectrum - Predation
+  { 
+    id: BodyType.RED, name: 'RED', color: Color.RED, displayColor: '#FF0000',
+    collisionBehavior: 'absorb', energyAbsorption: 1.0, energyAbsorptionEfficiency: 0.9,
+    collisionTargets: [BodyType.MAROON, BodyType.ORANGE, BodyType.PINK, BodyType.INDIGO, BodyType.OCHRE]
+  },
+  { 
+    id: BodyType.ORANGE, name: 'ORANGE', color: Color.ORANGE, displayColor: '#FFA500',
+    collisionBehavior: 'absorb', energyAbsorption: 1.0, energyAbsorptionEfficiency: 0.9,
+    collisionTargets: [BodyType.BLUE, BodyType.YELLOW, BodyType.CYAN, BodyType.DEAD, BodyType.TEAL, BodyType.GREEN, BodyType.SKY, BodyType.WHITE]
+  },
+  { 
+    id: BodyType.MAROON, name: 'MAROON', color: Color.MAROON, displayColor: '#800000',
+    collisionBehavior: 'absorb', energyAbsorption: 1.0, energyAbsorptionEfficiency: 0.9,
+    collisionTargets: [BodyType.DEAD, BodyType.GREEN, BodyType.BARK, BodyType.DEAD_BARK]
+  },
+  { 
+    id: BodyType.PINK, name: 'PINK', color: Color.PINK, displayColor: '#FFC0CB',
+    collisionBehavior: 'absorb', energyAbsorption: 1.0, energyAbsorptionEfficiency: 0.9,
+    collisionTargets: [BodyType.DEAD, BodyType.WHITE, BodyType.GREEN]
+  },
+  { 
+    id: BodyType.MAHOGANY, name: 'MAHOGANY', color: Color.MAHOGANY, displayColor: '#C04000',
+    collisionBehavior: 'absorb', energyAbsorption: 0.2, energyAbsorptionEfficiency: 1.0,
+    collisionTargets: [BodyType.DEAD, BodyType.GREEN, BodyType.BARK, BodyType.DEAD_BARK]
+  },
+  { 
+    id: BodyType.OCHRE, name: 'OCHRE', color: Color.OCHRE, displayColor: '#CC7722',
+    collisionBehavior: 'absorb', energyAbsorption: 0.2, energyAbsorptionEfficiency: 1.0,
+    collisionTargets: [BodyType.DEAD, BodyType.GREEN, BodyType.BLUE, BodyType.CYAN, BodyType.YELLOW, BodyType.TEAL, BodyType.BARK, BodyType.DEAD_BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE]
+  },
+  { 
+    id: BodyType.BURGUNDY, name: 'BURGUNDY', color: Color.BURGUNDY, displayColor: '#800020',
+    collisionBehavior: 'stick', energyAbsorption: 0.05, energyAbsorptionEfficiency: 0.7,
+    collisionTargets: [BodyType.GREEN, BodyType.BLUE, BodyType.CYAN, BodyType.YELLOW, BodyType.RED, BodyType.MAROON, BodyType.ORANGE, BodyType.TEAL, BodyType.BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE, BodyType.PINK, BodyType.OCHRE, BodyType.VIOLET, BodyType.TURQUOISE]
+  },
+  
+  // Special Mechanics
+  { 
+    id: BodyType.YELLOW, name: 'YELLOW', color: Color.YELLOW, displayColor: '#FFFF00',
+    reproductionBonus: 1.0, collisionBehavior: 'none'
+  },
+  { 
+    id: BodyType.WHITE, name: 'WHITE', color: Color.WHITE, displayColor: '#FFFFFF',
+    collisionBehavior: 'infect',
+    collisionTargets: [BodyType.GREEN, BodyType.RED, BodyType.MAROON, BodyType.ORANGE, BodyType.BARK]
+  },
+  { 
+    id: BodyType.GRAY, name: 'GRAY', color: Color.GRAY, displayColor: '#808080',
+    collisionBehavior: 'kill',
+    collisionTargets: [BodyType.GREEN, BodyType.RED, BodyType.CYAN, BodyType.YELLOW, BodyType.MAROON, BodyType.ORANGE, BodyType.TEAL, BodyType.BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE]
+  },
+  { 
+    id: BodyType.VIOLET, name: 'VIOLET', color: Color.VIOLET, displayColor: '#8A2BE2',
+    collisionBehavior: 'heal',
+    collisionTargets: [BodyType.GREEN, BodyType.BLUE, BodyType.CYAN, BodyType.YELLOW, BodyType.ORANGE, BodyType.TEAL, BodyType.BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE, BodyType.PINK, BodyType.OCHRE, BodyType.VIOLET]
+  },
+  { 
+    id: BodyType.STEEL, name: 'STEEL', color: Color.STEEL, displayColor: '#708090',
+    collisionBehavior: 'none'
+  },
 ]
 
 // Utility functions
@@ -57,3 +170,37 @@ export const GENE_TYPE_NAMES: {[key: number]: string} =
 // Display color mapping for UI
 export const GENE_DISPLAY_COLORS: {[key: string]: string} = 
   Object.fromEntries(GENE_TYPES.map(gene => [gene.name, gene.displayColor]))
+
+// Trait lookup helpers
+export const getGenePhotosynthesis = (id: number): number =>
+  getGeneTypeById(id)?.photosynthesis || 0
+
+export const getGeneMovementSpeed = (id: number): number =>
+  getGeneTypeById(id)?.movementSpeed || 0
+
+export const getGeneMovementType = (id: number): 'fast' | 'slow' | 'none' =>
+  getGeneTypeById(id)?.movementType || 'none'
+
+export const getGeneEnergyAbsorption = (id: number): number =>
+  getGeneTypeById(id)?.energyAbsorption || 0
+
+export const getGeneAbsorptionEfficiency = (id: number): number =>
+  getGeneTypeById(id)?.energyAbsorptionEfficiency || 0
+
+export const getGeneCollisionBehavior = (id: number): string =>
+  getGeneTypeById(id)?.collisionBehavior || 'none'
+
+export const getGeneCollisionTargets = (id: number): number[] =>
+  getGeneTypeById(id)?.collisionTargets || []
+
+export const getGeneReproductionBonus = (id: number): number =>
+  getGeneTypeById(id)?.reproductionBonus || 0
+
+export const doesGeneFleeFromAll = (id: number): boolean =>
+  getGeneTypeById(id)?.fleeFromAll || false
+
+export const doesGeneContactAll = (id: number): boolean =>
+  getGeneTypeById(id)?.contactsAll || false
+
+export const hasGeneMagneticAttraction = (id: number): boolean =>
+  getGeneTypeById(id)?.magneticAttraction || false
