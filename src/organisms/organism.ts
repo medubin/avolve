@@ -80,6 +80,7 @@ export default class Organism {
       this.synthesize()
       this.respirate()
       this.reproduce()
+      this.magneticAttraction()
     } else {
       this.respirate()
     }
@@ -193,5 +194,64 @@ export default class Organism {
     const vx = rngFloat(-speed, speed)
     const vy = rngFloat(-speed, speed)
     Matter.Body.setVelocity(moveable, { x: vx, y: vy })
+  }
+
+  protected magneticAttraction() {
+    // Only TURQUOISE organisms create magnetic fields
+    const turquoiseParts = this.body.bodies.filter(body => {
+      const bodyType = parseInt(body.label.split(':')[1], 10)
+      return bodyType === BodyType.TURQUOISE
+    })
+
+    if (turquoiseParts.length === 0) return
+
+    // Get all organisms in the database
+    const allOrganisms = this.database.organisms.organisms
+    const attractionRadius = 60 // pixels - even smaller radius
+    const baseForce = 0.001 // Extremely weak base force
+    
+    // Calculate attraction strength based on energy (more energy = stronger attraction)
+    const attractionStrength = baseForce * (this.energy / 5000) // Much reduced energy scaling
+
+    for (const turquoisePart of turquoiseParts) {
+      const turquoisePos = turquoisePart.position
+
+      // Attract nearby organisms
+      for (const uuid in allOrganisms) {
+        const targetOrg = allOrganisms[uuid]
+        
+        // Don't attract self or dead organisms
+        if (targetOrg.uuid === this.uuid || !targetOrg.isAlive) continue
+
+        // Check each body part of the target organism
+        for (const targetBody of targetOrg.body.bodies) {
+          const distance = Matter.Vector.magnitude(
+            Matter.Vector.sub(targetBody.position, turquoisePos)
+          )
+
+          // Only attract within radius, with minimum distance to prevent extreme forces
+          if (distance < attractionRadius && distance > 20) {
+            // Calculate attraction force (stronger when closer, weaker when farther)
+            const force = attractionStrength * (attractionRadius - distance) / attractionRadius
+            
+            // Cap the maximum force to prevent excessive speeds
+            const maxForce = 0.01 // Much lower force cap
+            const cappedForce = Math.min(force, maxForce)
+            
+            // Calculate direction vector from target to TURQUOISE
+            const direction = Matter.Vector.normalise(
+              Matter.Vector.sub(turquoisePos, targetBody.position)
+            )
+
+            // Apply attraction force
+            const attractionForce = Matter.Vector.mult(direction, cappedForce)
+            Matter.Body.applyForce(targetBody, targetBody.position, attractionForce)
+          }
+        }
+      }
+      
+      // TURQUOISE consumes energy for magnetic field (higher cost to balance benefits)
+      this.energy -= 0.2 * turquoiseParts.length
+    }
   }
 }

@@ -18,6 +18,7 @@ enum Color {
   MAHOGANY = '#420C09',
   OCHRE = '#CC7722',
   VIOLET = '#8A2BE2',
+  TURQUOISE = '#00CED1',
 }
 
 export default Color

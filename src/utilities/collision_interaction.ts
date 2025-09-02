@@ -1,6 +1,7 @@
 import BodyType from '../constants/body_type'
 import Database from '../databases/database'
 import { IEventCollision, Body } from 'matter-js'
+import * as Matter from 'matter-js'
 import Organism from '../organisms/organism'
 
 function collidesWith(type : number, target : number) {
@@ -26,9 +27,10 @@ const PINK = BodyType.PINK
 const MAHOGANY = BodyType.MAHOGANY
 const OCHRE = BodyType.OCHRE
 const VIOLET = BodyType.VIOLET
+const TURQUOISE = BodyType.TURQUOISE
 const ALL = [
   DEAD, GREEN, BLUE, RED, CYAN, GRAY, YELLOW, MAROON, ORANGE, TEAL, BARK, DEAD_BARK, SKY, INDIGO,
-  WHITE, PINK, MAHOGANY, OCHRE, VIOLET,
+  WHITE, PINK, MAHOGANY, OCHRE, VIOLET, TURQUOISE,
 ]
 
 const COLLISION_CHECK : {[key : number]: number[]} = {
@@ -51,6 +53,7 @@ const COLLISION_CHECK : {[key : number]: number[]} = {
   [OCHRE]: [DEAD, GREEN, BLUE, CYAN, YELLOW, TEAL, BARK, DEAD_BARK, SKY, INDIGO, WHITE],
   [MAHOGANY]: [DEAD, GREEN, BARK, DEAD_BARK],
   [VIOLET]: [GREEN, BLUE, CYAN, YELLOW, ORANGE, TEAL, BARK, SKY, INDIGO, WHITE, PINK, OCHRE, VIOLET],
+  [TURQUOISE]: [GREEN, BLUE, CYAN, YELLOW, RED, MAROON, ORANGE, TEAL, BARK, SKY, INDIGO, WHITE, PINK, OCHRE, VIOLET, TURQUOISE],
 }
 
 export function resolveCollision(event : IEventCollision<any>, database : Database) {
@@ -150,5 +153,38 @@ function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Bod
       orgA.energy -= shareAmount
       orgB.energy += shareAmount
     }
+  } else if (typeA === TURQUOISE) {
+    // TURQUOISE creates stronger orbital attraction on direct contact
+    const orbitForce = bodyA.area * 0.01 // Extremely weak orbital force
+    
+    // Create circular orbital motion around the TURQUOISE organism
+    const turquoisePos = bodyA.position
+    const targetPos = bodyB.position
+    
+    // Calculate perpendicular force for orbital motion
+    const toTarget = Matter.Vector.sub(targetPos, turquoisePos)
+    const perpendicular = { x: -toTarget.y, y: toTarget.x }
+    const normalizedPerp = Matter.Vector.normalise(perpendicular)
+    
+    // Apply orbital force (tangential to the radius)
+    const orbitalForce = Matter.Vector.mult(normalizedPerp, orbitForce)
+    Matter.Body.applyForce(bodyB, targetPos, orbitalForce)
+    
+    // TURQUOISE organisms can "lock" onto each other for enhanced photosynthesis
+    if (typeB === TURQUOISE) {
+      // Only boost photosynthesis occasionally to prevent reproduction explosion
+      if (Math.random() < 0.01) { // 1% chance per collision frame
+        const photosynthesisBoost = 2
+        // Energy comes from CO2, not from nothing
+        if (database.world.co2 >= photosynthesisBoost * 2) {
+          database.world.consumeCO2(photosynthesisBoost * 2)
+          orgA.energy += photosynthesisBoost
+          orgB.energy += photosynthesisBoost
+        }
+      }
+    }
+    
+    // Consume extra energy for contact-based orbital mechanics
+    orgA.energy -= 1
   }
 }
