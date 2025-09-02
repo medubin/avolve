@@ -8,6 +8,7 @@ import World from './parameters/world_parameters'
 import { rng } from './utilities/random'
 import { resolveCollision } from './utilities/collision_interaction'
 import WorldDisplay from './services/world_display'
+import { getGeneTypeName, GENE_DISPLAY_COLORS } from './constants/gene_types'
 
 // create an engine
 const engine = Matter.Engine.create()
@@ -187,14 +188,7 @@ function displayOrganismInfo(organism: any) {
 }
 
 function getBodyTypeName(bodyType: number): string {
-  const typeMap: {[key: number]: string} = {
-    0: 'DEAD', 1: 'DEAD_BARK', 2: 'GREEN', 3: 'BLUE', 4: 'MAROON', 
-    5: 'RED', 6: 'CYAN', 7: 'GRAY', 8: 'YELLOW', 9: 'ORANGE', 
-    10: 'TEAL', 11: 'BARK', 12: 'SKY', 13: 'INDIGO', 14: 'WHITE',
-    15: 'PINK', 16: 'MAHOGANY', 17: 'OCHRE', 18: 'VIOLET', 
-    19: 'TURQUOISE', 20: 'STEEL', 21: 'BURGUNDY'
-  }
-  return typeMap[bodyType] || 'UNKNOWN'
+  return getGeneTypeName(bodyType)
 }
 
 function clearOrganismInfo() {
@@ -242,15 +236,7 @@ function updateGeneFrequencyDisplay() {
   
   frequencies.forEach(item => {
     const percentage = ((item.count / totalGenes) * 100).toFixed(1)
-    const colorMap: {[key: string]: string} = {
-      'GREEN': '#00FF00', 'BLUE': '#0000FF', 'RED': '#FF0000', 'YELLOW': '#FFFF00',
-      'ORANGE': '#FFA500', 'CYAN': '#00FFFF', 'WHITE': '#FFFFFF', 'GRAY': '#808080',
-      'MAROON': '#800000', 'TEAL': '#008080', 'BARK': '#8B4513', 'SKY': '#87CEEB',
-      'INDIGO': '#4B0082', 'PINK': '#FFC0CB', 'MAHOGANY': '#C04000', 'OCHRE': '#CC7722',
-      'VIOLET': '#8A2BE2', 'TURQUOISE': '#00CED1', 'STEEL': '#708090', 'BURGUNDY': '#800020'
-    }
-    
-    const color = colorMap[item.name] || '#CCCCCC'
+    const color = GENE_DISPLAY_COLORS[item.name] || '#CCCCCC'
     html += `<span style="color: ${color}">●</span> ${item.name}: ${item.count}`
     
     if (!showHistorical) {

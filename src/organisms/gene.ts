@@ -1,8 +1,7 @@
 import { rng, rngFloat, rngBool } from '../utilities/random'
 import * as Matter from 'matter-js'
-import BodyType from '../constants/body_type'
-import Color from '../constants/color'
 import Organism from '../parameters/organism_parameters'
+import { PLAYABLE_GENE_TYPES, getGeneTypeColor } from '../constants/gene_types'
 
 export default class Gene {
   public type : number
@@ -15,7 +14,9 @@ export default class Gene {
 
   public static random() : Gene {
     const gene = new Gene()
-    gene.type = rng(2, 22)
+    // Use dynamic range based on playable gene types (excludes DEAD types)
+    const playableTypes = PLAYABLE_GENE_TYPES.map(g => g.id)
+    gene.type = playableTypes[rng(0, playableTypes.length - 1)]
     gene.x = rng(-100, 100) / 10
     gene.y = rng(-100, 100) / 10
     gene.sides = rng(3, 9)
@@ -29,7 +30,7 @@ export default class Gene {
     const options = {
       label: `${uuid}:${this.type}`,
       // frictionAir: .01,
-      render: { strokeStyle: this.getBodyColor(this.type), fillStyle: 'transparent', lineWidth: 1 },
+      render: { strokeStyle: getGeneTypeColor(this.type), fillStyle: 'transparent', lineWidth: 1 },
     }
     const body = Matter.Bodies.polygon(x + this.x, y + this.y, this.sides, this.radius, options)
     body.friction = 1
@@ -55,7 +56,8 @@ export default class Gene {
     const mutation = rng(0, 7)
     switch (mutation) {
       case(0):
-        gene.type = rng(2, 22)
+        const playableTypes = PLAYABLE_GENE_TYPES.map(g => g.id)
+        gene.type = playableTypes[rng(0, playableTypes.length - 1)]
         return gene
       case(1):
         gene.x = rng(-100, 100) / 10
@@ -75,53 +77,6 @@ export default class Gene {
       case(6):
         gene.length = rngFloat(8, 12)
         return gene
-    }
-  }
-
-  protected getBodyColor(bodyType : number) : string {
-    switch (bodyType){
-      case(BodyType.GREEN):
-        return Color.GREEN
-      case(BodyType.BLUE):
-        return Color.BLUE
-      case(BodyType.MAROON):
-        return Color.MAROON
-      case(BodyType.CYAN):
-        return Color.CYAN
-      case(BodyType.GRAY):
-        return Color.GRAY
-      case(BodyType.YELLOW):
-        return Color.YELLOW
-      case(BodyType.RED):
-        return Color.RED
-      case(BodyType.ORANGE):
-        return Color.ORANGE
-      case(BodyType.TEAL):
-        return Color.TEAL
-      case(BodyType.BARK):
-        return Color.BARK
-      case(BodyType.DEAD_BARK):
-        return Color.DEAD_BARK
-      case(BodyType.SKY):
-        return Color.SKY
-      case(BodyType.INDIGO):
-        return Color.INDIGO
-      case(BodyType.WHITE):
-        return Color.WHITE
-      case(BodyType.PINK):
-        return Color.PINK
-      case(BodyType.MAHOGANY):
-        return Color.MAHOGANY
-      case(BodyType.OCHRE):
-        return Color.OCHRE
-      case(BodyType.VIOLET):
-        return Color.VIOLET
-      case(BodyType.TURQUOISE):
-        return Color.TURQUOISE
-      case(BodyType.STEEL):
-        return Color.STEEL
-      case(BodyType.BURGUNDY):
-        return Color.BURGUNDY
     }
   }
 }
