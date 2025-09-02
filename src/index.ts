@@ -145,6 +145,10 @@ function displayOrganismInfo(organism: any) {
   const energyPercent = Math.round((organism.energy / organism.reproduceAt) * 100)
   const agePercent = Math.round((organism.age / organism.maxAge) * 100)
   
+  // Format age to match world display (divide by 100)
+  const ageInWorldUnits = (organism.age / 100).toFixed(1)
+  const maxAgeInWorldUnits = (organism.maxAge / 100).toFixed(1)
+  
   // Get body part composition
   const bodyTypes: {[key: string]: number} = {}
   for (const body of organism.body.bodies) {
@@ -162,7 +166,7 @@ function displayOrganismInfo(organism: any) {
     info.innerHTML = `
       <strong>🔍 Organism #${organism.uuid}</strong><br>
       <strong>Energy:</strong> ${Math.round(organism.energy)} (${energyPercent}%)<br>
-      <strong>Age:</strong> ${organism.age} / ${organism.maxAge} (${agePercent}%)<br>
+      <strong>Age:</strong> ${ageInWorldUnits} / ${maxAgeInWorldUnits} (${agePercent}%)<br>
       <strong>Status:</strong> 💚 Alive<br>
       <strong>Parent:</strong> #${organism.parentUuid || 'None'}<br>
       <strong>Generation:</strong> ${organism.generation}<br>
@@ -176,7 +180,7 @@ function displayOrganismInfo(organism: any) {
       <strong>💀 Dead Organism #${organism.uuid}</strong><br>
       <strong>Death Cause:</strong> ${deathCause}<br>
       <strong>Final Energy:</strong> ${Math.round(organism.energy)}<br>
-      <strong>Death Age:</strong> ${organism.age} / ${organism.maxAge} (${agePercent}%)<br>
+      <strong>Death Age:</strong> ${ageInWorldUnits} / ${maxAgeInWorldUnits} (${agePercent}%)<br>
       <strong>Status:</strong> 💀 Dead<br>
       <strong>Parent:</strong> #${organism.parentUuid || 'None'}<br>
       <strong>Generation:</strong> ${organism.generation}<br>

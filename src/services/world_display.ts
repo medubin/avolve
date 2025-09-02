@@ -9,6 +9,7 @@ export default class WorldDisplay {
   protected co2 : HTMLElement
   protected o2 : HTMLElement
   protected age : HTMLElement
+  protected totalGas : HTMLElement
   constructor(database : Database) {
     this.database = database
     this.stats = document.getElementById('stats')
@@ -48,6 +49,12 @@ export default class WorldDisplay {
     this.age = document.createElement('span')
     ageText.appendChild(this.age)
     this.stats.appendChild(ageText)
+
+    const totalGasText = document.createElement('span')
+    totalGasText.innerText = 'Total Gas: '
+    this.totalGas = document.createElement('span')
+    totalGasText.appendChild(this.totalGas)
+    this.stats.appendChild(totalGasText)
   }
 
   public tick() : void {
@@ -58,6 +65,7 @@ export default class WorldDisplay {
       this.co2.innerText = Math.floor(this.database.world.co2).toString()
       this.o2.innerText = Math.floor(this.database.world.o2).toString()
       this.age.innerText = (this.database.world.tickNumber / 100).toString()
+      this.totalGas.innerText = Math.floor(this.database.world.co2 + this.database.world.o2).toString()
     }
   }
 }
