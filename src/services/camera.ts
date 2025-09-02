@@ -23,12 +23,10 @@ export default class Camera {
 
   public scrollX() {
     if (this._scrollX) {
-      // @ts-ignore
       if (this._scrollX < 0 && this.render.bounds.min.x < -World.WALL / 2) {
         return
       }
       if (this._scrollX > 0 &&
-        // @ts-ignore
         (this.render.bounds.min.x + this.render.canvas.width) > World.WIDTH + (World.WALL / 2)) {
         return
       }
@@ -39,12 +37,10 @@ export default class Camera {
 
   public scrollY() {
     if (this._scrollY) {
-      // @ts-ignore
       if (this._scrollY < 0 && this.render.bounds.min.y < -World.WALL / 2) {
         return
       }
       if (this._scrollY > 0 &&
-        // @ts-ignore
         (this.render.bounds.min.y + this.render.canvas.height) > World.HEIGHT + (World.WALL / 2)) {
         return
       }

@@ -53,9 +53,8 @@ for (let i = 0; i < World.STARTING_ORGANISMS; i += 1) {
   database.organisms.addOrganism(organism)
   database.world.consumeCO2(organism.energy)
 }
-console.log('hi')
-// run the engine
-Matter.Engine.run(engine)
+// create a runner
+const runner = Matter.Runner.create()
 
 Matter.Events.on(engine, 'beforeTick', (_) => {
   const organisms = database.organisms.organisms
@@ -71,9 +70,12 @@ Matter.Events.on(engine, 'beforeTick', (_) => {
 Matter.Events.on(engine, 'collisionActive', collisionResolver)
 Matter.Events.on(engine, 'collisionStart', collisionResolver)
 
-function collisionResolver(event : Matter.IEventCollision<Event>) {
+function collisionResolver(event : any) {
   resolveCollision(event, database)
 }
 
 // run the renderer
 Matter.Render.run(render)
+
+// run the engine
+Matter.Runner.run(runner, engine)

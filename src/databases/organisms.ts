@@ -30,7 +30,11 @@ export default class Organisms {
   }
 
   public deleteOrganism(uuid : number) {
-    this._organisms[uuid].isAlive ? this.alive -= 1 : this.dead -= 1
+    if (this._organisms[uuid].isAlive) {
+      this.alive -= 1
+    } else {
+      this.dead -= 1
+    }
     delete this._organisms[uuid]
     this.length -= 1
   }
