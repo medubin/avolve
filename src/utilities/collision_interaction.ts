@@ -25,9 +25,10 @@ const WHITE = BodyType.WHITE
 const PINK = BodyType.PINK
 const MAHOGANY = BodyType.MAHOGANY
 const OCHRE = BodyType.OCHRE
+const VIOLET = BodyType.VIOLET
 const ALL = [
   DEAD, GREEN, BLUE, RED, CYAN, GRAY, YELLOW, MAROON, ORANGE, TEAL, BARK, DEAD_BARK, SKY, INDIGO,
-  WHITE, PINK, MAHOGANY, OCHRE,
+  WHITE, PINK, MAHOGANY, OCHRE, VIOLET,
 ]
 
 const COLLISION_CHECK : {[key : number]: number[]} = {
@@ -49,6 +50,7 @@ const COLLISION_CHECK : {[key : number]: number[]} = {
   [PINK]: [DEAD, WHITE, GREEN],
   [OCHRE]: [DEAD, GREEN, BLUE, CYAN, YELLOW, TEAL, BARK, DEAD_BARK, SKY, INDIGO, WHITE],
   [MAHOGANY]: [DEAD, GREEN, BARK, DEAD_BARK],
+  [VIOLET]: [GREEN, BLUE, CYAN, YELLOW, ORANGE, TEAL, BARK, SKY, INDIGO, WHITE, PINK, OCHRE, VIOLET],
 }
 
 export function resolveCollision(event : IEventCollision<any>, database : Database) {
@@ -89,17 +91,18 @@ export function resolveCollision(event : IEventCollision<any>, database : Databa
         continue
       }
       if (aCollidesB) {
-        onContact(organismA, organismB, typeA, pair.bodyA, pair.bodyB)
+        onContact(organismA, organismB, typeA, pair.bodyA, pair.bodyB, database)
       }
 
       if (bCollidesA) {
-        onContact(organismB, organismA, typeB, pair.bodyB, pair.bodyA)
+        onContact(organismB, organismA, typeB, pair.bodyB, pair.bodyA, database)
       }
     }
   }
 }
 
-function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Body, bodyB : Body) {
+function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Body, bodyB : Body, database : Database) {
+  const typeB = parseInt(bodyB.label.split(':')[1], 10)
   if (typeA === BLUE) {
     orgB.flee(bodyB, bodyB.position, bodyA.position)
   } else if (typeA === GRAY) {
@@ -126,5 +129,26 @@ function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Bod
     orgA.absorb(bodyA.area * .2, orgB)
   } else if (typeA === OCHRE) {
     orgA.absorb(bodyA.area * .2, orgB)
+  } else if (typeA === VIOLET) {
+    // VIOLET healing behavior
+    const healingAmount = bodyA.area * 0.3
+    
+    // Only heal if the target organism has less than 70% of its reproduction threshold
+    if (orgB.energy < orgB.reproduceAt * 0.7) {
+      // Transfer energy from VIOLET to the target organism
+      if (orgA.energy > healingAmount * 2) { // Ensure VIOLET has enough energy
+        orgA.energy -= healingAmount
+        orgB.energy += healingAmount * 0.8 // 80% efficiency
+        // Release 20% as CO2 (healing cost)
+        database.world.releaseCO2(healingAmount * 0.2)
+      }
+    }
+    
+    // VIOLET organisms cooperate with each other (energy sharing)
+    if (typeB === VIOLET && orgB.energy < orgA.energy * 0.8) {
+      const shareAmount = (orgA.energy - orgB.energy) * 0.1
+      orgA.energy -= shareAmount
+      orgB.energy += shareAmount
+    }
   }
 }

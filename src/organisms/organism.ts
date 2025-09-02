@@ -13,7 +13,7 @@ export default class Organism {
   protected moveables : Matter.Body[][]
   protected synthesizers : number
   protected bodySize : number
-  protected reproduceAt : number
+  public reproduceAt : number
   public energy : number
   public uuid : number
   public age : number
