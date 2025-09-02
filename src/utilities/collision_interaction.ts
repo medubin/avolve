@@ -21,7 +21,6 @@ function collidesWith(type : number, target : number) {
 // All collision logic is now trait-based and centralized in gene_types.ts
 
 export function resolveCollision(event : IEventCollision<any>, database : Database) {
-  const world = event.source.world // Access the Matter.js world from the collision event
   for (const pair of event.pairs) {
     const bodyA = pair.bodyA.label.split(':')
     const bodyB = pair.bodyB.label.split(':')
@@ -59,17 +58,17 @@ export function resolveCollision(event : IEventCollision<any>, database : Databa
         continue
       }
       if (aCollidesB) {
-        onContact(organismA, organismB, typeA, pair.bodyA, pair.bodyB, database, world)
+        onContact(organismA, organismB, typeA, pair.bodyA, pair.bodyB, database)
       }
 
       if (bCollidesA) {
-        onContact(organismB, organismA, typeB, pair.bodyB, pair.bodyA, database, world)
+        onContact(organismB, organismA, typeB, pair.bodyB, pair.bodyA, database)
       }
     }
   }
 }
 
-function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Body, bodyB : Body, database : Database, world : any) {
+function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Body, bodyB : Body, database : Database) {
   const typeB = parseInt(bodyB.label.split(':')[1], 10)
   const behavior = getGeneCollisionBehavior(typeA)
   const absorption = getGeneEnergyAbsorption(typeA)
@@ -167,7 +166,7 @@ function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Bod
       break
       
     case 'stick':
-      // BURGUNDY parasitic behavior - slow energy drain + physical sticking
+      // BURGUNDY parasitic behavior - slow energy drain + sticky forces
       const parasiteDrain = bodyA.area * absorption
       
       // Slow energy absorption
@@ -177,28 +176,38 @@ function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Bod
         database.world.releaseCO2(parasiteDrain * (1 - efficiency))
       }
       
-      // Physical sticking - create a constraint between BURGUNDY and target
-      // Use a simpler approach: create temporary constraint with auto-cleanup
-      const constraint = Matter.Constraint.create({
-        bodyA: bodyA,
-        bodyB: bodyB,
-        length: Math.max(8, (bodyA.circleRadius || 10) + (bodyB.circleRadius || 10) - 5), // Close but not overlapping
-        stiffness: 0.4, // Moderately flexible connection
-        damping: 0.2,   // Damping to prevent oscillation
-        render: { visible: false } // Hide constraint visually
-      })
+      // Physical sticking using attractive forces instead of constraints
+      const stickingId = `burgundy_${orgA.uuid}_${orgB.uuid}_${bodyA.id}_${bodyB.id}`
       
-      // Add constraint to the Matter.js world
-      Matter.World.add(world, constraint)
+      // Track sticking relationships to prevent multiple applications
+      if (!(bodyA as any).burgundyStickTargets) {
+        (bodyA as any).burgundyStickTargets = new Set()
+      }
       
-      // Set constraint to auto-remove after 2-4 seconds (prevents permanent attachment)
-      setTimeout(() => {
-        try {
-          Matter.World.remove(world, constraint)
-        } catch {
-          // Constraint or world may no longer exist, ignore error
+      if (!(bodyA as any).burgundyStickTargets.has(stickingId)) {
+        // Apply strong attractive force to create sticking effect
+        const stickForce = 0.3 // Strong force for sticking
+        const distance = Matter.Vector.magnitude(Matter.Vector.sub(bodyB.position, bodyA.position))
+        
+        if (distance > 5) { // Only apply if bodies are not extremely close
+          const direction = Matter.Vector.normalise(Matter.Vector.sub(bodyB.position, bodyA.position))
+          const attractiveForce = Matter.Vector.mult(direction, stickForce)
+          
+          // Apply attractive forces
+          Matter.Body.applyForce(bodyA, bodyA.position, attractiveForce)
+          Matter.Body.applyForce(bodyB, bodyB.position, Matter.Vector.mult(attractiveForce, -1))
         }
-      }, 2000 + Math.random() * 2000) // 2-4 second attachment
+        
+        // Track this sticking relationship
+        (bodyA as any).burgundyStickTargets.add(stickingId)
+        
+        // Remove sticking after 2-4 seconds
+        setTimeout(() => {
+          if ((bodyA as any).burgundyStickTargets) {
+            (bodyA as any).burgundyStickTargets.delete(stickingId)
+          }
+        }, 2000 + Math.random() * 2000)
+      }
       break
       
     case 'none':
