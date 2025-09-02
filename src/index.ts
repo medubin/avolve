@@ -56,7 +56,7 @@ for (let i = 0; i < World.STARTING_ORGANISMS; i += 1) {
 // create a runner
 const runner = Matter.Runner.create()
 
-Matter.Events.on(engine, 'beforeTick', (_) => {
+Matter.Events.on(engine, 'beforeUpdate', (_) => {
   const organisms = database.organisms.organisms
   for (const uuid in organisms) {
     organisms[uuid].update()
