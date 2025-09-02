@@ -20,6 +20,7 @@ enum Color {
   VIOLET = '#8A2BE2',
   TURQUOISE = '#00CED1',
   STEEL = '#708090',
+  BURGUNDY = '#800020',
 }
 
 export default Color

@@ -29,9 +29,10 @@ const OCHRE = BodyType.OCHRE
 const VIOLET = BodyType.VIOLET
 const TURQUOISE = BodyType.TURQUOISE
 const STEEL = BodyType.STEEL
+const BURGUNDY = BodyType.BURGUNDY
 const ALL = [
   DEAD, GREEN, BLUE, RED, CYAN, GRAY, YELLOW, MAROON, ORANGE, TEAL, BARK, DEAD_BARK, SKY, INDIGO,
-  WHITE, PINK, MAHOGANY, OCHRE, VIOLET, TURQUOISE, STEEL,
+  WHITE, PINK, MAHOGANY, OCHRE, VIOLET, TURQUOISE, STEEL, BURGUNDY,
 ]
 
 const COLLISION_CHECK : {[key : number]: number[]} = {
@@ -56,9 +57,11 @@ const COLLISION_CHECK : {[key : number]: number[]} = {
   [VIOLET]: [GREEN, BLUE, CYAN, YELLOW, ORANGE, TEAL, BARK, SKY, INDIGO, WHITE, PINK, OCHRE, VIOLET],
   [TURQUOISE]: [GREEN, BLUE, CYAN, YELLOW, RED, MAROON, ORANGE, TEAL, BARK, SKY, INDIGO, WHITE, PINK, OCHRE, VIOLET, TURQUOISE],
   [STEEL]: [], // STEEL doesn't attack anything - pure defense
+  [BURGUNDY]: [GREEN, BLUE, CYAN, YELLOW, RED, MAROON, ORANGE, TEAL, BARK, SKY, INDIGO, WHITE, PINK, OCHRE, VIOLET, TURQUOISE], // Parasitic - attacks most living things
 }
 
 export function resolveCollision(event : IEventCollision<any>, database : Database) {
+  const world = event.source.world // Access the Matter.js world from the collision event
   for (const pair of event.pairs) {
     const bodyA = pair.bodyA.label.split(':')
     const bodyB = pair.bodyB.label.split(':')
@@ -96,17 +99,17 @@ export function resolveCollision(event : IEventCollision<any>, database : Databa
         continue
       }
       if (aCollidesB) {
-        onContact(organismA, organismB, typeA, pair.bodyA, pair.bodyB, database)
+        onContact(organismA, organismB, typeA, pair.bodyA, pair.bodyB, database, world)
       }
 
       if (bCollidesA) {
-        onContact(organismB, organismA, typeB, pair.bodyB, pair.bodyA, database)
+        onContact(organismB, organismA, typeB, pair.bodyB, pair.bodyA, database, world)
       }
     }
   }
 }
 
-function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Body, bodyB : Body, database : Database) {
+function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Body, bodyB : Body, database : Database, world : any) {
   const typeB = parseInt(bodyB.label.split(':')[1], 10)
   if (typeA === BLUE) {
     orgB.flee(bodyB, bodyB.position, bodyA.position)
@@ -188,5 +191,38 @@ function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Bod
     
     // Consume extra energy for contact-based orbital mechanics
     orgA.energy -= 1
+  } else if (typeA === BURGUNDY) {
+    // BURGUNDY parasitic behavior - slow energy drain + physical sticking
+    const parasiteDrain = bodyA.area * 0.05 // Very slow drain (5% of body area)
+    
+    // Slow energy absorption
+    if (orgB.energy > parasiteDrain) {
+      orgB.energy -= parasiteDrain
+      orgA.energy += parasiteDrain * 0.7 // 70% efficiency
+      database.world.releaseCO2(parasiteDrain * 0.3) // 30% lost as CO2
+    }
+    
+    // Physical sticking - create a constraint between BURGUNDY and target
+    // Use a simpler approach: create temporary constraint with auto-cleanup
+    const constraint = Matter.Constraint.create({
+      bodyA: bodyA,
+      bodyB: bodyB,
+      length: Math.max(8, (bodyA.circleRadius || 10) + (bodyB.circleRadius || 10) - 5), // Close but not overlapping
+      stiffness: 0.4, // Moderately flexible connection
+      damping: 0.2,   // Damping to prevent oscillation
+      render: { visible: false } // Hide constraint visually
+    })
+    
+    // Add constraint to the Matter.js world
+    Matter.World.add(world, constraint)
+    
+    // Set constraint to auto-remove after 2-4 seconds (prevents permanent attachment)
+    setTimeout(() => {
+      try {
+        Matter.World.remove(world, constraint)
+      } catch {
+        // Constraint or world may no longer exist, ignore error
+      }
+    }, 2000 + Math.random() * 2000) // 2-4 second attachment
   }
 }

@@ -122,6 +122,12 @@ The organism colors follow three primary themes with specialized variants:
 - **Interactions**: 20% absorption from DEAD, GREEN, BLUE, CYAN, YELLOW, TEAL, BARK, DEAD_BARK, SKY, INDIGO, WHITE
 - **Role**: Adaptable survivor, ecosystem stabilizer
 
+### 🍷 **BURGUNDY** - The Parasitic Attachers *(New!)*
+- **Ability**: Slow energy drain + velocity reduction (sticking behavior)
+- **Behavior**: Parasitic attachment - drains hosts slowly while reducing their mobility
+- **Interactions**: 5% energy drain from most organisms, slows target velocity by 30%, self-slows by 10%
+- **Role**: Mobility disruptor, creates organism clusters through sticking, persistent energy drain
+
 ## Special Mechanics
 
 ### 🟡 **YELLOW** - The Reproducers

@@ -192,7 +192,7 @@ function getBodyTypeName(bodyType: number): string {
     5: 'RED', 6: 'CYAN', 7: 'GRAY', 8: 'YELLOW', 9: 'ORANGE', 
     10: 'TEAL', 11: 'BARK', 12: 'SKY', 13: 'INDIGO', 14: 'WHITE',
     15: 'PINK', 16: 'MAHOGANY', 17: 'OCHRE', 18: 'VIOLET', 
-    19: 'TURQUOISE', 20: 'STEEL'
+    19: 'TURQUOISE', 20: 'STEEL', 21: 'BURGUNDY'
   }
   return typeMap[bodyType] || 'UNKNOWN'
 }
@@ -223,6 +223,8 @@ function createGeneFrequencyDisplay() {
   display.style.minWidth = '150px'
   display.style.maxHeight = '80vh'
   display.style.overflowY = 'auto'
+  display.style.cursor = 'pointer'
+  display.title = 'Click to toggle between Current and Historical view'
   document.body.appendChild(display)
 }
 
@@ -230,10 +232,13 @@ function updateGeneFrequencyDisplay() {
   const display = document.getElementById('gene-frequency-display')
   if (!display) return
   
-  const frequencies = database.getSortedGeneFrequencies()
+  const frequencies = showHistorical ? database.getSortedHistoricalGeneFrequencies() : database.getSortedGeneFrequencies()
   const totalGenes = frequencies.reduce((sum, item) => sum + item.count, 0)
   
-  let html = '<strong>📊 Gene Frequencies</strong><br><br>'
+  const viewType = showHistorical ? 'Historical' : 'Current'
+  const icon = showHistorical ? '📈' : '📊'
+  let html = `<strong>${icon} ${viewType} Gene Frequencies</strong><br>`
+  html += '<small style="color: #CCCCCC">Click to toggle view</small><br><br>'
   
   frequencies.forEach(item => {
     const percentage = ((item.count / totalGenes) * 100).toFixed(1)
@@ -242,21 +247,33 @@ function updateGeneFrequencyDisplay() {
       'ORANGE': '#FFA500', 'CYAN': '#00FFFF', 'WHITE': '#FFFFFF', 'GRAY': '#808080',
       'MAROON': '#800000', 'TEAL': '#008080', 'BARK': '#8B4513', 'SKY': '#87CEEB',
       'INDIGO': '#4B0082', 'PINK': '#FFC0CB', 'MAHOGANY': '#C04000', 'OCHRE': '#CC7722',
-      'VIOLET': '#8A2BE2', 'TURQUOISE': '#00CED1', 'STEEL': '#708090'
+      'VIOLET': '#8A2BE2', 'TURQUOISE': '#00CED1', 'STEEL': '#708090', 'BURGUNDY': '#800020'
     }
     
     const color = colorMap[item.name] || '#CCCCCC'
-    html += `<span style="color: ${color}">●</span> ${item.name}: ${item.count} (${percentage}%)<br>`
+    html += `<span style="color: ${color}">●</span> ${item.name}: ${item.count}`
+    
+    if (!showHistorical) {
+      html += ` (${percentage}%)`
+    }
+    html += '<br>'
   })
   
   if (frequencies.length === 0) {
-    html += '<em>No organisms present</em>'
+    html += '<em>No data available</em>'
   }
   
   display.innerHTML = html
 }
 
 createGeneFrequencyDisplay()
+
+// Toggle between current and historical view
+let showHistorical = false
+document.getElementById('gene-frequency-display')?.addEventListener('click', () => {
+  showHistorical = !showHistorical
+  updateGeneFrequencyDisplay()
+})
 
 for (let i = 0; i < World.STARTING_ORGANISMS; i += 1) {
   const x = rng(50, World.WIDTH - 50)
