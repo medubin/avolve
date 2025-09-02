@@ -4,7 +4,7 @@ import BodyType from '../constants/body_type'
 import Database from '../databases/database'
 import { rngFloat, rngBool } from '../utilities/random'
 import Color from '../constants/color'
-import { getGenePhotosynthesis, getGeneMovementSpeed, getGeneMovementType, getGeneReproductionBonus, hasGeneMagneticAttraction } from '../constants/gene_types'
+import { getGenePhotosynthesis, getGeneMovementSpeed, getGeneMovementType, getGeneReproductionBonus, hasGeneMagneticAttraction, getGeneRespirationCost } from '../constants/gene_types'
 
 export default class Organism {
   protected body : Matter.Composite
@@ -186,10 +186,21 @@ export default class Organism {
   }
 
   protected respirate() {
-    let energyLoss = this.isAlive ? this.bodySize / 500 : this.bodySize / 100
-    if (this.isAlive) {
-      energyLoss = energyLoss / (this.database.world.o2Fraction + 1)
+    let energyLoss = 0
+    
+    // Calculate respiration cost based on each body part's gene type
+    for (const body of this.body.bodies) {
+      const genotype = parseInt(body.label.split(':')[1], 10)
+      const respirationCost = getGeneRespirationCost(genotype)
+      const bodyPartCost = (body.area * respirationCost) / 500
+      
+      if (this.isAlive) {
+        energyLoss += bodyPartCost / (this.database.world.o2Fraction + 1)
+      } else {
+        energyLoss += bodyPartCost * 5 // Dead organisms respire faster
+      }
     }
+    
     this.database.world.releaseCO2(energyLoss)
     this.energy -= energyLoss
   }
