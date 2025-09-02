@@ -19,6 +19,7 @@ enum BodyType {
   OCHRE = 17,
   VIOLET = 18,
   TURQUOISE = 19,
+  STEEL = 20,
 }
 
 export default BodyType

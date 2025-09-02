@@ -19,9 +19,9 @@ Avolve is an evolution simulation where colorful organisms interact, compete, an
 
 ### 🔵 **BLUE** - The Terrorizers  
 - **Ability**: Causes fear - makes other organisms flee on contact
-- **Behavior**: Aggressive crowd control
-- **Interactions**: Attacks all other colors except static ones
-- **Role**: Population control through intimidation
+- **Behavior**: Aggressive crowd control through intimidation
+- **Interactions**: Makes ALL other organisms flee when touched (no direct damage)
+- **Role**: Population control through fear and dispersal
 
 ### 🔴 **RED** - The Predators
 - **Ability**: Absorbs energy from contacted organisms

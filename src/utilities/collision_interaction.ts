@@ -28,9 +28,10 @@ const MAHOGANY = BodyType.MAHOGANY
 const OCHRE = BodyType.OCHRE
 const VIOLET = BodyType.VIOLET
 const TURQUOISE = BodyType.TURQUOISE
+const STEEL = BodyType.STEEL
 const ALL = [
   DEAD, GREEN, BLUE, RED, CYAN, GRAY, YELLOW, MAROON, ORANGE, TEAL, BARK, DEAD_BARK, SKY, INDIGO,
-  WHITE, PINK, MAHOGANY, OCHRE, VIOLET, TURQUOISE,
+  WHITE, PINK, MAHOGANY, OCHRE, VIOLET, TURQUOISE, STEEL,
 ]
 
 const COLLISION_CHECK : {[key : number]: number[]} = {
@@ -54,6 +55,7 @@ const COLLISION_CHECK : {[key : number]: number[]} = {
   [MAHOGANY]: [DEAD, GREEN, BARK, DEAD_BARK],
   [VIOLET]: [GREEN, BLUE, CYAN, YELLOW, ORANGE, TEAL, BARK, SKY, INDIGO, WHITE, PINK, OCHRE, VIOLET],
   [TURQUOISE]: [GREEN, BLUE, CYAN, YELLOW, RED, MAROON, ORANGE, TEAL, BARK, SKY, INDIGO, WHITE, PINK, OCHRE, VIOLET, TURQUOISE],
+  [STEEL]: [], // STEEL doesn't attack anything - pure defense
 }
 
 export function resolveCollision(event : IEventCollision<any>, database : Database) {

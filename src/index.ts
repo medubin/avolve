@@ -134,20 +134,48 @@ function displayOrganismInfo(organism: any) {
     info.style.fontFamily = 'monospace'
     info.style.fontSize = '12px'
     info.style.zIndex = '1000'
+    info.style.minWidth = '200px'
     document.body.appendChild(info)
   }
   
   const info = document.getElementById('organism-info')!
+  
+  // Calculate some dynamic stats
+  const energyPercent = Math.round((organism.energy / organism.reproduceAt) * 100)
+  const agePercent = Math.round((organism.age / organism.maxAge) * 100)
+  
+  // Get body part composition
+  const bodyTypes: {[key: string]: number} = {}
+  for (const body of organism.body.bodies) {
+    const bodyType = parseInt(body.label.split(':')[1], 10)
+    const typeName = getBodyTypeName(bodyType)
+    bodyTypes[typeName] = (bodyTypes[typeName] || 0) + 1
+  }
+  
+  const bodyComposition = Object.entries(bodyTypes)
+    .map(([type, count]) => `${type}: ${count}`)
+    .join(', ')
+  
   info.innerHTML = `
-    <strong>Organism #${organism.uuid}</strong><br>
-    Energy: ${Math.round(organism.energy)}<br>
-    Age: ${organism.age}<br>
-    Max Age: ${organism.maxAge}<br>
-    Alive: ${organism.isAlive}<br>
-    Body Parts: ${organism.body.bodies.length}<br>
-    Parent: ${organism.parentUuid || 'None'}<br>
-    Reproduce At: ${Math.round(organism.reproduceAt)}
+    <strong>🔍 Organism #${organism.uuid}</strong><br>
+    <strong>Energy:</strong> ${Math.round(organism.energy)} (${energyPercent}%)<br>
+    <strong>Age:</strong> ${organism.age} / ${organism.maxAge} (${agePercent}%)<br>
+    <strong>Status:</strong> ${organism.isAlive ? '💚 Alive' : '💀 Dead'}<br>
+    <strong>Parent:</strong> #${organism.parentUuid || 'None'}<br>
+    <strong>Body Parts:</strong> ${organism.body.bodies.length}<br>
+    <strong>Colors:</strong> ${bodyComposition}<br>
   `
+}
+
+function getBodyTypeName(bodyType: number): string {
+  const typeMap: {[key: number]: string} = {
+    0: 'DEAD', 1: 'DEAD_BARK', 2: 'GREEN', 3: 'BLUE', 4: 'MAROON', 
+    5: 'RED', 6: 'CYAN', 7: 'GRAY', 8: 'YELLOW', 9: 'ORANGE', 
+    10: 'TEAL', 11: 'BARK', 12: 'SKY', 13: 'INDIGO', 14: 'WHITE',
+    15: 'PINK', 16: 'MAHOGANY', 17: 'OCHRE', 18: 'VIOLET', 
+    19: 'TURQUOISE', 20: 'STEEL'
+  }
+  return typeMap[bodyType] || 'UNKNOWN'
 }
 
 function clearOrganismInfo() {
@@ -178,6 +206,16 @@ Matter.Events.on(engine, 'beforeUpdate', (_) => {
   camera.scrollY()
   database.world.tickNumber += 1
   worldDisplay.tick()
+  
+  // Update selected organism info in real-time
+  if (selectedOrganism && selectedOrganism.isAlive) {
+    displayOrganismInfo(selectedOrganism)
+  } else if (selectedOrganism && !selectedOrganism.isAlive) {
+    // Clear selection if organism died
+    clearHighlight(selectedOrganism)
+    selectedOrganism = null
+    clearOrganismInfo()
+  }
 })
 
 Matter.Events.on(engine, 'collisionActive', collisionResolver)
