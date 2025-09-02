@@ -147,10 +147,14 @@ export default class Organism {
   }
 
   protected healthCheck() {
+    const criticalEnergyThreshold = this.reproduceAt * 0.1
+    
     if (this.energy <= 0) {
       Matter.World.remove(this.world, this.body)
       this.database.world.releaseCO2(this.energy)
       this.database.organisms.deleteOrganism(this.uuid, this.database)
+    } else if (this.energy <= criticalEnergyThreshold) {
+      this.die()
     } else if (this.age > this.maxAge) {
       this.die()
     }

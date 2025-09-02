@@ -268,7 +268,9 @@ document.getElementById('gene-frequency-display')?.addEventListener('click', () 
 for (let i = 0; i < World.STARTING_ORGANISMS; i += 1) {
   const x = rng(50, World.WIDTH - 50)
   const y = rng(50, World.HEIGHT - 50)
+  // Create organism with temporary energy, then set it to 50% of reproduction threshold
   const organism = new Organism(x, y, engine.world, Genome.random(), 1000, null, database)
+  organism.energy = organism.reproduceAt * 0.5
   database.organisms.addOrganism(organism, database)
   database.world.consumeCO2(organism.energy)
 }
