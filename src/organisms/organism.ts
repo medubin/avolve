@@ -21,6 +21,8 @@ export default class Organism {
   public isAlive : boolean
   public parentUuid : number
   public broodSize : number
+  public totalChildren : number
+  public generation : number
   public infection : Genome
 
   constructor(
@@ -41,6 +43,7 @@ export default class Organism {
     this.body = this.genome.createBody(x, y, this.uuid)
     Matter.World.add(world, this.body)
     this.parentUuid = parent ? parent.uuid : null
+    this.generation = parent ? parent.generation + 1 : 0
     this.infection = null
     // CYAN, INDIGO
     this.moveables = [[], []]
@@ -67,6 +70,7 @@ export default class Organism {
     this.reproduceAt = Math.max(this.reproduceAt - yellowArea, this.reproduceAt / 2)
 
     this.broodSize = 1 + Math.ceil(yellowArea * 5 / this.bodySize)
+    this.totalChildren = 0
 
     this.age = 0
     this.maxAge = this.bodySize * 10
@@ -136,7 +140,7 @@ export default class Organism {
     if (this.energy <= 0) {
       Matter.World.remove(this.world, this.body)
       this.database.world.releaseCO2(this.energy)
-      this.database.organisms.deleteOrganism(this.uuid)
+      this.database.organisms.deleteOrganism(this.uuid, this.database)
     } else if (this.age > this.maxAge) {
       this.die()
     }
@@ -157,7 +161,10 @@ export default class Organism {
             genome.replicate(),
             offspringEnergy,
             this,
-            this.database))
+            this.database), this.database)
+        
+        // Increment total children counter
+        this.totalChildren += 1
       }
     }
   }

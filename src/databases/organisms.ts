@@ -23,17 +23,26 @@ export default class Organisms {
     return this._organisms[uuid]
   }
 
-  public addOrganism(organism : Organism) {
+  public addOrganism(organism : Organism, database? : any) {
     this._organisms[organism.uuid] = organism
     this.length += 1
     this.alive += 1
+    // Update gene frequencies when organism is born
+    if (database) {
+      database.updateGeneFrequencies(organism, true)
+    }
   }
 
-  public deleteOrganism(uuid : number) {
-    if (this._organisms[uuid].isAlive) {
+  public deleteOrganism(uuid : number, database? : any) {
+    const organism = this._organisms[uuid]
+    if (organism.isAlive) {
       this.alive -= 1
     } else {
       this.dead -= 1
+    }
+    // Update gene frequencies when organism is deleted
+    if (database) {
+      database.updateGeneFrequencies(organism, false)
     }
     delete this._organisms[uuid]
     this.length -= 1

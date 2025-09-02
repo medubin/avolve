@@ -86,7 +86,7 @@ function findOrganismAtPosition(x: number, y: number, database: any) {
   for (const uuid in organisms) {
     const organism = organisms[uuid]
     
-    // Check each body part of the organism
+    // Check each body part of the organism (works for both alive and dead)
     for (const body of organism.body.bodies) {
       const distance = Math.sqrt(
         Math.pow(body.position.x - x, 2) + Math.pow(body.position.y - y, 2)
@@ -156,15 +156,34 @@ function displayOrganismInfo(organism: any) {
     .map(([type, count]) => `${type}: ${count}`)
     .join(', ')
   
-  info.innerHTML = `
-    <strong>🔍 Organism #${organism.uuid}</strong><br>
-    <strong>Energy:</strong> ${Math.round(organism.energy)} (${energyPercent}%)<br>
-    <strong>Age:</strong> ${organism.age} / ${organism.maxAge} (${agePercent}%)<br>
-    <strong>Status:</strong> ${organism.isAlive ? '💚 Alive' : '💀 Dead'}<br>
-    <strong>Parent:</strong> #${organism.parentUuid || 'None'}<br>
-    <strong>Body Parts:</strong> ${organism.body.bodies.length}<br>
-    <strong>Colors:</strong> ${bodyComposition}<br>
-  `
+  // Different info display for alive vs dead organisms
+  if (organism.isAlive) {
+    info.innerHTML = `
+      <strong>🔍 Organism #${organism.uuid}</strong><br>
+      <strong>Energy:</strong> ${Math.round(organism.energy)} (${energyPercent}%)<br>
+      <strong>Age:</strong> ${organism.age} / ${organism.maxAge} (${agePercent}%)<br>
+      <strong>Status:</strong> 💚 Alive<br>
+      <strong>Parent:</strong> #${organism.parentUuid || 'None'}<br>
+      <strong>Generation:</strong> ${organism.generation}<br>
+      <strong>Children:</strong> ${organism.totalChildren}<br>
+      <strong>Body Parts:</strong> ${organism.body.bodies.length}<br>
+      <strong>Colors:</strong> ${bodyComposition}<br>
+    `
+  } else {
+    const deathCause = organism.energy <= 0 ? 'Energy depletion' : 'Old age'
+    info.innerHTML = `
+      <strong>💀 Dead Organism #${organism.uuid}</strong><br>
+      <strong>Death Cause:</strong> ${deathCause}<br>
+      <strong>Final Energy:</strong> ${Math.round(organism.energy)}<br>
+      <strong>Death Age:</strong> ${organism.age} / ${organism.maxAge} (${agePercent}%)<br>
+      <strong>Status:</strong> 💀 Dead<br>
+      <strong>Parent:</strong> #${organism.parentUuid || 'None'}<br>
+      <strong>Generation:</strong> ${organism.generation}<br>
+      <strong>Children:</strong> ${organism.totalChildren}<br>
+      <strong>Body Parts:</strong> ${organism.body.bodies.length}<br>
+      <strong>Colors:</strong> ${bodyComposition}<br>
+    `
+  }
 }
 
 function getBodyTypeName(bodyType: number): string {
@@ -187,11 +206,63 @@ function clearOrganismInfo() {
 
 const worldDisplay = new WorldDisplay(database)
 
+// Create gene frequency display
+function createGeneFrequencyDisplay() {
+  const display = document.createElement('div')
+  display.id = 'gene-frequency-display'
+  display.style.position = 'fixed'
+  display.style.left = '10px'
+  display.style.top = '10px'
+  display.style.background = 'rgba(0,0,0,0.8)'
+  display.style.color = 'white'
+  display.style.padding = '10px'
+  display.style.borderRadius = '5px'
+  display.style.fontFamily = 'monospace'
+  display.style.fontSize = '12px'
+  display.style.zIndex = '1000'
+  display.style.minWidth = '150px'
+  display.style.maxHeight = '80vh'
+  display.style.overflowY = 'auto'
+  document.body.appendChild(display)
+}
+
+function updateGeneFrequencyDisplay() {
+  const display = document.getElementById('gene-frequency-display')
+  if (!display) return
+  
+  const frequencies = database.getSortedGeneFrequencies()
+  const totalGenes = frequencies.reduce((sum, item) => sum + item.count, 0)
+  
+  let html = '<strong>📊 Gene Frequencies</strong><br><br>'
+  
+  frequencies.forEach(item => {
+    const percentage = ((item.count / totalGenes) * 100).toFixed(1)
+    const colorMap: {[key: string]: string} = {
+      'GREEN': '#00FF00', 'BLUE': '#0000FF', 'RED': '#FF0000', 'YELLOW': '#FFFF00',
+      'ORANGE': '#FFA500', 'CYAN': '#00FFFF', 'WHITE': '#FFFFFF', 'GRAY': '#808080',
+      'MAROON': '#800000', 'TEAL': '#008080', 'BARK': '#8B4513', 'SKY': '#87CEEB',
+      'INDIGO': '#4B0082', 'PINK': '#FFC0CB', 'MAHOGANY': '#C04000', 'OCHRE': '#CC7722',
+      'VIOLET': '#8A2BE2', 'TURQUOISE': '#00CED1', 'STEEL': '#708090'
+    }
+    
+    const color = colorMap[item.name] || '#CCCCCC'
+    html += `<span style="color: ${color}">●</span> ${item.name}: ${item.count} (${percentage}%)<br>`
+  })
+  
+  if (frequencies.length === 0) {
+    html += '<em>No organisms present</em>'
+  }
+  
+  display.innerHTML = html
+}
+
+createGeneFrequencyDisplay()
+
 for (let i = 0; i < World.STARTING_ORGANISMS; i += 1) {
   const x = rng(50, World.WIDTH - 50)
   const y = rng(50, World.HEIGHT - 50)
   const organism = new Organism(x, y, engine.world, Genome.random(), 1000, null, database)
-  database.organisms.addOrganism(organism)
+  database.organisms.addOrganism(organism, database)
   database.world.consumeCO2(organism.energy)
 }
 // create a runner
@@ -206,15 +277,11 @@ Matter.Events.on(engine, 'beforeUpdate', (_) => {
   camera.scrollY()
   database.world.tickNumber += 1
   worldDisplay.tick()
+  updateGeneFrequencyDisplay()
   
-  // Update selected organism info in real-time
-  if (selectedOrganism && selectedOrganism.isAlive) {
+  // Update selected organism info in real-time (works for both alive and dead)
+  if (selectedOrganism) {
     displayOrganismInfo(selectedOrganism)
-  } else if (selectedOrganism && !selectedOrganism.isAlive) {
-    // Clear selection if organism died
-    clearHighlight(selectedOrganism)
-    selectedOrganism = null
-    clearOrganismInfo()
   }
 })
 
