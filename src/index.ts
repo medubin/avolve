@@ -31,8 +31,8 @@ const render = Matter.Render.create({
   engine,
   element: document.getElementById('avolve'),
   options: {
-    width: 1440,
-    height: 900,
+    width: window.innerWidth,
+    height: window.innerHeight,
     hasBounds: true,
     wireframes: false,
   },

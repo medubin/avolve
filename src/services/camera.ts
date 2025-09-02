@@ -56,6 +56,6 @@ export default class Camera {
 
   public moveY(dY : number) : void {
     this._scrollY = dY
-    this.scrollX()
+    this.scrollY()
   }
 }
