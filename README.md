@@ -104,11 +104,11 @@ The organism colors follow three primary themes with specialized variants:
 - **Interactions**: Feeds on GREEN, BARK, DEAD_BARK, and DEAD (90% efficiency)
 - **Role**: Plant population control, decomposer of plant material
 
-### 🌸 **PINK** - The Ultimate Generalist Feeders
-- **Ability**: Extremely broad feeding strategy with reduced efficiency
-- **Behavior**: Feeds on almost everything except other predators and STEEL
-- **Interactions**: Eats GREEN, BARK, YELLOW, WHITE, VIOLET, BLUE, CYAN, TEAL, SKY, INDIGO, TURQUOISE, GRAY, DEAD, DEAD_BARK (70% efficiency)
-- **Role**: Ultimate generalist - can feed on nearly all organism types but at reduced efficiency
+### 🌸 **PINK** - The Balanced Generalist Feeders
+- **Ability**: Broad feeding strategy with reduced efficiency
+- **Behavior**: Feeds on plants, utilities, mobility, and some special genes
+- **Interactions**: Eats GREEN, BARK, YELLOW, WHITE, VIOLET, BLUE, CYAN, TEAL, SKY, TURQUOISE, GRAY, DEAD (70% efficiency)
+- **Role**: Balanced generalist - broad diet but cannot prey on other predators or decompose dead bark
 
 ### 🍫 **MAHOGANY** - The Living Plant Specialists
 - **Ability**: Highly efficient feeding on living plants only
