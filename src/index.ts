@@ -442,10 +442,10 @@ document.addEventListener('keydown', (event) => {
 const historicalData: {tick: number, frequencies: {[key: string]: number}}[] = []
 
 function updateHistoricalGraph() {
-  // Sample data every 50 ticks to keep graph manageable, plus collect initial data points
-  const shouldCollect = database.world.tickNumber % 50 === 0 || 
+  // Sample data every 100 ticks to keep graph manageable, plus collect initial data points
+  const shouldCollect = database.world.tickNumber % 100 === 0 || 
                         database.world.tickNumber === 1 || 
-                        database.world.tickNumber === 25
+                        database.world.tickNumber === 50
   
   if (shouldCollect) {
     const currentFreqs = database.getSortedGeneFrequencies()
@@ -460,8 +460,8 @@ function updateHistoricalGraph() {
       frequencies: freqMap
     })
     
-    // Keep only last 100 data points (5000 ticks of history)
-    if (historicalData.length > 100) {
+    // Keep only last 1000 data points (100,000 ticks of history)
+    if (historicalData.length > 1000) {
       historicalData.shift()
     }
   }
