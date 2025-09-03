@@ -243,20 +243,21 @@ function updateGeneFrequencyDisplay() {
   const display = document.getElementById('gene-frequency-display')
   if (!display) return
   
-  const frequencies = showHistorical ? database.getSortedHistoricalGeneFrequencies() : database.getSortedGeneFrequencies()
+  // Show text views (current or historical)
+  const frequencies = viewMode === 'historical' ? database.getSortedHistoricalGeneFrequencies() : database.getSortedGeneFrequencies()
   const totalGenes = frequencies.reduce((sum, item) => sum + item.count, 0)
   
-  const viewType = showHistorical ? 'Historical' : 'Current'
-  const icon = showHistorical ? '📈' : '📊'
+  const viewType = viewMode === 'historical' ? 'Historical' : 'Current'
+  const icon = viewMode === 'historical' ? '📈' : '📊'
   let html = `<strong>${icon} ${viewType} Gene Frequencies</strong><br>`
-  html += '<small style="color: #CCCCCC">Click to toggle view</small><br><br>'
+  html += '<small style="color: #CCCCCC">Click to toggle | Press G for graph</small><br><br>'
   
   frequencies.forEach(item => {
     const percentage = ((item.count / totalGenes) * 100).toFixed(1)
     const color = GENE_DISPLAY_COLORS[item.name] || '#CCCCCC'
     html += `<span style="color: ${color}">●</span> ${item.name}: ${item.count}`
     
-    if (!showHistorical) {
+    if (viewMode === 'current') {
       html += ` (${percentage}%)`
     }
     html += '<br>'
@@ -271,10 +272,199 @@ function updateGeneFrequencyDisplay() {
 
 createGeneFrequencyDisplay()
 
+// Create separate graph display for G key - bottom left, always visible when toggled
+function createGraphDisplay() {
+  const display = document.createElement('div')
+  display.id = 'graph-display'
+  display.style.position = 'fixed'
+  display.style.left = '10px'
+  display.style.bottom = '10px'
+  display.style.background = 'rgba(0,0,0,0.9)'
+  display.style.color = 'white'
+  display.style.padding = '15px'
+  display.style.borderRadius = '5px'
+  display.style.fontFamily = 'monospace'
+  display.style.fontSize = '12px'
+  display.style.zIndex = '1500'
+  display.style.display = 'none'
+  
+  let html = '<strong>📊 Gene Frequency Graph</strong><br>'
+  html += '<small style="color: #CCCCCC">Press G to close</small><br><br>'
+  html += '<canvas id="history-graph" width="380" height="200" style="background: rgba(0,0,0,0.3); border: 1px solid #555;"></canvas>'
+  
+  display.innerHTML = html
+  document.body.appendChild(display)
+}
+
+let graphVisible = false
+
+function toggleGraphDisplay() {
+  const display = document.getElementById('graph-display')
+  if (!display) {
+    createGraphDisplay()
+  }
+  
+  const actualDisplay = document.getElementById('graph-display')!
+  
+  if (!graphVisible) {
+    actualDisplay.style.display = 'block'
+    graphVisible = true
+    drawHistoryGraph() // Initial draw
+  } else {
+    actualDisplay.style.display = 'none'
+    graphVisible = false
+  }
+}
+
+function drawHistoryGraph() {
+  const canvas = document.getElementById('history-graph') as HTMLCanvasElement
+  if (!canvas) return
+  
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+  
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  
+  if (historicalData.length < 2) {
+    ctx.fillStyle = '#CCCCCC'
+    ctx.font = '14px monospace'
+    ctx.textAlign = 'center'
+    ctx.fillText('Collecting data...', canvas.width / 2, canvas.height / 2)
+    ctx.fillText(`${historicalData.length} data points`, canvas.width / 2, canvas.height / 2 + 20)
+    return
+  }
+  
+  // Get top 6 most frequent genes for graphing
+  const latestFreqs = historicalData[historicalData.length - 1]?.frequencies || {}
+  const topGenes = Object.entries(latestFreqs)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6)
+    .map(([name]) => name)
+  
+  // Find max value for scaling
+  let maxValue = 0
+  historicalData.forEach(data => {
+    topGenes.forEach(gene => {
+      if (data.frequencies[gene] && data.frequencies[gene] > maxValue) {
+        maxValue = data.frequencies[gene]
+      }
+    })
+  })
+  
+  if (maxValue === 0) {
+    ctx.fillStyle = '#CCCCCC'
+    ctx.font = '16px monospace'
+    ctx.textAlign = 'center'
+    ctx.fillText('No data to display', canvas.width / 2, canvas.height / 2)
+    return
+  }
+  
+  // Draw grid lines
+  ctx.strokeStyle = '#333'
+  ctx.lineWidth = 1
+  for (let i = 0; i <= 10; i++) {
+    const y = (canvas.height / 10) * i
+    ctx.beginPath()
+    ctx.moveTo(0, y)
+    ctx.lineTo(canvas.width, y)
+    ctx.stroke()
+  }
+  
+  // Draw vertical grid lines
+  for (let i = 0; i <= 10; i++) {
+    const x = (canvas.width / 10) * i
+    ctx.beginPath()
+    ctx.moveTo(x, 0)
+    ctx.lineTo(x, canvas.height)
+    ctx.stroke()
+  }
+  
+  // Draw lines for each gene
+  topGenes.forEach((gene, index) => {
+    if (!GENE_DISPLAY_COLORS[gene]) return
+    
+    ctx.strokeStyle = GENE_DISPLAY_COLORS[gene]
+    ctx.lineWidth = 3
+    ctx.beginPath()
+    
+    let isFirstPoint = true
+    let hasData = false
+    
+    historicalData.forEach((data, dataIndex) => {
+      const x = (canvas.width / (historicalData.length - 1)) * dataIndex
+      const value = data.frequencies[gene] || 0
+      const y = canvas.height - (value / maxValue) * canvas.height
+      
+      if (value > 0) hasData = true
+      
+      if (isFirstPoint) {
+        ctx.moveTo(x, y)
+        isFirstPoint = false
+      } else {
+        ctx.lineTo(x, y)
+      }
+    })
+    
+    if (hasData) {
+      ctx.stroke()
+      
+      // Draw gene name and current value
+      ctx.fillStyle = GENE_DISPLAY_COLORS[gene]
+      ctx.font = '12px monospace'
+      ctx.textAlign = 'left'
+      const currentValue = latestFreqs[gene] || 0
+      ctx.fillText(`${gene}: ${currentValue}`, 10, 20 + index * 18)
+    }
+  })
+}
+
+// Add keyboard handler for G key
+document.addEventListener('keydown', (event) => {
+  if (event.key.toLowerCase() === 'g') {
+    toggleGraphDisplay()
+  }
+})
+
+
+// Store historical data for graphing
+const historicalData: {tick: number, frequencies: {[key: string]: number}}[] = []
+
+function updateHistoricalGraph() {
+  // Sample data every 50 ticks to keep graph manageable, plus collect initial data points
+  const shouldCollect = database.world.tickNumber % 50 === 0 || 
+                       database.world.tickNumber === 1 || 
+                       database.world.tickNumber === 25
+  
+  if (shouldCollect) {
+    const currentFreqs = database.getSortedGeneFrequencies()
+    const freqMap: {[key: string]: number} = {}
+    currentFreqs.forEach(item => {
+      freqMap[item.name] = item.count
+    })
+    
+    console.log(`Tick ${database.world.tickNumber}: Collecting historical data`, freqMap)
+    
+    historicalData.push({
+      tick: database.world.tickNumber,
+      frequencies: freqMap
+    })
+    
+    // Debug logging for first few data points and then every 10th
+    if (historicalData.length <= 5 || historicalData.length % 10 === 0) {
+      console.log(`Historical data collected - ${historicalData.length} points, latest frequencies:`, freqMap)
+    }
+    
+    // Keep only last 100 data points (5000 ticks of history)
+    if (historicalData.length > 100) {
+      historicalData.shift()
+    }
+  }
+}
+
 // Toggle between current and historical view
-let showHistorical = false
+let viewMode = 'current' // 'current', 'historical'
 document.getElementById('gene-frequency-display')?.addEventListener('click', () => {
-  showHistorical = !showHistorical
+  viewMode = viewMode === 'current' ? 'historical' : 'current'
   updateGeneFrequencyDisplay()
 })
 
@@ -300,6 +490,12 @@ Matter.Events.on(engine, 'beforeUpdate', (_) => {
   database.world.tickNumber += 1
   worldDisplay.tick()
   updateGeneFrequencyDisplay()
+  updateHistoricalGraph()
+  
+  // Update graph in real-time if visible
+  if (graphVisible) {
+    drawHistoryGraph()
+  }
   
   // Update selected organism info in real-time (works for both alive and dead)
   if (selectedOrganism) {
