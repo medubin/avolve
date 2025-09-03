@@ -59,11 +59,11 @@ export const GENE_TYPES: GeneTypeInfo[] = [
   // Blue Spectrum - Movement Domain  
   { 
     id: BodyType.BLUE, name: 'BLUE', color: Color.BLUE, displayColor: '#0000FF',
-    respirationCost: 1.0, collisionBehavior: 'flee', contactsAll: true
+    respirationCost: 0.6, collisionBehavior: 'flee', contactsAll: true
   },
   { 
     id: BodyType.CYAN, name: 'CYAN', color: Color.CYAN, displayColor: '#00FFFF',
-    respirationCost: 1.0, movementSpeed: 10, movementType: 'fast', collisionBehavior: 'none'
+    respirationCost: 0.6, movementSpeed: 10, movementType: 'fast', collisionBehavior: 'none'
   },
   { 
     id: BodyType.INDIGO, name: 'INDIGO', color: Color.INDIGO, displayColor: '#4B0082',
@@ -73,15 +73,15 @@ export const GENE_TYPES: GeneTypeInfo[] = [
   },
   { 
     id: BodyType.SKY, name: 'SKY', color: Color.SKY, displayColor: '#87CEEB',
-    respirationCost: 1.0, movementSpeed: 2, movementType: 'slow', collisionBehavior: 'flee', contactsAll: true
+    respirationCost: 0.6, movementSpeed: 2, movementType: 'slow', collisionBehavior: 'flee', contactsAll: true
   },
   { 
     id: BodyType.TEAL, name: 'TEAL', color: Color.TEAL, displayColor: '#008080',
-    respirationCost: 1.0, collisionBehavior: 'flee', fleeFromAll: true
+    respirationCost: 0.6, collisionBehavior: 'flee', fleeFromAll: true
   },
   { 
     id: BodyType.TURQUOISE, name: 'TURQUOISE', color: Color.TURQUOISE, displayColor: '#00CED1',
-    respirationCost: 1.0, magneticAttraction: true, orbitalForce: true, collisionBehavior: 'attract',
+    respirationCost: 0.7, magneticAttraction: true, orbitalForce: true, collisionBehavior: 'attract',
     collisionTargets: [BodyType.GREEN, BodyType.BLUE, BodyType.CYAN, BodyType.YELLOW, BodyType.RED, BodyType.MAROON, BodyType.ORANGE, BodyType.TEAL, BodyType.BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE, BodyType.PINK, BodyType.OCHRE, BodyType.VIOLET, BodyType.TURQUOISE]
   },
   
@@ -104,7 +104,7 @@ export const GENE_TYPES: GeneTypeInfo[] = [
   { 
     id: BodyType.PINK, name: 'PINK', color: Color.PINK, displayColor: '#FFC0CB',
     respirationCost: 1.0, collisionBehavior: 'absorb', energyAbsorption: 1.0, energyAbsorptionEfficiency: 0.7,
-    collisionTargets: [BodyType.GREEN, BodyType.BARK, BodyType.YELLOW, BodyType.WHITE, BodyType.VIOLET, BodyType.BLUE, BodyType.CYAN, BodyType.TEAL, BodyType.SKY, BodyType.INDIGO, BodyType.TURQUOISE, BodyType.GRAY, BodyType.DEAD, BodyType.DEAD_BARK]
+    collisionTargets: [BodyType.GREEN, BodyType.BARK, BodyType.YELLOW, BodyType.WHITE, BodyType.VIOLET, BodyType.BLUE, BodyType.CYAN, BodyType.TEAL, BodyType.SKY, BodyType.TURQUOISE, BodyType.GRAY, BodyType.DEAD, BodyType.DEAD_BARK]
   },
   { 
     id: BodyType.MAHOGANY, name: 'MAHOGANY', color: Color.MAHOGANY, displayColor: '#C04000',
@@ -113,12 +113,12 @@ export const GENE_TYPES: GeneTypeInfo[] = [
   },
   { 
     id: BodyType.OCHRE, name: 'OCHRE', color: Color.OCHRE, displayColor: '#CC7722',
-    respirationCost: 1.0, collisionBehavior: 'absorb', energyAbsorption: 1.0, energyAbsorptionEfficiency: 1.0,
+    respirationCost: 0.3, collisionBehavior: 'absorb', energyAbsorption: 1.0, energyAbsorptionEfficiency: 1.0,
     collisionTargets: [BodyType.DEAD, BodyType.DEAD_BARK]
   },
   { 
     id: BodyType.BURGUNDY, name: 'BURGUNDY', color: Color.BURGUNDY, displayColor: '#800020',
-    respirationCost: 1.0, collisionBehavior: 'stick', energyAbsorption: 0.02, energyAbsorptionEfficiency: 0.3,
+    respirationCost: 0.5, collisionBehavior: 'stick', energyAbsorption: 0.15, energyAbsorptionEfficiency: 0.6,
     collisionTargets: [BodyType.GREEN, BodyType.BLUE, BodyType.CYAN, BodyType.YELLOW, BodyType.RED, BodyType.MAROON, BodyType.ORANGE, BodyType.TEAL, BodyType.BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE, BodyType.PINK, BodyType.MAHOGANY, BodyType.OCHRE, BodyType.VIOLET, BodyType.TURQUOISE, BodyType.GRAY]
   },
   
@@ -134,12 +134,12 @@ export const GENE_TYPES: GeneTypeInfo[] = [
   },
   { 
     id: BodyType.GRAY, name: 'GRAY', color: Color.GRAY, displayColor: '#808080',
-    respirationCost: 1.0, collisionBehavior: 'kill',
+    respirationCost: 0.4, collisionBehavior: 'kill',
     collisionTargets: [BodyType.GREEN, BodyType.RED, BodyType.CYAN, BodyType.YELLOW, BodyType.MAROON, BodyType.ORANGE, BodyType.TEAL, BodyType.BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE]
   },
   { 
     id: BodyType.VIOLET, name: 'VIOLET', color: Color.VIOLET, displayColor: '#8A2BE2',
-    respirationCost: 1.0, collisionBehavior: 'heal',
+    respirationCost: 0.5, collisionBehavior: 'heal',
     collisionTargets: [BodyType.GREEN, BodyType.BLUE, BodyType.CYAN, BodyType.YELLOW, BodyType.ORANGE, BodyType.TEAL, BodyType.BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE, BodyType.PINK, BodyType.OCHRE, BodyType.VIOLET]
   },
   { 

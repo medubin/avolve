@@ -95,7 +95,12 @@ function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Bod
     case 'absorb':
       if (absorption > 0) {
         const energyDrain = bodyA.area * absorption
-        orgA.absorb(energyDrain, orgB)
+        
+        // Use configured efficiency instead of hardcoded 90%
+        const actualEnergyDrain = Math.min(energyDrain, orgB.energy)
+        orgB.energy -= actualEnergyDrain
+        orgA.energy += actualEnergyDrain * efficiency
+        database.world.releaseCO2(actualEnergyDrain * (1 - efficiency))
       }
       break
       

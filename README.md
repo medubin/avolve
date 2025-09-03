@@ -123,10 +123,10 @@ The organism colors follow three primary themes with specialized variants:
 - **Role**: Ecosystem recycler - cleans up dead material efficiently
 
 ### 🍷 **BURGUNDY** - The Universal Parasite
-- **Ability**: Parasitic feeding on all organisms at very low efficiency
-- **Behavior**: Attaches and slowly drains energy from any target
-- **Interactions**: Feeds on everything except STEEL and DEAD types (30% efficiency, 2% absorption rate)
-- **Role**: Universal low-level parasite - creates sticking behavior and energy drain
+- **Ability**: Parasitic feeding on all organisms with improved efficiency
+- **Behavior**: Attaches and steadily drains energy from any target
+- **Interactions**: Feeds on everything except STEEL and DEAD types (60% efficiency, 15% absorption rate)
+- **Role**: Universal parasite - creates sticking behavior and significant energy drain
 
 ## Special Mechanics
 
