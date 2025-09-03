@@ -89,12 +89,12 @@ export const GENE_TYPES: GeneTypeInfo[] = [
   { 
     id: BodyType.RED, name: 'RED', color: Color.RED, displayColor: '#FF0000',
     respirationCost: 1.0, collisionBehavior: 'absorb', energyAbsorption: 1.0, energyAbsorptionEfficiency: 0.9,
-    collisionTargets: [BodyType.MAROON, BodyType.ORANGE, BodyType.PINK, BodyType.INDIGO, BodyType.OCHRE]
+    collisionTargets: [BodyType.ORANGE, BodyType.MAROON, BodyType.PINK, BodyType.MAHOGANY, BodyType.OCHRE, BodyType.BURGUNDY]
   },
   { 
     id: BodyType.ORANGE, name: 'ORANGE', color: Color.ORANGE, displayColor: '#FFA500',
     respirationCost: 1.0, collisionBehavior: 'absorb', energyAbsorption: 1.0, energyAbsorptionEfficiency: 0.9,
-    collisionTargets: [BodyType.BLUE, BodyType.YELLOW, BodyType.CYAN, BodyType.DEAD, BodyType.TEAL, BodyType.GREEN, BodyType.SKY, BodyType.WHITE]
+    collisionTargets: [BodyType.BLUE, BodyType.CYAN, BodyType.TEAL, BodyType.SKY, BodyType.INDIGO, BodyType.TURQUOISE, BodyType.YELLOW, BodyType.WHITE, BodyType.DEAD]
   },
   { 
     id: BodyType.MAROON, name: 'MAROON', color: Color.MAROON, displayColor: '#800000',
@@ -103,23 +103,23 @@ export const GENE_TYPES: GeneTypeInfo[] = [
   },
   { 
     id: BodyType.PINK, name: 'PINK', color: Color.PINK, displayColor: '#FFC0CB',
-    respirationCost: 1.0, collisionBehavior: 'absorb', energyAbsorption: 1.0, energyAbsorptionEfficiency: 0.9,
-    collisionTargets: [BodyType.DEAD, BodyType.WHITE, BodyType.GREEN]
+    respirationCost: 1.0, collisionBehavior: 'absorb', energyAbsorption: 1.0, energyAbsorptionEfficiency: 0.7,
+    collisionTargets: [BodyType.GREEN, BodyType.BARK, BodyType.YELLOW, BodyType.WHITE, BodyType.VIOLET, BodyType.BLUE, BodyType.CYAN, BodyType.TEAL, BodyType.SKY, BodyType.INDIGO, BodyType.TURQUOISE, BodyType.GRAY, BodyType.DEAD, BodyType.DEAD_BARK]
   },
   { 
     id: BodyType.MAHOGANY, name: 'MAHOGANY', color: Color.MAHOGANY, displayColor: '#C04000',
-    respirationCost: 1.0, collisionBehavior: 'absorb', energyAbsorption: 0.2, energyAbsorptionEfficiency: 1.0,
-    collisionTargets: [BodyType.DEAD, BodyType.GREEN, BodyType.BARK, BodyType.DEAD_BARK]
+    respirationCost: 1.0, collisionBehavior: 'absorb', energyAbsorption: 1.0, energyAbsorptionEfficiency: 1.0,
+    collisionTargets: [BodyType.GREEN, BodyType.BARK]
   },
   { 
     id: BodyType.OCHRE, name: 'OCHRE', color: Color.OCHRE, displayColor: '#CC7722',
-    respirationCost: 1.0, collisionBehavior: 'absorb', energyAbsorption: 0.2, energyAbsorptionEfficiency: 1.0,
-    collisionTargets: [BodyType.DEAD, BodyType.GREEN, BodyType.BLUE, BodyType.CYAN, BodyType.YELLOW, BodyType.TEAL, BodyType.BARK, BodyType.DEAD_BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE]
+    respirationCost: 1.0, collisionBehavior: 'absorb', energyAbsorption: 1.0, energyAbsorptionEfficiency: 1.0,
+    collisionTargets: [BodyType.DEAD, BodyType.DEAD_BARK]
   },
   { 
     id: BodyType.BURGUNDY, name: 'BURGUNDY', color: Color.BURGUNDY, displayColor: '#800020',
-    respirationCost: 1.0, collisionBehavior: 'stick', energyAbsorption: 0.05, energyAbsorptionEfficiency: 0.7,
-    collisionTargets: [BodyType.GREEN, BodyType.BLUE, BodyType.CYAN, BodyType.YELLOW, BodyType.RED, BodyType.MAROON, BodyType.ORANGE, BodyType.TEAL, BodyType.BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE, BodyType.PINK, BodyType.OCHRE, BodyType.VIOLET, BodyType.TURQUOISE]
+    respirationCost: 1.0, collisionBehavior: 'stick', energyAbsorption: 0.02, energyAbsorptionEfficiency: 0.3,
+    collisionTargets: [BodyType.GREEN, BodyType.BLUE, BodyType.CYAN, BodyType.YELLOW, BodyType.RED, BodyType.MAROON, BodyType.ORANGE, BodyType.TEAL, BodyType.BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE, BodyType.PINK, BodyType.MAHOGANY, BodyType.OCHRE, BodyType.VIOLET, BodyType.TURQUOISE, BodyType.GRAY]
   },
   
   // Special Mechanics

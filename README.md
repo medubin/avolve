@@ -86,47 +86,47 @@ The organism colors follow three primary themes with specialized variants:
 
 ## Red/Orange Spectrum - Predation
 
-### 🔴 **RED** - The Predators
-- **Ability**: Absorbs energy from contacted organisms
-- **Behavior**: Direct energy vampirism
-- **Interactions**: Hunts MAROON, ORANGE, PINK, INDIGO, OCHRE
-- **Role**: Top predator, maintains population balance
+### 🔴 **RED** - The Apex Predators
+- **Ability**: Top-tier energy absorption from all other predators
+- **Behavior**: Hunts and dominates the predator hierarchy
+- **Interactions**: Feeds on ORANGE, MAROON, PINK, MAHOGANY, OCHRE, BURGUNDY (90% efficiency)
+- **Role**: Apex predator - controls predator populations, cannot feed on itself
 
-### 🟠 **ORANGE** - The Scavengers
-- **Ability**: Absorbs energy from various organisms
-- **Behavior**: Opportunistic feeding
-- **Interactions**: Eats BLUE, YELLOW, CYAN, DEAD, TEAL, GREEN, SKY, WHITE
-- **Role**: Cleanup crew and generalist predator
+### 🟠 **ORANGE** - The Utility Hunters
+- **Ability**: Specializes in hunting utility and movement organisms
+- **Behavior**: Targets mobile and special-function organisms
+- **Interactions**: Hunts BLUE, CYAN, TEAL, SKY, INDIGO, TURQUOISE, YELLOW, WHITE, and DEAD (90% efficiency)
+- **Role**: Utility specialist - prevents movement/special genes from dominating
 
-### 🟤 **MAROON** - The Specialists
-- **Ability**: Absorbs energy from dead and plant matter
-- **Behavior**: Scavenges dead organisms and plants
-- **Interactions**: Feeds on DEAD, GREEN, BARK, DEAD_BARK
-- **Role**: Decomposer and plant specialist
+### 🟤 **MAROON** - The Plant Specialists
+- **Ability**: Efficient consumption of all plant matter
+- **Behavior**: Pure herbivore - feeds only on photosynthetic organisms
+- **Interactions**: Feeds on GREEN, BARK, DEAD_BARK, and DEAD (90% efficiency)
+- **Role**: Plant population control, decomposer of plant material
 
-### 🌸 **PINK** - The Cleaners
-- **Ability**: Specializes in consuming dead matter and specific targets
-- **Behavior**: Cleanup and targeted predation
-- **Interactions**: Eats DEAD, WHITE, GREEN
-- **Role**: Ecosystem cleaner and parasite controller
+### 🌸 **PINK** - The Ultimate Generalist Feeders
+- **Ability**: Extremely broad feeding strategy with reduced efficiency
+- **Behavior**: Feeds on almost everything except other predators and STEEL
+- **Interactions**: Eats GREEN, BARK, YELLOW, WHITE, VIOLET, BLUE, CYAN, TEAL, SKY, INDIGO, TURQUOISE, GRAY, DEAD, DEAD_BARK (70% efficiency)
+- **Role**: Ultimate generalist - can feed on nearly all organism types but at reduced efficiency
 
-### 🍫 **MAHOGANY** - The Bark Specialists  
-- **Ability**: Efficient consumption of wood-like materials
-- **Behavior**: Specialized feeding on defensive organisms
-- **Interactions**: 20% energy absorption from DEAD, GREEN, BARK, DEAD_BARK
-- **Role**: Defensive structure breaker
+### 🍫 **MAHOGANY** - The Living Plant Specialists
+- **Ability**: Highly efficient feeding on living plants only
+- **Behavior**: Targets healthy plant matter, avoids dead material
+- **Interactions**: Feeds only on GREEN, BARK (100% efficiency)
+- **Role**: Efficient herbivore - pressure on healthy plant populations
 
-### 🟤 **OCHRE** - The Generalists
-- **Ability**: Broad-spectrum energy absorption
-- **Behavior**: Adaptable feeding strategy
-- **Interactions**: 20% absorption from DEAD, GREEN, BLUE, CYAN, YELLOW, TEAL, BARK, DEAD_BARK, SKY, INDIGO, WHITE
-- **Role**: Adaptable survivor, ecosystem stabilizer
+### 🟤 **OCHRE** - The Scavenger Specialists
+- **Ability**: Highly efficient decomposer of dead material
+- **Behavior**: Pure scavenger - feeds only on dead organisms
+- **Interactions**: Feeds only on DEAD, DEAD_BARK (100% efficiency)
+- **Role**: Ecosystem recycler - cleans up dead material efficiently
 
-### 🍷 **BURGUNDY** - The Parasitic Attachers *(New!)*
-- **Ability**: Slow energy drain + velocity reduction (sticking behavior)
-- **Behavior**: Parasitic attachment - drains hosts slowly while reducing their mobility
-- **Interactions**: 5% energy drain from most organisms, slows target velocity by 30%, self-slows by 10%
-- **Role**: Mobility disruptor, creates organism clusters through sticking, persistent energy drain
+### 🍷 **BURGUNDY** - The Universal Parasite
+- **Ability**: Parasitic feeding on all organisms at very low efficiency
+- **Behavior**: Attaches and slowly drains energy from any target
+- **Interactions**: Feeds on everything except STEEL and DEAD types (30% efficiency, 2% absorption rate)
+- **Role**: Universal low-level parasite - creates sticking behavior and energy drain
 
 ## Special Mechanics
 

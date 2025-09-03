@@ -205,8 +205,10 @@ export default class Organism {
       }
     }
     
-    this.database.world.releaseCO2(energyLoss)
-    this.energy -= energyLoss
+    // Cap energy loss to prevent going below zero
+    const actualEnergyLoss = Math.min(energyLoss, this.energy)
+    this.database.world.releaseCO2(actualEnergyLoss)
+    this.energy -= actualEnergyLoss
   }
 
   protected move() : void {
