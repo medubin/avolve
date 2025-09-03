@@ -334,17 +334,27 @@ function drawHistoryGraph() {
     return
   }
   
-  // Get top 6 most frequent genes for graphing
+  // Get all genes that have appeared in the data for graphing
   const latestFreqs = historicalData[historicalData.length - 1]?.frequencies || {}
-  const topGenes = Object.entries(latestFreqs)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 6)
-    .map(([name]) => name)
+  const allGenesSet = new Set<string>()
+  
+  // Collect all gene names that have appeared throughout history
+  historicalData.forEach(data => {
+    Object.keys(data.frequencies).forEach(geneName => {
+      if (data.frequencies[geneName] > 0) {
+        allGenesSet.add(geneName)
+      }
+    })
+  })
+  
+  // Convert to array and sort by current frequency (highest first)
+  const allGenes = Array.from(allGenesSet)
+    .sort((a, b) => (latestFreqs[b] || 0) - (latestFreqs[a] || 0))
   
   // Find max value for scaling
   let maxValue = 0
   historicalData.forEach(data => {
-    topGenes.forEach(gene => {
+    allGenes.forEach(gene => {
       if (data.frequencies[gene] && data.frequencies[gene] > maxValue) {
         maxValue = data.frequencies[gene]
       }
@@ -380,11 +390,11 @@ function drawHistoryGraph() {
   }
   
   // Draw lines for each gene
-  topGenes.forEach((gene, index) => {
+  allGenes.forEach((gene, index) => {
     if (!GENE_DISPLAY_COLORS[gene]) return
     
     ctx.strokeStyle = GENE_DISPLAY_COLORS[gene]
-    ctx.lineWidth = 3
+    ctx.lineWidth = 2
     ctx.beginPath()
     
     let isFirstPoint = true
@@ -408,12 +418,14 @@ function drawHistoryGraph() {
     if (hasData) {
       ctx.stroke()
       
-      // Draw gene name and current value
-      ctx.fillStyle = GENE_DISPLAY_COLORS[gene]
-      ctx.font = '12px monospace'
-      ctx.textAlign = 'left'
-      const currentValue = latestFreqs[gene] || 0
-      ctx.fillText(`${gene}: ${currentValue}`, 10, 20 + index * 18)
+      // Draw gene name and current value (only show first 10 to avoid overcrowding)
+      if (index < 10) {
+        ctx.fillStyle = GENE_DISPLAY_COLORS[gene]
+        ctx.font = '10px monospace'
+        ctx.textAlign = 'left'
+        const currentValue = latestFreqs[gene] || 0
+        ctx.fillText(`${gene}: ${currentValue}`, 5, 15 + index * 12)
+      }
     }
   })
 }
@@ -432,8 +444,8 @@ const historicalData: {tick: number, frequencies: {[key: string]: number}}[] = [
 function updateHistoricalGraph() {
   // Sample data every 50 ticks to keep graph manageable, plus collect initial data points
   const shouldCollect = database.world.tickNumber % 50 === 0 || 
-                       database.world.tickNumber === 1 || 
-                       database.world.tickNumber === 25
+                        database.world.tickNumber === 1 || 
+                        database.world.tickNumber === 25
   
   if (shouldCollect) {
     const currentFreqs = database.getSortedGeneFrequencies()
@@ -442,17 +454,11 @@ function updateHistoricalGraph() {
       freqMap[item.name] = item.count
     })
     
-    console.log(`Tick ${database.world.tickNumber}: Collecting historical data`, freqMap)
     
     historicalData.push({
       tick: database.world.tickNumber,
       frequencies: freqMap
     })
-    
-    // Debug logging for first few data points and then every 10th
-    if (historicalData.length <= 5 || historicalData.length % 10 === 0) {
-      console.log(`Historical data collected - ${historicalData.length} points, latest frequencies:`, freqMap)
-    }
     
     // Keep only last 100 data points (5000 ticks of history)
     if (historicalData.length > 100) {
