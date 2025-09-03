@@ -83,7 +83,7 @@ export default class Organism {
     this.totalChildren = 0
 
     this.age = 0
-    this.maxAge = this.bodySize * 10
+    this.maxAge = Math.sqrt(this.bodySize) * 150
   }
 
   public update() {
@@ -115,7 +115,16 @@ export default class Organism {
     this.isAlive = false
     this.database.organisms.alive -= 1
     this.database.organisms.dead += 1
+    
+    // Update gene frequencies to reflect death
     for (const body of this.body.bodies) {
+      const oldBodyType = parseInt(body.label.split(':')[1], 10)
+      // Decrease count for the original gene type
+      this.database.geneFrequencies[oldBodyType] -= 1
+      // Increase count for DEAD type
+      this.database.geneFrequencies[BodyType.DEAD] += 1
+      
+      // Update visual appearance
       body.render.strokeStyle = Color.DEAD
       body.label = `${this.uuid}:${BodyType.DEAD}`
     }

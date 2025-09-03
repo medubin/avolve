@@ -161,6 +161,13 @@ function displayOrganismInfo(organism: any) {
     .map(([type, count]) => `${type}: ${count}`)
     .join(', ')
   
+  // Check infection status
+  const infectionStatus = organism.infection ? '🦠 Infected' : '✅ Healthy'
+  
+  // Get genome information
+  const genomeGeneCount = organism.genome.genes.length
+  const symmetry = organism.genome.symmetry
+  
   // Different info display for alive vs dead organisms
   if (organism.isAlive) {
     info.innerHTML = `
@@ -168,9 +175,12 @@ function displayOrganismInfo(organism: any) {
       <strong>Energy:</strong> ${Math.round(organism.energy)} (${energyPercent}%)<br>
       <strong>Age:</strong> ${ageInWorldUnits} / ${maxAgeInWorldUnits} (${agePercent}%)<br>
       <strong>Status:</strong> 💚 Alive<br>
+      <strong>Body Size:</strong> ${Math.round(organism.bodySize)}<br>
+      <strong>Infection:</strong> ${infectionStatus}<br>
       <strong>Parent:</strong> #${organism.parentUuid || 'None'}<br>
       <strong>Generation:</strong> ${organism.generation}<br>
       <strong>Children:</strong> ${organism.totalChildren}<br>
+      <strong>Genes:</strong> ${genomeGeneCount} (${symmetry}x symmetry)<br>
       <strong>Body Parts:</strong> ${organism.body.bodies.length}<br>
       <strong>Colors:</strong> ${bodyComposition}<br>
     `
@@ -182,9 +192,12 @@ function displayOrganismInfo(organism: any) {
       <strong>Final Energy:</strong> ${Math.round(organism.energy)}<br>
       <strong>Death Age:</strong> ${ageInWorldUnits} / ${maxAgeInWorldUnits} (${agePercent}%)<br>
       <strong>Status:</strong> 💀 Dead<br>
+      <strong>Body Size:</strong> ${Math.round(organism.bodySize)}<br>
+      <strong>Infection:</strong> ${infectionStatus}<br>
       <strong>Parent:</strong> #${organism.parentUuid || 'None'}<br>
       <strong>Generation:</strong> ${organism.generation}<br>
       <strong>Children:</strong> ${organism.totalChildren}<br>
+      <strong>Genes:</strong> ${genomeGeneCount} (${symmetry}x symmetry)<br>
       <strong>Body Parts:</strong> ${organism.body.bodies.length}<br>
       <strong>Colors:</strong> ${bodyComposition}<br>
     `

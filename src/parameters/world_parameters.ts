@@ -1,10 +1,10 @@
 enum World {
-  WIDTH = 2000,
+  WIDTH = 3000,
   /* eslint-disable */
-  HEIGHT = 2000,
+  HEIGHT = 3000,
   /* eslint-enable */
   WALL = 50,
-  CO2 = 2000000,
+  CO2 = 4000000,
   STARTING_ORGANISMS = 100,
 }
 
