@@ -14,7 +14,7 @@ export default class Genome {
       genes.push(Gene.random())
     }
     genome.genes = genes
-    genome.symmetry = rng(1, 4)
+    genome.symmetry = rng(1, 5)
     return genome
   }
 
@@ -37,18 +37,18 @@ export default class Genome {
     if (mutation === 0 && genome.genes.length < 10) {
       // duplicate gene
       const dupe = rng(0, genome.genes.length)
-      const target = rng(0, genome.genes.length)
+      const target = rng(0, genome.genes.length + 1)
       genome.genes.splice(target, 0, genome.genes[dupe])
     } else if (mutation === 1 && genome.genes.length < 10) {
        // insert random gene
-      const target = rng(0, genome.genes.length)
+      const target = rng(0, genome.genes.length + 1)
       genome.genes.splice(target, 0, Gene.random())
     } else if (mutation === 2 && genome.genes.length > 1) {
       // delete gene
       genome.genes.splice(rng(0, genome.genes.length), 1)
     } else {
       // change symmetry
-      genome.symmetry = rng(1, 4)
+      genome.symmetry = rng(1, 5)
     }
     return genome
   }

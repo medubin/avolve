@@ -16,10 +16,11 @@ export default class Gene {
     const gene = new Gene()
     // Use dynamic range based on playable gene types (excludes DEAD types)
     const playableTypes = PLAYABLE_GENE_TYPES.map(g => g.id)
-    gene.type = playableTypes[rng(0, playableTypes.length - 1)]
+    const randomIndex = rng(0, playableTypes.length)
+    gene.type = playableTypes[randomIndex]
     gene.x = rng(-100, 100) / 10
     gene.y = rng(-100, 100) / 10
-    gene.sides = rng(3, 9)
+    gene.sides = rng(3, 10)
     gene.radius = rngFloat(3, 15)
     gene.isBranch = rngBool()
     gene.length = rngFloat(8, 12)
@@ -57,7 +58,7 @@ export default class Gene {
     switch (mutation) {
       case(0):
         const playableTypes = PLAYABLE_GENE_TYPES.map(g => g.id)
-        gene.type = playableTypes[rng(0, playableTypes.length - 1)]
+        gene.type = playableTypes[rng(0, playableTypes.length)]
         return gene
       case(1):
         gene.x = rng(-100, 100) / 10
@@ -66,7 +67,7 @@ export default class Gene {
         gene.y = rng(-100, 100) / 10
         return gene
       case(3):
-        gene.sides = rng(3, 9)
+        gene.sides = rng(3, 10)
         return gene
       case(4):
         gene.radius = rngFloat(3, 15)

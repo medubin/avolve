@@ -4,16 +4,16 @@ import BodyType from '../constants/body_type'
 import Database from '../databases/database'
 import { rngFloat, rngBool } from '../utilities/random'
 import Color from '../constants/color'
-import { getGenePhotosynthesis, getGeneMovementSpeed, getGeneMovementType, getGeneReproductionBonus, hasGeneMagneticAttraction, getGeneRespirationCost } from '../constants/gene_types'
+import { getGenePhotosynthesis, getGeneMovementSpeed, getGeneMovementType, getGeneReproductionBonus, hasGeneMagneticAttraction, getGeneRespirationCost, getGeneTypeName } from '../constants/gene_types'
 
 export default class Organism {
-  protected body : Matter.Composite
   protected database : Database
   protected world : Matter.World
   protected genome : Genome
   protected moveables : Matter.Body[][]
   protected synthesizers : number
   protected bodySize : number
+  public body : Matter.Composite
   public reproduceAt : number
   public energy : number
   public uuid : number
@@ -85,6 +85,91 @@ export default class Organism {
     this.age = 0
     this.maxAge = Math.sqrt(this.bodySize) * 150
   }
+
+  public displayOrganismInfo() {
+  const infoElement = document.getElementById('organism-info')
+  if (!infoElement) {
+    // Create info display element
+    const info = document.createElement('div')
+    info.id = 'organism-info'
+    info.style.position = 'fixed'
+    info.style.top = '10px'
+    info.style.right = '10px'
+    info.style.background = 'rgba(0,0,0,0.8)'
+    info.style.color = 'white'
+    info.style.padding = '10px'
+    info.style.borderRadius = '5px'
+    info.style.fontFamily = 'monospace'
+    info.style.fontSize = '12px'
+    info.style.zIndex = '1000'
+    info.style.minWidth = '200px'
+    document.body.appendChild(info)
+  }
+  
+  const info = document.getElementById('organism-info')!
+  
+  // Calculate some dynamic stats
+  const energyPercent = Math.round((this.energy / this.reproduceAt) * 100)
+  const agePercent = Math.round((this.age / this.maxAge) * 100)
+  
+  // Format age to match world display (divide by 100)
+  const ageInWorldUnits = (this.age / 100).toFixed(1)
+  const maxAgeInWorldUnits = (this.maxAge / 100).toFixed(1)
+  
+  // Get body part composition
+  const bodyTypes: {[key: string]: number} = {}
+  for (const body of this.body.bodies) {
+    const bodyType = parseInt(body.label.split(':')[1], 10)
+    const typeName = getGeneTypeName(bodyType)
+    bodyTypes[typeName] = (bodyTypes[typeName] || 0) + 1
+  }
+  
+  const bodyComposition = Object.entries(bodyTypes)
+    .map(([type, count]) => `${type}: ${count}`)
+    .join(', ')
+  
+  // Check infection status
+  const infectionStatus = this.infection ? '🦠 Infected' : '✅ Healthy'
+  
+  // Get genome information
+  const genomeGeneCount = this.genome.genes.length
+  const symmetry = this.genome.symmetry
+  
+  // Different info display for alive vs dead thiss
+  if (this.isAlive) {
+    info.innerHTML = `
+      <strong>🔍 Organism #${this.uuid}</strong><br>
+      <strong>Energy:</strong> ${Math.round(this.energy)} (${energyPercent}%)<br>
+      <strong>Age:</strong> ${ageInWorldUnits} / ${maxAgeInWorldUnits} (${agePercent}%)<br>
+      <strong>Status:</strong> 💚 Alive<br>
+      <strong>Body Size:</strong> ${Math.round(this.bodySize)}<br>
+      <strong>Infection:</strong> ${infectionStatus}<br>
+      <strong>Parent:</strong> #${this.parentUuid || 'None'}<br>
+      <strong>Generation:</strong> ${this.generation}<br>
+      <strong>Children:</strong> ${this.totalChildren}<br>
+      <strong>Genes:</strong> ${genomeGeneCount} (${symmetry}x symmetry)<br>
+      <strong>Body Parts:</strong> ${this.body.bodies.length}<br>
+      <strong>Colors:</strong> ${bodyComposition}<br>
+    `
+  } else {
+    const deathCause = this.energy <= 0 ? 'Energy depletion' : 'Old age'
+    info.innerHTML = `
+      <strong>💀 Dead Organism #${this.uuid}</strong><br>
+      <strong>Death Cause:</strong> ${deathCause}<br>
+      <strong>Final Energy:</strong> ${Math.round(this.energy)}<br>
+      <strong>Death Age:</strong> ${ageInWorldUnits} / ${maxAgeInWorldUnits} (${agePercent}%)<br>
+      <strong>Status:</strong> 💀 Dead<br>
+      <strong>Body Size:</strong> ${Math.round(this.bodySize)}<br>
+      <strong>Infection:</strong> ${infectionStatus}<br>
+      <strong>Parent:</strong> #${this.parentUuid || 'None'}<br>
+      <strong>Generation:</strong> ${this.generation}<br>
+      <strong>Children:</strong> ${this.totalChildren}<br>
+      <strong>Genes:</strong> ${genomeGeneCount} (${symmetry}x symmetry)<br>
+      <strong>Body Parts:</strong> ${this.body.bodies.length}<br>
+      <strong>Colors:</strong> ${bodyComposition}<br>
+    `
+  }
+}
 
   public update() {
     this.age += 1

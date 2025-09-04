@@ -2,6 +2,7 @@ import Organisms from './organisms'
 import World from './world'
 import WorldParameters from '../parameters/world_parameters'
 import { GENE_TYPES, GENE_TYPE_NAMES } from '../constants/gene_types'
+import Organism from '../organisms/organism'
 
 export default class Database {
   public organisms : Organisms
@@ -21,7 +22,7 @@ export default class Database {
     }
   }
 
-  public updateGeneFrequencies(organism: any, increment: boolean) {
+  public updateGeneFrequencies(organism: Organism, increment: boolean) {
     const multiplier = increment ? 1 : -1
     for (const body of organism.body.bodies) {
       const bodyType = parseInt(body.label.split(':')[1], 10)

@@ -8,7 +8,7 @@ import World from './parameters/world_parameters'
 import { rng } from './utilities/random'
 import { resolveCollision } from './utilities/collision_interaction'
 import WorldDisplay from './services/world_display'
-import { getGeneTypeName, GENE_DISPLAY_COLORS } from './constants/gene_types'
+import {  GENE_DISPLAY_COLORS } from './constants/gene_types'
 
 // create an engine
 const engine = Matter.Engine.create()
@@ -46,7 +46,7 @@ keyboard.attachKeys()
 const database = new Database()
 
 // Organism selection system
-let selectedOrganism: any = null
+let selectedOrganism: Organism | null = null
 
 // Add mouse click handler
 render.canvas.addEventListener('click', (event) => {
@@ -70,7 +70,7 @@ render.canvas.addEventListener('click', (event) => {
     // Select new organism
     selectedOrganism = clickedOrganism
     highlightOrganism(selectedOrganism)
-    displayOrganismInfo(selectedOrganism)
+    selectedOrganism.displayOrganismInfo()
   } else {
     // Clear selection if clicking empty space
     if (selectedOrganism) {
@@ -81,7 +81,7 @@ render.canvas.addEventListener('click', (event) => {
   }
 })
 
-function findOrganismAtPosition(x: number, y: number, database: any) {
+function findOrganismAtPosition(x: number, y: number, database: Database) {
   const organisms = database.organisms.organisms
   
   for (const uuid in organisms) {
@@ -103,7 +103,7 @@ function findOrganismAtPosition(x: number, y: number, database: any) {
   return null
 }
 
-function highlightOrganism(organism: any) {
+function highlightOrganism(organism: Organism) {
   // Add thick outline while keeping original color
   for (const body of organism.body.bodies) {
     body.render.lineWidth = 4 // Thick border for selection
@@ -111,101 +111,12 @@ function highlightOrganism(organism: any) {
   }
 }
 
-function clearHighlight(organism: any) {
+function clearHighlight(organism: Organism) {
   // Reset to original line width
   for (const body of organism.body.bodies) {
     body.render.lineWidth = 1 // Reset to thin border
     // Color stays the same - no need to restore
   }
-}
-
-function displayOrganismInfo(organism: any) {
-  const infoElement = document.getElementById('organism-info')
-  if (!infoElement) {
-    // Create info display element
-    const info = document.createElement('div')
-    info.id = 'organism-info'
-    info.style.position = 'fixed'
-    info.style.top = '10px'
-    info.style.right = '10px'
-    info.style.background = 'rgba(0,0,0,0.8)'
-    info.style.color = 'white'
-    info.style.padding = '10px'
-    info.style.borderRadius = '5px'
-    info.style.fontFamily = 'monospace'
-    info.style.fontSize = '12px'
-    info.style.zIndex = '1000'
-    info.style.minWidth = '200px'
-    document.body.appendChild(info)
-  }
-  
-  const info = document.getElementById('organism-info')!
-  
-  // Calculate some dynamic stats
-  const energyPercent = Math.round((organism.energy / organism.reproduceAt) * 100)
-  const agePercent = Math.round((organism.age / organism.maxAge) * 100)
-  
-  // Format age to match world display (divide by 100)
-  const ageInWorldUnits = (organism.age / 100).toFixed(1)
-  const maxAgeInWorldUnits = (organism.maxAge / 100).toFixed(1)
-  
-  // Get body part composition
-  const bodyTypes: {[key: string]: number} = {}
-  for (const body of organism.body.bodies) {
-    const bodyType = parseInt(body.label.split(':')[1], 10)
-    const typeName = getBodyTypeName(bodyType)
-    bodyTypes[typeName] = (bodyTypes[typeName] || 0) + 1
-  }
-  
-  const bodyComposition = Object.entries(bodyTypes)
-    .map(([type, count]) => `${type}: ${count}`)
-    .join(', ')
-  
-  // Check infection status
-  const infectionStatus = organism.infection ? '🦠 Infected' : '✅ Healthy'
-  
-  // Get genome information
-  const genomeGeneCount = organism.genome.genes.length
-  const symmetry = organism.genome.symmetry
-  
-  // Different info display for alive vs dead organisms
-  if (organism.isAlive) {
-    info.innerHTML = `
-      <strong>🔍 Organism #${organism.uuid}</strong><br>
-      <strong>Energy:</strong> ${Math.round(organism.energy)} (${energyPercent}%)<br>
-      <strong>Age:</strong> ${ageInWorldUnits} / ${maxAgeInWorldUnits} (${agePercent}%)<br>
-      <strong>Status:</strong> 💚 Alive<br>
-      <strong>Body Size:</strong> ${Math.round(organism.bodySize)}<br>
-      <strong>Infection:</strong> ${infectionStatus}<br>
-      <strong>Parent:</strong> #${organism.parentUuid || 'None'}<br>
-      <strong>Generation:</strong> ${organism.generation}<br>
-      <strong>Children:</strong> ${organism.totalChildren}<br>
-      <strong>Genes:</strong> ${genomeGeneCount} (${symmetry}x symmetry)<br>
-      <strong>Body Parts:</strong> ${organism.body.bodies.length}<br>
-      <strong>Colors:</strong> ${bodyComposition}<br>
-    `
-  } else {
-    const deathCause = organism.energy <= 0 ? 'Energy depletion' : 'Old age'
-    info.innerHTML = `
-      <strong>💀 Dead Organism #${organism.uuid}</strong><br>
-      <strong>Death Cause:</strong> ${deathCause}<br>
-      <strong>Final Energy:</strong> ${Math.round(organism.energy)}<br>
-      <strong>Death Age:</strong> ${ageInWorldUnits} / ${maxAgeInWorldUnits} (${agePercent}%)<br>
-      <strong>Status:</strong> 💀 Dead<br>
-      <strong>Body Size:</strong> ${Math.round(organism.bodySize)}<br>
-      <strong>Infection:</strong> ${infectionStatus}<br>
-      <strong>Parent:</strong> #${organism.parentUuid || 'None'}<br>
-      <strong>Generation:</strong> ${organism.generation}<br>
-      <strong>Children:</strong> ${organism.totalChildren}<br>
-      <strong>Genes:</strong> ${genomeGeneCount} (${symmetry}x symmetry)<br>
-      <strong>Body Parts:</strong> ${organism.body.bodies.length}<br>
-      <strong>Colors:</strong> ${bodyComposition}<br>
-    `
-  }
-}
-
-function getBodyTypeName(bodyType: number): string {
-  return getGeneTypeName(bodyType)
 }
 
 function clearOrganismInfo() {
@@ -505,7 +416,7 @@ Matter.Events.on(engine, 'beforeUpdate', (_) => {
   
   // Update selected organism info in real-time (works for both alive and dead)
   if (selectedOrganism) {
-    displayOrganismInfo(selectedOrganism)
+    selectedOrganism.displayOrganismInfo()
   }
 })
 
