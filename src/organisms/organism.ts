@@ -388,4 +388,30 @@ export default class Organism {
       this.energy -= 0.2 * magneticParts.length
     }
   }
+
+  public getGeneFrequency() : number[] {
+    const geneFreqency: number[] = []
+    for (const gene of this.genome.genes) {
+      for (let i = 0; i < this.genome.symmetry; i++) {
+        geneFreqency.push(gene.type)
+      }
+    }
+    return geneFreqency
+  }
+
+  public highlightOrganism() {
+    // Add thick outline while keeping original color
+    for (const body of this.body.bodies) {
+      body.render.lineWidth = 4 // Thick border for selection
+      // Keep the original color - no need to change strokeStyle
+    }
+  }
+  
+  public clearHighlight() {
+    // Reset to original line width
+    for (const body of this.body.bodies) {
+      body.render.lineWidth = 1 // Reset to thin border
+      // Color stays the same - no need to restore
+    }
+  }
 }

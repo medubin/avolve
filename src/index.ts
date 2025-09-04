@@ -64,17 +64,17 @@ render.canvas.addEventListener('click', (event) => {
   if (clickedOrganism) {
     // Clear previous selection
     if (selectedOrganism) {
-      clearHighlight(selectedOrganism)
+      selectedOrganism.clearHighlight()
     }
     
     // Select new organism
     selectedOrganism = clickedOrganism
-    highlightOrganism(selectedOrganism)
+    selectedOrganism.highlightOrganism()
     selectedOrganism.displayOrganismInfo()
   } else {
     // Clear selection if clicking empty space
     if (selectedOrganism) {
-      clearHighlight(selectedOrganism)
+      selectedOrganism.clearHighlight()
       selectedOrganism = null
       clearOrganismInfo()
     }
@@ -101,22 +101,6 @@ function findOrganismAtPosition(x: number, y: number, database: Database) {
   }
   
   return null
-}
-
-function highlightOrganism(organism: Organism) {
-  // Add thick outline while keeping original color
-  for (const body of organism.body.bodies) {
-    body.render.lineWidth = 4 // Thick border for selection
-    // Keep the original color - no need to change strokeStyle
-  }
-}
-
-function clearHighlight(organism: Organism) {
-  // Reset to original line width
-  for (const body of organism.body.bodies) {
-    body.render.lineWidth = 1 // Reset to thin border
-    // Color stays the same - no need to restore
-  }
 }
 
 function clearOrganismInfo() {
@@ -220,125 +204,11 @@ function toggleGraphDisplay() {
   if (!graphVisible) {
     actualDisplay.style.display = 'block'
     graphVisible = true
-    drawHistoryGraph() // Initial draw
+    database.frequency.drawHistoryGraph() // Initial draw
   } else {
     actualDisplay.style.display = 'none'
     graphVisible = false
   }
-}
-
-function drawHistoryGraph() {
-  const canvas = document.getElementById('history-graph') as HTMLCanvasElement
-  if (!canvas) return
-  
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return
-  
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
-  
-  if (historicalData.length < 2) {
-    ctx.fillStyle = '#CCCCCC'
-    ctx.font = '14px monospace'
-    ctx.textAlign = 'center'
-    ctx.fillText('Collecting data...', canvas.width / 2, canvas.height / 2)
-    ctx.fillText(`${historicalData.length} data points`, canvas.width / 2, canvas.height / 2 + 20)
-    return
-  }
-  
-  // Get all genes that have appeared in the data for graphing
-  const latestFreqs = historicalData[historicalData.length - 1]?.frequencies || {}
-  const allGenesSet = new Set<string>()
-  
-  // Collect all gene names that have appeared throughout history
-  historicalData.forEach(data => {
-    Object.keys(data.frequencies).forEach(geneName => {
-      if (data.frequencies[geneName] > 0) {
-        allGenesSet.add(geneName)
-      }
-    })
-  })
-  
-  // Convert to array and sort by current frequency (highest first)
-  const allGenes = Array.from(allGenesSet)
-    .sort((a, b) => (latestFreqs[b] || 0) - (latestFreqs[a] || 0))
-  
-  // Find max value for scaling
-  let maxValue = 0
-  historicalData.forEach(data => {
-    allGenes.forEach(gene => {
-      if (data.frequencies[gene] && data.frequencies[gene] > maxValue) {
-        maxValue = data.frequencies[gene]
-      }
-    })
-  })
-  
-  if (maxValue === 0) {
-    ctx.fillStyle = '#CCCCCC'
-    ctx.font = '16px monospace'
-    ctx.textAlign = 'center'
-    ctx.fillText('No data to display', canvas.width / 2, canvas.height / 2)
-    return
-  }
-  
-  // Draw grid lines
-  ctx.strokeStyle = '#333'
-  ctx.lineWidth = 1
-  for (let i = 0; i <= 10; i++) {
-    const y = (canvas.height / 10) * i
-    ctx.beginPath()
-    ctx.moveTo(0, y)
-    ctx.lineTo(canvas.width, y)
-    ctx.stroke()
-  }
-  
-  // Draw vertical grid lines
-  for (let i = 0; i <= 10; i++) {
-    const x = (canvas.width / 10) * i
-    ctx.beginPath()
-    ctx.moveTo(x, 0)
-    ctx.lineTo(x, canvas.height)
-    ctx.stroke()
-  }
-  
-  // Draw lines for each gene
-  allGenes.forEach((gene, index) => {
-    if (!GENE_DISPLAY_COLORS[gene]) return
-    
-    ctx.strokeStyle = GENE_DISPLAY_COLORS[gene]
-    ctx.lineWidth = 2
-    ctx.beginPath()
-    
-    let isFirstPoint = true
-    let hasData = false
-    
-    historicalData.forEach((data, dataIndex) => {
-      const x = (canvas.width / (historicalData.length - 1)) * dataIndex
-      const value = data.frequencies[gene] || 0
-      const y = canvas.height - (value / maxValue) * canvas.height
-      
-      if (value > 0) hasData = true
-      
-      if (isFirstPoint) {
-        ctx.moveTo(x, y)
-        isFirstPoint = false
-      } else {
-        ctx.lineTo(x, y)
-      }
-    })
-    
-    if (hasData) {
-      ctx.stroke()
-      
-      // Draw gene name and current value (only show first 10 to avoid overcrowding)
-      if (index < 10) {
-        ctx.fillStyle = GENE_DISPLAY_COLORS[gene]
-        ctx.font = '10px monospace'
-        ctx.textAlign = 'left'
-        const currentValue = latestFreqs[gene] || 0
-        ctx.fillText(`${gene}: ${currentValue}`, 5, 15 + index * 12)
-      }
-    }
-  })
 }
 
 // Add keyboard handler for G key
@@ -347,36 +217,6 @@ document.addEventListener('keydown', (event) => {
     toggleGraphDisplay()
   }
 })
-
-
-// Store historical data for graphing
-const historicalData: {tick: number, frequencies: {[key: string]: number}}[] = []
-
-function updateHistoricalGraph() {
-  // Sample data every 100 ticks to keep graph manageable, plus collect initial data points
-  const shouldCollect = database.world.tickNumber % 100 === 0 || 
-                        database.world.tickNumber === 1 || 
-                        database.world.tickNumber === 50
-  
-  if (shouldCollect) {
-    const currentFreqs = database.frequency.getSortedGeneFrequencies()
-    const freqMap: {[key: string]: number} = {}
-    currentFreqs.forEach(item => {
-      freqMap[item.name] = item.count
-    })
-    
-    
-    historicalData.push({
-      tick: database.world.tickNumber,
-      frequencies: freqMap
-    })
-    
-    // Keep only last 1000 data points (100,000 ticks of history)
-    if (historicalData.length > 1000) {
-      historicalData.shift()
-    }
-  }
-}
 
 // Toggle between current and historical view
 let viewMode = 'current' // 'current', 'historical'
@@ -407,11 +247,11 @@ Matter.Events.on(engine, 'beforeUpdate', (_) => {
   database.world.tickNumber += 1
   worldDisplay.tick()
   updateGeneFrequencyDisplay()
-  updateHistoricalGraph()
+  database.frequency.updateHistoricalGraph(database.world.tickNumber)
   
   // Update graph in real-time if visible
   if (graphVisible) {
-    drawHistoryGraph()
+    database.frequency.drawHistoryGraph()
   }
   
   // Update selected organism info in real-time (works for both alive and dead)
