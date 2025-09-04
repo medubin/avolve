@@ -205,9 +205,9 @@ export default class Organism {
     for (const body of this.body.bodies) {
       const oldBodyType = parseInt(body.label.split(':')[1], 10)
       // Decrease count for the original gene type
-      this.database.geneFrequencies[oldBodyType] -= 1
+      this.database.frequency.geneFrequencies[oldBodyType] -= 1
       // Increase count for DEAD type
-      this.database.geneFrequencies[BodyType.DEAD] += 1
+      this.database.frequency.geneFrequencies[BodyType.DEAD] += 1
       
       // Update visual appearance
       body.render.strokeStyle = Color.DEAD

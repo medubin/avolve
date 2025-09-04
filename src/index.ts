@@ -155,7 +155,7 @@ function updateGeneFrequencyDisplay() {
   if (!display) return
   
   // Show text views (current or historical)
-  const frequencies = viewMode === 'historical' ? database.getSortedHistoricalGeneFrequencies() : database.getSortedGeneFrequencies()
+  const frequencies = viewMode === 'historical' ? database.frequency.getSortedHistoricalGeneFrequencies() : database.frequency.getSortedGeneFrequencies()
   const totalGenes = frequencies.reduce((sum, item) => sum + item.count, 0)
   
   const viewType = viewMode === 'historical' ? 'Historical' : 'Current'
@@ -359,7 +359,7 @@ function updateHistoricalGraph() {
                         database.world.tickNumber === 50
   
   if (shouldCollect) {
-    const currentFreqs = database.getSortedGeneFrequencies()
+    const currentFreqs = database.frequency.getSortedGeneFrequencies()
     const freqMap: {[key: string]: number} = {}
     currentFreqs.forEach(item => {
       freqMap[item.name] = item.count
