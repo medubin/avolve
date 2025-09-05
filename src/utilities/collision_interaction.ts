@@ -80,23 +80,21 @@ export function resolveCollision(event : IEventCollision<any>, database : Databa
       continue
     }
 
-    if (organismA.isAlive && organismB.isAlive) {
-      // prevent parents from eating children and vice versa
-      if (organismA.parentUuid === organismB.uuid || organismA.uuid === organismB.parentUuid) {
-        continue
-      }
+    // prevent parents from eating children and vice versa
+    if (organismA.parentUuid === organismB.uuid || organismA.uuid === organismB.parentUuid) {
+      continue
+    }
 
-        // prevent siblings from eating eachother
-      if (organismA.parentUuid && organismA.parentUuid === organismB.parentUuid) {
-        continue
-      }
-      if (aCollidesB) {
-        onContact(organismA, organismB, typeA, pair.bodyA, pair.bodyB, database)
-      }
+      // prevent siblings from eating eachother
+    if (organismA.parentUuid && organismA.parentUuid === organismB.parentUuid) {
+      continue
+    }
+    if (aCollidesB) {
+      onContact(organismA, organismB, typeA, pair.bodyA, pair.bodyB, database)
+    }
 
-      if (bCollidesA) {
-        onContact(organismB, organismA, typeB, pair.bodyB, pair.bodyA, database)
-      }
+    if (bCollidesA) {
+      onContact(organismB, organismA, typeB, pair.bodyB, pair.bodyA, database)
     }
   }
 }
