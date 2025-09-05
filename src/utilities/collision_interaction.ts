@@ -143,7 +143,10 @@ function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Bod
       break
       
     case 'infect':
-      orgA.infect(orgB)
+      // Check if target organism has infection immunity
+      if (!orgB.immuneToInfection) {
+        orgA.infect(orgB)
+      }
       break
       
     case 'coop':

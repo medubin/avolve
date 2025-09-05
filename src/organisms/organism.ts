@@ -26,6 +26,7 @@ export default class Organism {
   public generation : number
   public infection : Genome
   public photosynthesisMultiplier : number
+  public immuneToInfection : boolean
 
   constructor(
     x : number,
@@ -52,6 +53,7 @@ export default class Organism {
     this.synthesizers = 0
     this.bodySize = 100
     this.photosynthesisMultiplier = 1.0
+    this.immuneToInfection = false
     let yellowArea = 0
     for (const body of this.body.bodies) {
       const genotype : number = parseInt(body.label.split(':')[1], 10)
@@ -74,6 +76,11 @@ export default class Organism {
       const reproductionBonus = getGeneReproductionBonus(genotype)
       if (reproductionBonus > 0) {
         yellowArea += body.area
+      }
+      
+      // Infection immunity from YELLOW
+      if (genotype === BodyType.YELLOW) {
+        this.immuneToInfection = true
       }
 
       this.bodySize += body.area
