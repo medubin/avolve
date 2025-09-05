@@ -54,28 +54,32 @@ export default class Gene {
   }
 
   protected mutate(gene : Gene) : Gene {
-    const mutation = rng(0, 7)
-    switch (mutation) {
-      case(0):
+    if (rngBool()) {
         const playableTypes = PLAYABLE_GENE_TYPES.map(g => g.id)
         gene.type = playableTypes[rng(0, playableTypes.length)]
         return gene
-      case(1):
+    }
+      if (rngBool()) {
         gene.x = rng(-100, 100) / 10
         return gene
-      case(2):
+      }
+      if (rngBool()) {
         gene.y = rng(-100, 100) / 10
         return gene
-      case(3):
+      }
+      if (rngBool()) {
         gene.sides = rng(3, 10)
         return gene
-      case(4):
+      }
+      if (rngBool()) {
         gene.radius = rngFloat(3, 15)
         return gene
-      case(5):
+      }
+      if (rngBool()) {
         gene.isBranch = rngBool()
         return gene
-      case(6):
+      }
+      if (rngBool()) {
         gene.length = rngFloat(8, 12)
         return gene
     }
