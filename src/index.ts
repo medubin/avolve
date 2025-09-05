@@ -12,7 +12,7 @@ import {  GENE_DISPLAY_COLORS } from './constants/gene_types'
 
 // create an engine
 const engine = Matter.Engine.create()
-engine.world.gravity.y = 0
+engine.gravity.y = 0
 
 Matter.World.add(engine.world, [
   // top

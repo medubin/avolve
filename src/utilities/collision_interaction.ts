@@ -12,6 +12,39 @@ import {
   doesGeneContactAll 
 } from '../constants/gene_types'
 
+function showPredationIndicator(bodyPart: Body) {
+  // Avoid multiple indicators on the same body part
+  if ((bodyPart as any).predationIndicatorActive) {
+    return
+  }
+  
+  // Mark as active and store original fill style
+  (bodyPart as any).predationIndicatorActive = true
+  const originalFillStyle = bodyPart.render.fillStyle
+  
+  // Flash red interior only, keeping the original border color
+  bodyPart.render.fillStyle = 'rgba(255, 0, 0, 0.6)'
+  
+  // Use requestAnimationFrame for better timing with the render cycle
+  const startTime = performance.now()
+  
+  function restoreOriginal() {
+    const elapsed = performance.now() - startTime
+    
+    if (elapsed >= 150) {
+      // Restore original appearance
+      if (bodyPart.render) {
+        bodyPart.render.fillStyle = originalFillStyle
+        delete (bodyPart as any).predationIndicatorActive
+      }
+    } else {
+      requestAnimationFrame(restoreOriginal)
+    }
+  }
+  
+  requestAnimationFrame(restoreOriginal)
+}
+
 function collidesWith(type : number, target : number) {
   // Use trait-based collision checking
   const collisionTargets = getGeneCollisionTargets(type)
@@ -101,6 +134,9 @@ function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Bod
         orgB.energy -= actualEnergyDrain
         orgA.energy += actualEnergyDrain * efficiency
         database.world.releaseCO2(actualEnergyDrain * (1 - efficiency))
+        
+        // Visual indicator for predation - flash the prey red briefly
+        showPredationIndicator(bodyB)
       }
       break
       
@@ -171,6 +207,9 @@ function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Bod
         orgB.energy -= parasiteDrain
         orgA.energy += parasiteDrain * efficiency
         database.world.releaseCO2(parasiteDrain * (1 - efficiency))
+        
+        // Visual indicator for parasitic drain
+        showPredationIndicator(bodyB)
       }
       
       // Physical sticking using attractive forces instead of constraints
