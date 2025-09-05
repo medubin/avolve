@@ -204,13 +204,15 @@ export default class Organism {
     this.database.organisms.dead += 1
     
     // Update gene frequencies to reflect death
-    for (const body of this.body.bodies) {
-      const oldBodyType = parseInt(body.label.split(':')[1], 10)
+    const genes = this.getGeneFrequency()
+    for (const gene of genes) {
       // Decrease count for the original gene type
-      this.database.frequency.geneFrequencies[oldBodyType] -= 1
+      this.database.frequency.geneFrequencies[gene] -= 1
       // Increase count for DEAD type
       this.database.frequency.geneFrequencies[BodyType.DEAD] += 1
-      
+    }
+    
+    for (const body of this.body.bodies) {
       // Update visual appearance
       body.render.strokeStyle = Color.DEAD
       body.label = `${this.uuid}:${BodyType.DEAD}`
@@ -231,7 +233,7 @@ export default class Organism {
     Matter.Body.setVelocity(body, { x: 0, y: 0  })
   }
 
-  public harden(bark : Matter.Body) {
+  public harden(bark : Matter.Body) { 
     bark.label = `${this.uuid}:${BodyType.DEAD_BARK}`
     bark.render.strokeStyle = Color.DEAD_BARK
     this.synthesizers -= (bark.area * 0.8)
