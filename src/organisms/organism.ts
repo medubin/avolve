@@ -25,6 +25,7 @@ export default class Organism {
   public totalChildren : number
   public generation : number
   public infection : Genome
+  public photosynthesisMultiplier : number
 
   constructor(
     x : number,
@@ -50,6 +51,7 @@ export default class Organism {
     this.moveables = [[], []]
     this.synthesizers = 0
     this.bodySize = 100
+    this.photosynthesisMultiplier = 1.0
     let yellowArea = 0
     for (const body of this.body.bodies) {
       const genotype : number = parseInt(body.label.split(':')[1], 10)
@@ -278,9 +280,11 @@ export default class Organism {
   }
 
   protected synthesize() {
-    const newEnergy = (this.synthesizers / 5) * this.database.world.co2Fraction
+    const newEnergy = (this.synthesizers / 5) * this.database.world.co2Fraction * this.photosynthesisMultiplier
     this.database.world.consumeCO2(newEnergy)
     this.energy += newEnergy
+    // Reset multiplier after each tick
+    this.photosynthesisMultiplier = 1.0
   }
 
   protected respirate() {

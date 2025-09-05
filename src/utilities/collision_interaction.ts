@@ -112,26 +112,18 @@ function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Bod
       orgA.infect(orgB)
       break
       
-    case 'heal':
-      // VIOLET healing behavior
-      const healingAmount = bodyA.area * 0.3
-      
-      // Only heal if the target organism has less than 70% of its reproduction threshold
-      if (orgB.energy < orgB.reproduceAt * 0.7) {
-        // Transfer energy from VIOLET to the target organism
-        if (orgA.energy > healingAmount * 2) { // Ensure VIOLET has enough energy
-          orgA.energy -= healingAmount
-          orgB.energy += healingAmount * 0.8 // 80% efficiency
-          // Release 20% as CO2 (healing cost)
-          database.world.releaseCO2(healingAmount * 0.2)
+    case 'coop':
+      // FOREST organisms cooperate with each other (energy sharing + enhanced photosynthesis)
+      if (typeB === BodyType.FOREST) {
+        // Set enhanced photosynthesis rate for this tick (5x base rate: 0.3 -> 1.5)
+        orgA.photosynthesisMultiplier = 3.0
+        
+        // Energy sharing if needed
+        if (orgB.energy < orgA.energy * 0.8) {
+          const shareAmount = (orgA.energy - orgB.energy) * 0.15
+          orgA.energy -= shareAmount
+          orgB.energy += shareAmount
         }
-      }
-      
-      // VIOLET organisms cooperate with each other (energy sharing)
-      if (typeB === BodyType.VIOLET && orgB.energy < orgA.energy * 0.8) {
-        const shareAmount = (orgA.energy - orgB.energy) * 0.1
-        orgA.energy -= shareAmount
-        orgB.energy += shareAmount
       }
       break
       

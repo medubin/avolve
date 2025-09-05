@@ -107,7 +107,7 @@ The organism colors follow three primary themes with specialized variants:
 ### 🌸 **PINK** - The Balanced Generalist Feeders
 - **Ability**: Broad feeding strategy with reduced efficiency
 - **Behavior**: Feeds on plants, utilities, mobility, and some special genes
-- **Interactions**: Eats GREEN, BARK, YELLOW, WHITE, VIOLET, BLUE, CYAN, TEAL, SKY, TURQUOISE, GRAY, DEAD (70% efficiency)
+- **Interactions**: Eats GREEN, BARK, YELLOW, WHITE, FOREST, BLUE, CYAN, TEAL, SKY, TURQUOISE, GRAY, DEAD (70% efficiency)
 - **Role**: Balanced generalist - broad diet but cannot prey on other predators or decompose dead bark
 
 ### 🍫 **MAHOGANY** - The Living Plant Specialists
@@ -148,10 +148,10 @@ The organism colors follow three primary themes with specialized variants:
 - **Interactions**: Destroys GREEN, RED, CYAN, YELLOW, MAROON, ORANGE, TEAL, BARK, SKY, INDIGO, WHITE
 - **Role**: Population limiter, ecosystem reset mechanism
 
-### 🟣 **VIOLET** - The Healers *(New!)*
-- **Ability**: Energy redistribution and healing
-- **Behavior**: Transfers energy to low-health organisms, cooperates with other VIOLET
-- **Interactions**: Heals organisms below 70% reproduction threshold, shares energy with other VIOLET
+### 🌲 **FOREST** - The Energy Sharers *(Updated!)*
+- **Ability**: Photosynthesis and energy sharing
+- **Behavior**: Always transfers energy to other organisms on contact, gains energy from interactions
+- **Interactions**: Shares energy with all organisms, cooperates with other FOREST
 - **Role**: Ecosystem stabilizer, prevents population crashes, enables cooperation
 
 ### 🔘 **STEEL** - The Living Shields *(New!)*
@@ -161,10 +161,10 @@ The organism colors follow three primary themes with specialized variants:
 - **Role**: Ultimate survivor, genetic preservation, evolutionary insurance
 
 ## Ecosystem Dynamics
-- **Energy Flow**: GREEN produces → Others consume → VIOLET redistributes
+- **Energy Flow**: GREEN produces → Others consume → FOREST redistributes
 - **Population Control**: GRAY and BLUE control overpopulation
 - **Genetic Diversity**: WHITE spreads genes, TEAL preserves rare traits
-- **Cooperation**: VIOLET creates the first truly cooperative behavior
+- **Cooperation**: FOREST creates the first truly cooperative behavior
 - **Balance**: Each color has predators and prey, creating stable cycles
 
 ## Evolution Mechanics

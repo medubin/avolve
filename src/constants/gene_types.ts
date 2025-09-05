@@ -18,7 +18,7 @@ export interface GeneTypeInfo {
   energyAbsorptionEfficiency?: number // Percentage of absorbed energy retained
   
   // Behavioral traits
-  collisionBehavior?: 'flee' | 'kill' | 'absorb' | 'heal' | 'infect' | 'harden' | 'stick' | 'attract' | 'none'
+  collisionBehavior?: 'flee' | 'kill' | 'absorb' | 'coop' | 'infect' | 'harden' | 'stick' | 'attract' | 'none'
   collisionTargets?: number[] // Which body types this gene interacts with
   
   // Special abilities
@@ -53,23 +53,23 @@ export const GENE_TYPES: GeneTypeInfo[] = [
   { 
     id: BodyType.BARK, name: 'BARK', color: Color.BARK, displayColor: '#8B4513',
     respirationCost: 1.0, photosynthesis: 0.8, collisionBehavior: 'harden',
-    collisionTargets: [BodyType.MAROON, BodyType.MAHOGANY]
+    collisionTargets: [BodyType.MAROON, BodyType.MAHOGANY, BodyType.PINK]
   },
   
   // Blue Spectrum - Movement Domain  
   { 
     id: BodyType.BLUE, name: 'BLUE', color: Color.BLUE, displayColor: '#0000FF',
-    respirationCost: 0.6, collisionBehavior: 'flee', contactsAll: true
+    respirationCost: 0.4, collisionBehavior: 'flee', contactsAll: true
   },
   { 
     id: BodyType.CYAN, name: 'CYAN', color: Color.CYAN, displayColor: '#00FFFF',
-    respirationCost: 0.6, movementSpeed: 10, movementType: 'fast', collisionBehavior: 'none'
+    respirationCost: 0.4, movementSpeed: 10, movementType: 'fast', collisionBehavior: 'none'
   },
   { 
     id: BodyType.INDIGO, name: 'INDIGO', color: Color.INDIGO, displayColor: '#4B0082',
     respirationCost: 1.0, movementSpeed: 3, movementType: 'slow', 
     collisionBehavior: 'absorb', energyAbsorption: 0.2, energyAbsorptionEfficiency: 1.0,
-    collisionTargets: [BodyType.BLUE, BodyType.YELLOW, BodyType.CYAN, BodyType.DEAD, BodyType.TEAL, BodyType.GREEN, BodyType.SKY, BodyType.WHITE]
+    collisionTargets: [BodyType.BLUE, BodyType.YELLOW, BodyType.CYAN, BodyType.DEAD, BodyType.TEAL, BodyType.GREEN, BodyType.FOREST, BodyType.SKY, BodyType.WHITE]
   },
   { 
     id: BodyType.SKY, name: 'SKY', color: Color.SKY, displayColor: '#87CEEB',
@@ -82,7 +82,7 @@ export const GENE_TYPES: GeneTypeInfo[] = [
   { 
     id: BodyType.TURQUOISE, name: 'TURQUOISE', color: Color.TURQUOISE, displayColor: '#00CED1',
     respirationCost: 0.7, magneticAttraction: true, orbitalForce: true, collisionBehavior: 'attract',
-    collisionTargets: [BodyType.GREEN, BodyType.BLUE, BodyType.CYAN, BodyType.YELLOW, BodyType.RED, BodyType.MAROON, BodyType.ORANGE, BodyType.TEAL, BodyType.BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE, BodyType.PINK, BodyType.OCHRE, BodyType.VIOLET, BodyType.TURQUOISE]
+    collisionTargets: [BodyType.GREEN, BodyType.BLUE, BodyType.CYAN, BodyType.YELLOW, BodyType.RED, BodyType.MAROON, BodyType.ORANGE, BodyType.TEAL, BodyType.BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE, BodyType.PINK, BodyType.OCHRE, BodyType.FOREST, BodyType.TURQUOISE]
   },
   
   // Red/Orange Spectrum - Predation
@@ -99,17 +99,17 @@ export const GENE_TYPES: GeneTypeInfo[] = [
   { 
     id: BodyType.MAROON, name: 'MAROON', color: Color.MAROON, displayColor: '#800000',
     respirationCost: 1.0, collisionBehavior: 'absorb', energyAbsorption: 1.0, energyAbsorptionEfficiency: 0.9,
-    collisionTargets: [BodyType.DEAD, BodyType.GREEN, BodyType.BARK, BodyType.DEAD_BARK]
+    collisionTargets: [BodyType.DEAD, BodyType.GREEN, BodyType.FOREST, BodyType.BARK, BodyType.DEAD_BARK]
   },
   { 
     id: BodyType.PINK, name: 'PINK', color: Color.PINK, displayColor: '#FFC0CB',
     respirationCost: 1.0, collisionBehavior: 'absorb', energyAbsorption: 1.0, energyAbsorptionEfficiency: 0.7,
-    collisionTargets: [BodyType.GREEN, BodyType.BARK, BodyType.YELLOW, BodyType.WHITE, BodyType.VIOLET, BodyType.BLUE, BodyType.CYAN, BodyType.TEAL, BodyType.SKY, BodyType.TURQUOISE, BodyType.GRAY, BodyType.DEAD]
+    collisionTargets: [BodyType.GREEN, BodyType.BARK, BodyType.YELLOW, BodyType.WHITE, BodyType.FOREST, BodyType.BLUE, BodyType.CYAN, BodyType.TEAL, BodyType.SKY, BodyType.TURQUOISE, BodyType.GRAY, BodyType.DEAD]
   },
   { 
     id: BodyType.MAHOGANY, name: 'MAHOGANY', color: Color.MAHOGANY, displayColor: '#C04000',
     respirationCost: 1.0, collisionBehavior: 'absorb', energyAbsorption: 1.0, energyAbsorptionEfficiency: 1.0,
-    collisionTargets: [BodyType.GREEN, BodyType.BARK]
+    collisionTargets: [BodyType.GREEN, BodyType.FOREST, BodyType.BARK]
   },
   { 
     id: BodyType.OCHRE, name: 'OCHRE', color: Color.OCHRE, displayColor: '#CC7722',
@@ -119,7 +119,7 @@ export const GENE_TYPES: GeneTypeInfo[] = [
   { 
     id: BodyType.BURGUNDY, name: 'BURGUNDY', color: Color.BURGUNDY, displayColor: '#800020',
     respirationCost: 0.5, collisionBehavior: 'stick', energyAbsorption: 0.15, energyAbsorptionEfficiency: 0.6,
-    collisionTargets: [BodyType.GREEN, BodyType.BLUE, BodyType.CYAN, BodyType.YELLOW, BodyType.RED, BodyType.MAROON, BodyType.ORANGE, BodyType.TEAL, BodyType.BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE, BodyType.PINK, BodyType.MAHOGANY, BodyType.OCHRE, BodyType.VIOLET, BodyType.TURQUOISE, BodyType.GRAY]
+    collisionTargets: [BodyType.GREEN, BodyType.BLUE, BodyType.CYAN, BodyType.YELLOW, BodyType.RED, BodyType.MAROON, BodyType.ORANGE, BodyType.TEAL, BodyType.BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE, BodyType.PINK, BodyType.MAHOGANY, BodyType.OCHRE, BodyType.FOREST, BodyType.TURQUOISE, BodyType.GRAY]
   },
   
   // Special Mechanics
@@ -130,17 +130,17 @@ export const GENE_TYPES: GeneTypeInfo[] = [
   { 
     id: BodyType.WHITE, name: 'WHITE', color: Color.WHITE, displayColor: '#FFFFFF',
     respirationCost: 1.0, collisionBehavior: 'infect',
-    collisionTargets: [BodyType.GREEN, BodyType.RED, BodyType.MAROON, BodyType.ORANGE, BodyType.BARK]
+    collisionTargets: [BodyType.GREEN, BodyType.FOREST, BodyType.RED, BodyType.MAROON, BodyType.BARK]
   },
   { 
     id: BodyType.GRAY, name: 'GRAY', color: Color.GRAY, displayColor: '#808080',
     respirationCost: 0.4, collisionBehavior: 'kill',
-    collisionTargets: [BodyType.GREEN, BodyType.RED, BodyType.CYAN, BodyType.YELLOW, BodyType.MAROON, BodyType.ORANGE, BodyType.TEAL, BodyType.BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE]
+    collisionTargets: [BodyType.GREEN, BodyType.FOREST, BodyType.RED, BodyType.CYAN, BodyType.YELLOW, BodyType.MAROON, BodyType.ORANGE, BodyType.TEAL, BodyType.BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE]
   },
   { 
-    id: BodyType.VIOLET, name: 'VIOLET', color: Color.VIOLET, displayColor: '#8A2BE2',
-    respirationCost: 0.5, collisionBehavior: 'heal',
-    collisionTargets: [BodyType.GREEN, BodyType.BLUE, BodyType.CYAN, BodyType.YELLOW, BodyType.ORANGE, BodyType.TEAL, BodyType.BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE, BodyType.PINK, BodyType.OCHRE, BodyType.VIOLET]
+    id: BodyType.FOREST, name: 'FOREST', color: Color.FOREST, displayColor: '#228B22',
+    respirationCost: 1, photosynthesis: 0.7, collisionBehavior: 'coop',
+    collisionTargets: [BodyType.GREEN, BodyType.BLUE, BodyType.CYAN, BodyType.YELLOW, BodyType.ORANGE, BodyType.TEAL, BodyType.BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE, BodyType.PINK, BodyType.OCHRE, BodyType.FOREST]
   },
   { 
     id: BodyType.STEEL, name: 'STEEL', color: Color.STEEL, displayColor: '#708090',

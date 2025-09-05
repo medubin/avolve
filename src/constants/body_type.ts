@@ -17,7 +17,7 @@ enum BodyType {
   PINK = 15,
   MAHOGANY = 16,
   OCHRE = 17,
-  VIOLET = 18,
+  FOREST = 18,
   TURQUOISE = 19,
   STEEL = 20,
   BURGUNDY = 21,

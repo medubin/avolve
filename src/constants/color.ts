@@ -17,7 +17,7 @@ enum Color {
   PINK = '#FFC0CB',
   MAHOGANY = '#420C09',
   OCHRE = '#CC7722',
-  VIOLET = '#8A2BE2',
+  FOREST = '#228B22',
   TURQUOISE = '#00CED1',
   STEEL = '#708090',
   BURGUNDY = '#800020',
