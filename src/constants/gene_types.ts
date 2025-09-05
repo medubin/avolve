@@ -66,12 +66,6 @@ export const GENE_TYPES: GeneTypeInfo[] = [
     respirationCost: 0.4, movementSpeed: 10, movementType: 'fast', collisionBehavior: 'none'
   },
   { 
-    id: BodyType.INDIGO, name: 'INDIGO', color: Color.INDIGO, displayColor: '#4B0082',
-    respirationCost: 1.0, movementSpeed: 3, movementType: 'slow', 
-    collisionBehavior: 'absorb', energyAbsorption: 0.2, energyAbsorptionEfficiency: 1.0,
-    collisionTargets: [BodyType.BLUE, BodyType.YELLOW, BodyType.CYAN, BodyType.DEAD, BodyType.TEAL, BodyType.GREEN, BodyType.FOREST, BodyType.SKY, BodyType.WHITE]
-  },
-  { 
     id: BodyType.SKY, name: 'SKY', color: Color.SKY, displayColor: '#87CEEB',
     respirationCost: 0.6, movementSpeed: 2, movementType: 'slow', collisionBehavior: 'flee', contactsAll: true
   },
@@ -84,12 +78,19 @@ export const GENE_TYPES: GeneTypeInfo[] = [
     respirationCost: 0.7, magneticAttraction: true, orbitalForce: true, collisionBehavior: 'attract',
     collisionTargets: [BodyType.GREEN, BodyType.BLUE, BodyType.CYAN, BodyType.YELLOW, BodyType.RED, BodyType.MAROON, BodyType.ORANGE, BodyType.TEAL, BodyType.BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE, BodyType.PINK, BodyType.OCHRE, BodyType.FOREST, BodyType.TURQUOISE]
   },
+  // Movement AND Predation
+  { 
+  id: BodyType.INDIGO, name: 'INDIGO', color: Color.INDIGO, displayColor: '#4B0082',
+  respirationCost: 1.0, movementSpeed: 3, movementType: 'slow', 
+  collisionBehavior: 'absorb', energyAbsorption: 0.2, energyAbsorptionEfficiency: 1.0,
+  collisionTargets: [BodyType.BLUE, BodyType.YELLOW, BodyType.CYAN, BodyType.DEAD, BodyType.TEAL, BodyType.GREEN, BodyType.FOREST, BodyType.SKY, BodyType.WHITE]
+},
   
   // Red/Orange Spectrum - Predation
   { 
     id: BodyType.RED, name: 'RED', color: Color.RED, displayColor: '#FF0000',
     respirationCost: 1.0, collisionBehavior: 'absorb', energyAbsorption: 1.0, energyAbsorptionEfficiency: 0.9,
-    collisionTargets: [BodyType.ORANGE, BodyType.MAROON, BodyType.PINK, BodyType.MAHOGANY, BodyType.OCHRE, BodyType.BURGUNDY]
+    collisionTargets: [BodyType.ORANGE, BodyType.MAROON, BodyType.PINK, BodyType.MAHOGANY, BodyType.OCHRE, BodyType.BURGUNDY, BodyType.INDIGO]
   },
   { 
     id: BodyType.ORANGE, name: 'ORANGE', color: Color.ORANGE, displayColor: '#FFA500',
@@ -103,7 +104,7 @@ export const GENE_TYPES: GeneTypeInfo[] = [
   },
   { 
     id: BodyType.PINK, name: 'PINK', color: Color.PINK, displayColor: '#FFC0CB',
-    respirationCost: 1.0, collisionBehavior: 'absorb', energyAbsorption: 1.0, energyAbsorptionEfficiency: 0.7,
+    respirationCost: 1.0, collisionBehavior: 'absorb', energyAbsorption: 0.8, energyAbsorptionEfficiency: 0.7,
     collisionTargets: [BodyType.GREEN, BodyType.BARK, BodyType.YELLOW, BodyType.WHITE, BodyType.FOREST, BodyType.BLUE, BodyType.CYAN, BodyType.TEAL, BodyType.SKY, BodyType.TURQUOISE, BodyType.GRAY, BodyType.DEAD]
   },
   { 
