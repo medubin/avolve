@@ -4,7 +4,7 @@ import { IEventCollision, Body } from 'matter-js'
 import * as Matter from 'matter-js'
 import Organism from '../organisms/organism'
 import { 
-  getGeneCollisionBehavior, 
+  getGeneCollisionBehaviors, 
   getGeneCollisionTargets, 
   getGeneEnergyAbsorption, 
   getGeneAbsorptionEfficiency,
@@ -98,159 +98,122 @@ export function resolveCollision(event : IEventCollision<any>, database : Databa
 
 function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Body, bodyB : Body, database : Database, areRelated : boolean) {
   const typeB = parseInt(bodyB.label.split(':')[1], 10)
-  const behavior = getGeneCollisionBehavior(typeA)
+  const behaviors = getGeneCollisionBehaviors(typeA)
   const absorption = getGeneEnergyAbsorption(typeA)
   const efficiency = getGeneAbsorptionEfficiency(typeA)
 
-  switch (behavior) {
-    case 'flee':
-      if (doesGeneContactAll(typeA)) {
-        // Like BLUE - makes others flee
-        orgB.flee(bodyB, bodyB.position, bodyA.position)
-      } else if (doesGeneFleeFromAll(typeA)) {
-        // Like TEAL - flees from everything
-        orgA.flee(bodyA, bodyA.position, bodyB.position)
-      } else {
-        // Like SKY - gentle flee
-        orgA.flee(bodyA, bodyB.position, bodyA.position, 2)
-      }
-      break
-      
-    case 'kill':
-      // Don't kill relatives
-      if (!areRelated) {
-        orgB.die()
-      }
-      break
-      
-    case 'absorb':
-      // Don't absorb from relatives
-      if (!areRelated && absorption > 0) {
-        const energyDrain = bodyA.area * absorption
-        
-        // Use configured efficiency instead of hardcoded 90%
-        const actualEnergyDrain = Math.min(energyDrain, orgB.energy)
-        orgB.energy -= actualEnergyDrain
-        orgA.energy += actualEnergyDrain * efficiency
-        database.world.releaseCO2(actualEnergyDrain * (1 - efficiency))
-        
-        // Visual indicator for predation - flash the prey red briefly
-        showPredationIndicator(bodyB)
-      }
-      break
-      
-    case 'harden':
-      orgA.harden(bodyA)
-      break
-      
-    case 'infect':
-      // Don't infect relatives, and check for immunity
-      if (!areRelated && !orgB.immuneToInfection) {
-        orgA.infect(orgB)
-      }
-      break
-      
-    case 'coop':
-      // FOREST organisms cooperate with each other (energy sharing + enhanced photosynthesis)
-      if (typeB === BodyType.FOREST) {
-        // Set enhanced photosynthesis rate for this tick (5x base rate: 0.3 -> 1.5)
-        orgA.photosynthesisMultiplier = 3.0
-        
-        // Energy sharing if needed
-        if (orgB.energy < orgA.energy * 0.8) {
-          const shareAmount = (orgA.energy - orgB.energy) * 0.15
-          orgA.energy -= shareAmount
-          orgB.energy += shareAmount
+  // Process each behavior in the array
+  behaviors.forEach(behavior => {
+    switch (behavior) {
+      case 'flee':
+        if (doesGeneContactAll(typeA)) {
+          orgB.flee(bodyB, bodyB.position, bodyA.position)
+        } else if (doesGeneFleeFromAll(typeA)) {
+          orgA.flee(bodyA, bodyA.position, bodyB.position)
+        } else {
+          orgA.flee(bodyA, bodyB.position, bodyA.position, 2)
         }
-      }
-      break
-      
-    case 'attract':
-      // TURQUOISE creates stronger orbital attraction on direct contact
-      const orbitForce = bodyA.area * 0.01 // Extremely weak orbital force
-      
-      // Create circular orbital motion around the TURQUOISE organism
-      const turquoisePos = bodyA.position
-      const targetPos = bodyB.position
-      
-      // Calculate perpendicular force for orbital motion
-      const toTarget = Matter.Vector.sub(targetPos, turquoisePos)
-      const perpendicular = { x: -toTarget.y, y: toTarget.x }
-      const normalizedPerp = Matter.Vector.normalise(perpendicular)
-      
-      // Apply orbital force (tangential to the radius)
-      const orbitalForce = Matter.Vector.mult(normalizedPerp, orbitForce)
-      Matter.Body.applyForce(bodyB, targetPos, orbitalForce)
-      
-      // TURQUOISE organisms can "lock" onto each other for enhanced photosynthesis
-      if (typeB === BodyType.TURQUOISE) {
-        // Only boost photosynthesis occasionally to prevent reproduction explosion
-        if (Math.random() < 0.01) { // 1% chance per collision frame
-          const photosynthesisBoost = 2
-          // Energy comes from CO2, not from nothing
-          if (database.world.co2 >= photosynthesisBoost * 2) {
-            database.world.consumeCO2(photosynthesisBoost * 2)
-            orgA.energy += photosynthesisBoost
-            orgB.energy += photosynthesisBoost
+        break
+        
+      case 'kill':
+        if (!areRelated) {
+          orgB.die()
+        }
+        break
+        
+      case 'absorb_energy':
+        if (!areRelated && absorption > 0) {
+          const energyDrain = bodyA.area * absorption
+          const actualEnergyDrain = Math.min(energyDrain, orgB.energy)
+          orgB.energy -= actualEnergyDrain
+          orgA.energy += actualEnergyDrain * efficiency
+          database.world.releaseCO2(actualEnergyDrain * (1 - efficiency))
+          showPredationIndicator(bodyB)
+        }
+        break
+        
+      case 'share_energy':
+        const energyDifference = Math.abs(orgA.energy - orgB.energy)
+        if (energyDifference > 100) {
+          const shareAmount = energyDifference * 0.1
+          if (orgA.energy > orgB.energy) {
+            orgA.energy -= shareAmount
+            orgB.energy += shareAmount
+          } else {
+            orgB.energy -= shareAmount
+            orgA.energy += shareAmount
           }
         }
-      }
-      
-      // Consume extra energy for contact-based orbital mechanics
-      orgA.energy -= 1
-      break
-      
-    case 'stick':
-      // BURGUNDY parasitic behavior - slow energy drain + sticky forces
-      const parasiteDrain = bodyA.area * absorption
-      
-      // Don't parasitize relatives, but still allow sticking (physical interaction)
-      if (!areRelated && orgB.energy > parasiteDrain) {
-        orgB.energy -= parasiteDrain
-        orgA.energy += parasiteDrain * efficiency
-        database.world.releaseCO2(parasiteDrain * (1 - efficiency))
+        break
         
-        // Visual indicator for parasitic drain
-        showPredationIndicator(bodyB)
-      }
-      
-      // Physical sticking using attractive forces instead of constraints
-      const stickingId = `burgundy_${orgA.uuid}_${orgB.uuid}_${bodyA.id}_${bodyB.id}`
-      
-      // Track sticking relationships to prevent multiple applications
-      if (!(bodyA as any).burgundyStickTargets) {
-        (bodyA as any).burgundyStickTargets = new Set()
-      }
-      
-      if (!(bodyA as any).burgundyStickTargets.has(stickingId)) {
-        // Apply strong attractive force to create sticking effect
-        const stickForce = 0.3 // Strong force for sticking
+      case 'enhance_photosynthesis':
+        if (typeB === BodyType.FOREST || typeB === BodyType.GREEN || typeB === BodyType.BARK) {
+          orgA.photosynthesisMultiplier = 3.0
+        }
+        break
+        
+      case 'harden':
+        orgA.harden(bodyA)
+        break
+        
+      case 'infect':
+        if (!areRelated && !orgB.immuneToInfection) {
+          orgA.infect(orgB)
+        }
+        break
+        
+      case 'heal':
+        if (orgB.energy < orgB.reproduceAt * 0.8) {
+          orgB.energy += 10
+        }
+        break
+        
+      case 'attract':
+        const attractionForce = 0.8
         const distance = Matter.Vector.magnitude(Matter.Vector.sub(bodyB.position, bodyA.position))
         
-        if (distance > 5) { // Only apply if bodies are not extremely close
+        if (distance > 10 && distance < 200) {
           const direction = Matter.Vector.normalise(Matter.Vector.sub(bodyB.position, bodyA.position))
-          const attractiveForce = Matter.Vector.mult(direction, stickForce)
+          const force = Matter.Vector.mult(direction, attractionForce)
           
-          // Apply attractive forces
-          Matter.Body.applyForce(bodyA, bodyA.position, attractiveForce)
-          Matter.Body.applyForce(bodyB, bodyB.position, Matter.Vector.mult(attractiveForce, -1))
+          Matter.Body.applyForce(bodyA, bodyA.position, force)
+          Matter.Body.applyForce(bodyB, bodyB.position, Matter.Vector.mult(force, -1))
         }
         
-        // Track this sticking relationship
-        (bodyA as any).burgundyStickTargets.add(stickingId)
+        orgA.energy -= 1
+        break
         
-        // Remove sticking after 2-4 seconds
-        setTimeout(() => {
-          if ((bodyA as any).burgundyStickTargets) {
-            (bodyA as any).burgundyStickTargets.delete(stickingId)
+      case 'physical_stick':
+        const stickingId = `stick_${orgA.uuid}_${orgB.uuid}_${bodyA.id}_${bodyB.id}`
+        
+        if (!(bodyA as any).stickTargets) {
+          (bodyA as any).stickTargets = new Set()
+        }
+        
+        if (!(bodyA as any).stickTargets.has(stickingId)) {
+          const stickForce = 0.3
+          const distance = Matter.Vector.magnitude(Matter.Vector.sub(bodyB.position, bodyA.position))
+          
+          if (distance > 5) {
+            const direction = Matter.Vector.normalise(Matter.Vector.sub(bodyB.position, bodyA.position))
+            const attractiveForce = Matter.Vector.mult(direction, stickForce)
+            
+            Matter.Body.applyForce(bodyA, bodyA.position, attractiveForce)
+            Matter.Body.applyForce(bodyB, bodyB.position, Matter.Vector.mult(attractiveForce, -1))
           }
-        }, 2000 + Math.random() * 2000)
-      }
-      break
-      
-    case 'none':
-    default:
-      // No collision behavior
-      break
-  }
+          
+          (bodyA as any).stickTargets.add(stickingId)
+          
+          setTimeout(() => {
+            if ((bodyA as any).stickTargets) {
+              (bodyA as any).stickTargets.delete(stickingId)
+            }
+          }, 2000 + Math.random() * 2000)
+        }
+        break
+        
+      default:
+        break
+    }
+  })
 }
