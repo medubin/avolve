@@ -17,12 +17,9 @@ export interface GeneTypeInfo {
   energyAbsorptionEfficiency?: number // Percentage of absorbed energy retained
   
   // Behavioral traits
-  collisionBehaviors?: ('absorb_energy' | 'share_energy' | 'enhance_photosynthesis' | 'kill' | 'physical_stick' | 'flee' | 'attract' | 'infect' | 'harden' | 'heal')[]
+  collisionBehaviors?: ('absorb_energy' | 'share_energy' | 'enhance_photosynthesis' | 'kill' | 'physical_stick' | 'flee' | 'cause_flee' | 'attract' | 'infect' | 'harden' | 'heal')[]
   collisionTargets?: number[] // Which body types this gene interacts with
-  
-  // Special abilities
-  fleeFromAll?: boolean // Like TEAL  
-  contactsAll?: boolean // Like SKY
+  fleeIntensity?: number // Flee force multiplier (default 1, higher = stronger flee)
   
   // Reproduction modifiers
   reproductionBonus?: number // Multiplier for reproduction (YELLOW)
@@ -58,7 +55,7 @@ export const GENE_TYPES: GeneTypeInfo[] = [
   // Blue Spectrum - Movement Domain  
   { 
     id: BodyType.BLUE, name: 'BLUE', color: Color.BLUE,
-    respirationCost: 0.4, collisionBehaviors: ['flee'], contactsAll: true
+    respirationCost: 0.4, collisionBehaviors: ['cause_flee']
   },
   { 
     id: BodyType.CYAN, name: 'CYAN', color: Color.CYAN,
@@ -66,11 +63,11 @@ export const GENE_TYPES: GeneTypeInfo[] = [
   },
   { 
     id: BodyType.SKY, name: 'SKY', color: Color.SKY,
-    respirationCost: 0.6, movementSpeed: 2, movementType: 'slow', collisionBehaviors: ['flee'], contactsAll: true
+    respirationCost: 0.6, movementSpeed: 2, movementType: 'slow', collisionBehaviors: ['cause_flee'], fleeIntensity: 2
   },
   { 
     id: BodyType.TEAL, name: 'TEAL', color: Color.TEAL,
-    respirationCost: 0.6, collisionBehaviors: ['flee'], fleeFromAll: true
+    respirationCost: 0.6, collisionBehaviors: ['flee'], fleeIntensity: 3
   },
   { 
     id: BodyType.TURQUOISE, name: 'TURQUOISE', color: Color.TURQUOISE,
@@ -197,11 +194,8 @@ export const getGeneCollisionTargets = (id: number): number[] =>
 export const getGeneReproductionBonus = (id: number): number =>
   getGeneTypeById(id)?.reproductionBonus || 0
 
-export const doesGeneFleeFromAll = (id: number): boolean =>
-  getGeneTypeById(id)?.fleeFromAll || false
-
-export const doesGeneContactAll = (id: number): boolean =>
-  getGeneTypeById(id)?.contactsAll || false
+export const getGeneFleeIntensity = (id: number): number =>
+  getGeneTypeById(id)?.fleeIntensity || 1
 
 export const hasGeneMagneticAttraction = (id: number): boolean =>
   getGeneTypeById(id)?.magneticAttraction || false

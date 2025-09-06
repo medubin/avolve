@@ -8,8 +8,7 @@ import {
   getGeneCollisionTargets, 
   getGeneEnergyAbsorption, 
   getGeneAbsorptionEfficiency,
-  doesGeneFleeFromAll,
-  doesGeneContactAll 
+  getGeneFleeIntensity
 } from '../constants/gene_types'
 
 function showPredationIndicator(bodyPart: Body) {
@@ -101,18 +100,19 @@ function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Bod
   const behaviors = getGeneCollisionBehaviors(typeA)
   const absorption = getGeneEnergyAbsorption(typeA)
   const efficiency = getGeneAbsorptionEfficiency(typeA)
+  const fleeIntensity = getGeneFleeIntensity(typeA)
 
   // Process each behavior in the array
   behaviors.forEach(behavior => {
     switch (behavior) {
       case 'flee':
-        if (doesGeneContactAll(typeA)) {
-          orgB.flee(bodyB, bodyB.position, bodyA.position)
-        } else if (doesGeneFleeFromAll(typeA)) {
-          orgA.flee(bodyA, bodyA.position, bodyB.position)
-        } else {
-          orgA.flee(bodyA, bodyB.position, bodyA.position, 2)
-        }
+        // Organism flees from the target with configurable intensity
+        orgA.flee(bodyA, bodyA.position, bodyB.position, fleeIntensity)
+        break
+        
+      case 'cause_flee':
+        // Makes target organism flee with configurable intensity
+        orgB.flee(bodyB, bodyB.position, bodyA.position, fleeIntensity)
         break
         
       case 'kill':
