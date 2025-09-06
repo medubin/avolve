@@ -145,7 +145,7 @@ export const GENE_TYPES: GeneTypeInfo[] = [
   },
   { 
     id: BodyType.STEEL, name: 'STEEL', color: Color.STEEL, displayColor: '#708090',
-    respirationCost: 1.0, collisionBehavior: 'none'
+    respirationCost: 0.3, collisionBehavior: 'none'
   },
 ]
 

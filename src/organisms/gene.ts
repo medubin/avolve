@@ -9,6 +9,7 @@ export default class Gene {
   public y : number
   public sides : number
   public radius : number
+  public width : number
   public isBranch : boolean
   public length : number
 
@@ -20,8 +21,9 @@ export default class Gene {
     gene.type = playableTypes[randomIndex]
     gene.x = rng(-100, 100) / 10
     gene.y = rng(-100, 100) / 10
-    gene.sides = rng(2, 10)
+    gene.sides = rng(2, 7)
     gene.radius = rngFloat(3, 15)
+    gene.width = rngFloat(3, 15)
     gene.isBranch = rngBool()
     gene.length = rngFloat(8, 12)
     return gene
@@ -33,7 +35,16 @@ export default class Gene {
       // frictionAir: .01,
       render: { strokeStyle: getGeneTypeColor(this.type), fillStyle: 'transparent', lineWidth: 1 },
     }
-    const body = Matter.Bodies.polygon(x + this.x, y + this.y, this.sides, this.radius, options)
+    
+    let body: Matter.Body
+    if (this.sides === 4) {
+      // Use rectangle for 4-sided body parts
+      body = Matter.Bodies.rectangle(x + this.x, y + this.y, this.width * 2, this.radius * 2, options)
+    } else {
+      // Use polygon for other sided body parts (circles for sides < 3)
+      body = Matter.Bodies.polygon(x + this.x, y + this.y, this.sides, this.radius, options)
+    }
+    
     body.friction = 1
     body.restitution = 0
     return body
@@ -46,6 +57,7 @@ export default class Gene {
     gene.y = this.y
     gene.sides = this.sides
     gene.radius = this.radius
+    gene.width = this.width
     gene.isBranch = this.isBranch
     if (Math.random() < mutationRate) {
       return this.mutate(gene)
@@ -68,11 +80,15 @@ export default class Gene {
         return gene
       }
       if (rngBool()) {
-        gene.sides = rng(2, 10)
+        gene.sides = rng(2, 7)
         return gene
       }
       if (rngBool()) {
         gene.radius = rngFloat(3, 15)
+        return gene
+      }
+      if (rngBool()) {
+        gene.width = rngFloat(3, 15)
         return gene
       }
       if (rngBool()) {
