@@ -137,7 +137,7 @@ export const GENE_TYPES: GeneTypeInfo[] = [
   { 
     id: BodyType.FOREST, name: 'FOREST', color: Color.FOREST,
     respirationCost: 1, photosynthesis: 0.7, collisionBehaviors: ['share_energy','enhance_photosynthesis'],
-    collisionTargets: [BodyType.GREEN, BodyType.BLUE, BodyType.CYAN, BodyType.YELLOW, BodyType.ORANGE, BodyType.TEAL, BodyType.BARK, BodyType.SKY, BodyType.INDIGO, BodyType.WHITE, BodyType.PINK, BodyType.OCHRE, BodyType.FOREST]
+    collisionTargets: [BodyType.GREEN, BodyType.FOREST, BodyType.BARK]
   },
   { 
     id: BodyType.STEEL, name: 'STEEL', color: Color.STEEL,

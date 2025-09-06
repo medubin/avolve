@@ -121,48 +121,168 @@ function createGeneFrequencyDisplay() {
   display.style.top = '10px'
   display.style.background = 'rgba(0,0,0,0.8)'
   display.style.color = 'white'
-  display.style.padding = '10px'
   display.style.borderRadius = '5px'
   display.style.fontFamily = 'monospace'
   display.style.fontSize = '12px'
   display.style.zIndex = '1000'
-  display.style.minWidth = '150px'
+  display.style.minWidth = '200px'
   display.style.maxHeight = '80vh'
   display.style.overflowY = 'auto'
-  display.style.cursor = 'pointer'
-  display.title = 'Click to toggle between Current and Historical view'
+  
+  // Create header with title and close button
+  const headerContainer = document.createElement('div')
+  headerContainer.style.display = 'flex'
+  headerContainer.style.justifyContent = 'space-between'
+  headerContainer.style.alignItems = 'center'
+  headerContainer.style.padding = '8px 10px'
+  headerContainer.style.borderBottom = '1px solid #555'
+  headerContainer.style.marginBottom = '0'
+  
+  const title = document.createElement('strong')
+  title.textContent = '📊 Gene Frequencies'
+  title.style.flex = '1'
+  
+  const closeButton = document.createElement('button')
+  closeButton.textContent = '✕'
+  closeButton.style.background = 'none'
+  closeButton.style.border = 'none'
+  closeButton.style.color = '#aaa'
+  closeButton.style.cursor = 'pointer'
+  closeButton.style.fontSize = '14px'
+  closeButton.style.padding = '2px 6px'
+  closeButton.title = 'Close frequency display'
+  closeButton.onclick = () => {
+    display.style.display = 'none'
+    geneFrequencyVisible = false
+  }
+  
+  headerContainer.appendChild(title)
+  headerContainer.appendChild(closeButton)
+  
+  // Create tab buttons
+  const tabsContainer = document.createElement('div')
+  tabsContainer.style.display = 'flex'
+  tabsContainer.style.borderBottom = '1px solid #555'
+  tabsContainer.style.marginBottom = '10px'
+  
+  const currentTab = document.createElement('button')
+  currentTab.textContent = 'Current'
+  currentTab.id = 'current-tab'
+  currentTab.style.flex = '1'
+  currentTab.style.padding = '6px'
+  currentTab.style.background = 'rgba(255,255,255,0.2)'
+  currentTab.style.color = 'white'
+  currentTab.style.border = 'none'
+  currentTab.style.cursor = 'pointer'
+  currentTab.style.fontFamily = 'monospace'
+  currentTab.style.fontSize = '11px'
+  currentTab.onclick = () => switchFrequencyTab('current')
+  
+  const historicalTab = document.createElement('button')
+  historicalTab.textContent = 'Historical'
+  historicalTab.id = 'historical-tab'
+  historicalTab.style.flex = '1'
+  historicalTab.style.padding = '6px'
+  historicalTab.style.background = 'rgba(255,255,255,0.1)'
+  historicalTab.style.color = '#aaa'
+  historicalTab.style.border = 'none'
+  historicalTab.style.cursor = 'pointer'
+  historicalTab.style.fontFamily = 'monospace'
+  historicalTab.style.fontSize = '11px'
+  historicalTab.onclick = () => switchFrequencyTab('historical')
+  
+  const graphTab = document.createElement('button')
+  graphTab.textContent = 'Graph'
+  graphTab.id = 'graph-tab'
+  graphTab.style.flex = '1'
+  graphTab.style.padding = '6px'
+  graphTab.style.background = 'rgba(255,255,255,0.1)'
+  graphTab.style.color = '#aaa'
+  graphTab.style.border = 'none'
+  graphTab.style.cursor = 'pointer'
+  graphTab.style.fontFamily = 'monospace'
+  graphTab.style.fontSize = '11px'
+  graphTab.onclick = () => switchFrequencyTab('graph')
+  
+  tabsContainer.appendChild(currentTab)
+  tabsContainer.appendChild(historicalTab)
+  tabsContainer.appendChild(graphTab)
+  
+  // Create content container
+  const contentContainer = document.createElement('div')
+  contentContainer.id = 'frequency-content'
+  contentContainer.style.padding = '0 10px 10px 10px'
+  
+  display.appendChild(headerContainer)
+  display.appendChild(tabsContainer)
+  display.appendChild(contentContainer)
   document.body.appendChild(display)
 }
 
-function updateGeneFrequencyDisplay() {
-  const display = document.getElementById('gene-frequency-display')
-  if (!display) return
+function switchFrequencyTab(tabName: string) {
+  viewMode = tabName
   
-  // Show text views (current or historical)
-  const frequencies = viewMode === 'historical' ? database.frequency.getSortedHistoricalGeneFrequencies() : database.frequency.getSortedGeneFrequencies()
-  const totalGenes = frequencies.reduce((sum, item) => sum + item.count, 0)
+  // Update tab button styles
+  const currentTab = document.getElementById('current-tab')
+  const historicalTab = document.getElementById('historical-tab')
+  const graphTab = document.getElementById('graph-tab')
   
-  const viewType = viewMode === 'historical' ? 'Historical' : 'Current'
-  const icon = viewMode === 'historical' ? '📈' : '📊'
-  let html = `<strong>${icon} ${viewType} Gene Frequencies</strong><br>`
-  html += '<small style="color: #CCCCCC">Click to toggle | Press G for graph</small><br><br>'
-  
-  frequencies.forEach(item => {
-    const percentage = ((item.count / totalGenes) * 100).toFixed(1)
-    const color = GENE_DISPLAY_COLORS[item.name] || '#CCCCCC'
-    html += `<span style="color: ${color}">●</span> ${item.name}: ${item.count}`
-    
-    if (viewMode === 'current') {
-      html += ` (${percentage}%)`
+  // Reset all tabs
+  const tabs = [currentTab, historicalTab, graphTab]
+  tabs.forEach(tab => {
+    if (tab) {
+      tab.style.background = 'rgba(255,255,255,0.1)'
+      tab.style.color = '#aaa'
     }
-    html += '<br>'
   })
   
-  if (frequencies.length === 0) {
-    html += '<em>No data available</em>'
+  // Highlight active tab
+  const activeTab = document.getElementById(`${tabName}-tab`)
+  if (activeTab) {
+    activeTab.style.background = 'rgba(255,255,255,0.2)'
+    activeTab.style.color = 'white'
   }
   
-  display.innerHTML = html
+  updateGeneFrequencyDisplay()
+}
+
+function updateGeneFrequencyDisplay() {
+  const contentContainer = document.getElementById('frequency-content')
+  if (!contentContainer) return
+  
+  if (viewMode === 'graph') {
+    // Show inline graph placeholder or refer to G key
+    contentContainer.innerHTML = `
+      <small style="color: #CCCCCC">Gene frequency graph</small><br><br>
+      <div style="text-align: center; padding: 20px; border: 1px dashed #555; background: rgba(255,255,255,0.05);">
+        📈<br><br>
+        <small>Press 'G' key to open<br>full graph display</small>
+      </div>
+    `
+  } else {
+    // Show text views (current or historical)
+    const frequencies = viewMode === 'historical' ? database.frequency.getSortedHistoricalGeneFrequencies() : database.frequency.getSortedGeneFrequencies()
+    const totalGenes = frequencies.reduce((sum, item) => sum + item.count, 0)
+    
+    let html = ''
+    
+    frequencies.forEach(item => {
+      const percentage = ((item.count / totalGenes) * 100).toFixed(1)
+      const color = GENE_DISPLAY_COLORS[item.name] || '#CCCCCC'
+      html += `<span style="color: ${color}">●</span> ${item.name}: ${item.count}`
+      
+      if (viewMode === 'current') {
+        html += ` (${percentage}%)`
+      }
+      html += '<br>'
+    })
+    
+    if (frequencies.length === 0) {
+      html += '<em>No data available</em>'
+    }
+    
+    contentContainer.innerHTML = html
+  }
 }
 
 createGeneFrequencyDisplay()
@@ -211,19 +331,33 @@ function toggleGraphDisplay() {
   }
 }
 
-// Add keyboard handler for G key
+function toggleFrequencyDisplay() {
+  const display = document.getElementById('gene-frequency-display')
+  
+  if (!display) {
+    createGeneFrequencyDisplay()
+    geneFrequencyVisible = true
+  } else if (geneFrequencyVisible) {
+    display.style.display = 'none'
+    geneFrequencyVisible = false
+  } else {
+    display.style.display = 'block'
+    geneFrequencyVisible = true
+  }
+}
+
+// Add keyboard handlers
 document.addEventListener('keydown', (event) => {
   if (event.key.toLowerCase() === 'g') {
     toggleGraphDisplay()
+  } else if (event.key.toLowerCase() === 'f') {
+    toggleFrequencyDisplay()
   }
 })
 
 // Toggle between current and historical view
-let viewMode = 'current' // 'current', 'historical'
-document.getElementById('gene-frequency-display')?.addEventListener('click', () => {
-  viewMode = viewMode === 'current' ? 'historical' : 'current'
-  updateGeneFrequencyDisplay()
-})
+let viewMode = 'current' // 'current', 'historical', 'graph'
+let geneFrequencyVisible = true
 
 for (let i = 0; i < World.STARTING_ORGANISMS; i += 1) {
   const x = rng(50, World.WIDTH - 50)

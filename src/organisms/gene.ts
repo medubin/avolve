@@ -59,6 +59,7 @@ export default class Gene {
     gene.radius = this.radius
     gene.width = this.width
     gene.isBranch = this.isBranch
+    gene.length = this.length
     if (Math.random() < mutationRate) {
       return this.mutate(gene)
     }

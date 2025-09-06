@@ -4,7 +4,7 @@ import BodyType from '../constants/body_type'
 import Database from '../databases/database'
 import { rngFloat, rngBool } from '../utilities/random'
 import Color from '../constants/color'
-import { getGenePhotosynthesis, getGeneMovementSpeed, getGeneMovementType, getGeneReproductionBonus, hasGeneMagneticAttraction, getGeneRespirationCost, getGeneTypeName } from '../constants/gene_types'
+import { getGenePhotosynthesis, getGeneMovementSpeed, getGeneMovementType, getGeneReproductionBonus, hasGeneMagneticAttraction, getGeneRespirationCost, getGeneTypeName, getGeneTypeColor } from '../constants/gene_types'
 
 export default class Organism {
   protected database : Database
@@ -27,6 +27,7 @@ export default class Organism {
   public infection : Genome
   public photosynthesisMultiplier : number
   public immuneToInfection : boolean
+  public activeTab : string = 'stats'
 
   constructor(
     x : number,
@@ -96,9 +97,11 @@ export default class Organism {
   }
 
   public displayOrganismInfo() {
-  const infoElement = document.getElementById('organism-info')
-  if (!infoElement) {
-    // Create info display element
+  let infoElement = document.getElementById('organism-info')
+  const isNewPanel = !infoElement
+  
+  if (isNewPanel) {
+    // Create info display element with tabs
     const info = document.createElement('div')
     info.id = 'organism-info'
     info.style.position = 'fixed'
@@ -106,17 +109,122 @@ export default class Organism {
     info.style.right = '10px'
     info.style.background = 'rgba(0,0,0,0.8)'
     info.style.color = 'white'
-    info.style.padding = '10px'
     info.style.borderRadius = '5px'
     info.style.fontFamily = 'monospace'
     info.style.fontSize = '12px'
     info.style.zIndex = '1000'
-    info.style.minWidth = '200px'
+    info.style.minWidth = '250px'
+    info.style.maxHeight = '80vh'
+    info.style.overflowY = 'auto'
+    
+    // Create tab buttons
+    const tabsContainer = document.createElement('div')
+    tabsContainer.style.display = 'flex'
+    tabsContainer.style.borderBottom = '1px solid #555'
+    tabsContainer.style.marginBottom = '10px'
+    
+    const statsTab = document.createElement('button')
+    statsTab.textContent = 'Stats'
+    statsTab.id = 'stats-tab'
+    statsTab.style.flex = '1'
+    statsTab.style.padding = '8px'
+    statsTab.style.background = 'rgba(255,255,255,0.2)'
+    statsTab.style.color = 'white'
+    statsTab.style.border = 'none'
+    statsTab.style.cursor = 'pointer'
+    statsTab.style.fontFamily = 'monospace'
+    statsTab.style.fontSize = '12px'
+    statsTab.onclick = () => this.switchTab('stats')
+    
+    const geneticsTab = document.createElement('button')
+    geneticsTab.textContent = 'Genetics'
+    geneticsTab.id = 'genetics-tab'
+    geneticsTab.style.flex = '1'
+    geneticsTab.style.padding = '8px'
+    geneticsTab.style.background = 'rgba(255,255,255,0.1)'
+    geneticsTab.style.color = '#aaa'
+    geneticsTab.style.border = 'none'
+    geneticsTab.style.cursor = 'pointer'
+    geneticsTab.style.fontFamily = 'monospace'
+    geneticsTab.style.fontSize = '12px'
+    geneticsTab.onclick = () => this.switchTab('genetics')
+    
+    tabsContainer.appendChild(statsTab)
+    tabsContainer.appendChild(geneticsTab)
+    
+    // Create content container
+    const contentContainer = document.createElement('div')
+    contentContainer.id = 'organism-content'
+    contentContainer.style.padding = '0 10px 10px 10px'
+    
+    info.appendChild(tabsContainer)
+    info.appendChild(contentContainer)
     document.body.appendChild(info)
+    
+    // Set default active tab only for new panels
+    this.activeTab = 'stats'
+    
+    // Store current organism UUID to detect organism changes
+    infoElement = info
+    infoElement.setAttribute('data-organism-uuid', this.uuid.toString())
+  } else {
+    // Check if this is a different organism
+    const currentUuid = infoElement.getAttribute('data-organism-uuid')
+    if (currentUuid !== this.uuid.toString()) {
+      // Different organism selected - reset to stats tab
+      this.activeTab = 'stats'
+      infoElement.setAttribute('data-organism-uuid', this.uuid.toString())
+      this.updateTabStyles()
+    }
   }
   
-  const info = document.getElementById('organism-info')!
+  // Update content based on active tab
+  this.updateInfoContent()
+}
+
+public switchTab(tabName: string) {
+  this.activeTab = tabName
+  this.updateTabStyles()
+  this.updateInfoContent()
+}
+
+private updateTabStyles() {
+  const statsTab = document.getElementById('stats-tab')
+  const geneticsTab = document.getElementById('genetics-tab')
   
+  if (this.activeTab === 'stats') {
+    if (statsTab) {
+      statsTab.style.background = 'rgba(255,255,255,0.2)'
+      statsTab.style.color = 'white'
+    }
+    if (geneticsTab) {
+      geneticsTab.style.background = 'rgba(255,255,255,0.1)'
+      geneticsTab.style.color = '#aaa'
+    }
+  } else {
+    if (geneticsTab) {
+      geneticsTab.style.background = 'rgba(255,255,255,0.2)'
+      geneticsTab.style.color = 'white'
+    }
+    if (statsTab) {
+      statsTab.style.background = 'rgba(255,255,255,0.1)'
+      statsTab.style.color = '#aaa'
+    }
+  }
+}
+
+public updateInfoContent() {
+  const contentContainer = document.getElementById('organism-content')
+  if (!contentContainer) return
+  
+  if (this.activeTab === 'stats') {
+    this.displayStatsContent(contentContainer)
+  } else if (this.activeTab === 'genetics') {
+    this.displayGeneticsContent(contentContainer)
+  }
+}
+
+private displayStatsContent(container: HTMLElement) {
   // Calculate some dynamic stats
   const energyPercent = Math.round((this.energy / this.reproduceAt) * 100)
   const agePercent = Math.round((this.age / this.maxAge) * 100)
@@ -144,9 +252,9 @@ export default class Organism {
   const genomeGeneCount = this.genome.genes.length
   const symmetry = this.genome.symmetry
   
-  // Different info display for alive vs dead thiss
+  // Different info display for alive vs dead organisms
   if (this.isAlive) {
-    info.innerHTML = `
+    container.innerHTML = `
       <strong>🔍 Organism #${this.uuid}</strong><br>
       <strong>Energy:</strong> ${Math.round(this.energy)} (${energyPercent}%)<br>
       <strong>Age:</strong> ${ageInWorldUnits} / ${maxAgeInWorldUnits} (${agePercent}%)<br>
@@ -162,7 +270,7 @@ export default class Organism {
     `
   } else {
     const deathCause = this.energy <= 0 ? 'Energy depletion' : 'Old age'
-    info.innerHTML = `
+    container.innerHTML = `
       <strong>💀 Dead Organism #${this.uuid}</strong><br>
       <strong>Death Cause:</strong> ${deathCause}<br>
       <strong>Final Energy:</strong> ${Math.round(this.energy)}<br>
@@ -178,6 +286,54 @@ export default class Organism {
       <strong>Colors:</strong> ${bodyComposition}<br>
     `
   }
+}
+
+private displayGeneticsContent(container: HTMLElement) {
+  const genomeGeneCount = this.genome.genes.length
+  const symmetry = this.genome.symmetry
+  
+  let geneticsHtml = `
+    <strong>🧬 Genetic Code #${this.uuid}</strong><br>
+    <strong>Total Genes:</strong> ${genomeGeneCount}<br>
+    <strong>Symmetry:</strong> ${symmetry}x<br>
+    <strong>Total Body Parts:</strong> ${genomeGeneCount * symmetry}<br><br>
+  `
+  
+  // Display each gene in detail
+  this.genome.genes.forEach((gene, index) => {
+    const typeName = getGeneTypeName(gene.type)
+    const color = getGeneTypeColor(gene.type)
+    
+    geneticsHtml += `
+      <div style="margin-bottom: 10px; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 3px;">
+        <strong>Gene ${index + 1}:</strong> <span style="color: ${color}">●</span> ${typeName}<br>
+        <strong>Position:</strong> (${gene.x.toFixed(1)}, ${gene.y.toFixed(1)})<br>
+        <strong>Shape:</strong> ${gene.sides} sides<br>
+        <strong>Size:</strong> radius=${gene.radius.toFixed(1)}, width=${gene.width.toFixed(1)}<br>
+        <strong>Connection:</strong> ${gene.isBranch ? 'Branch to center' : 'Sequential'}<br>
+        <strong>Length:</strong> ${gene.length ? gene.length.toFixed(1) : 'MISSING'}<br>
+      </div>
+    `
+  })
+  
+  if (this.infection) {
+    geneticsHtml += `<br><strong style="color: #ff6666;">🦠 INFECTION GENOME:</strong><br>`
+    geneticsHtml += `<strong>Infection Genes:</strong> ${this.infection.genes.length}<br>`
+    
+    this.infection.genes.forEach((gene, index) => {
+      const typeName = getGeneTypeName(gene.type)
+      const color = getGeneTypeColor(gene.type)
+      
+      geneticsHtml += `
+        <div style="margin-bottom: 8px; padding: 6px; background: rgba(255,100,100,0.1); border-radius: 3px;">
+          <strong>Infection Gene ${index + 1}:</strong> <span style="color: ${color}">●</span> ${typeName}<br>
+          <small>Pos: (${gene.x.toFixed(1)}, ${gene.y.toFixed(1)}), ${gene.sides} sides, R=${gene.radius.toFixed(1)}</small>
+        </div>
+      `
+    })
+  }
+  
+  container.innerHTML = geneticsHtml
 }
 
   public update() {
