@@ -51,6 +51,7 @@ function collidesWith(type : number, target : number) {
   return collisionTargets.includes(target)
 }
 
+
 // All collision logic is now trait-based and centralized in gene_types.ts
 
 export function resolveCollision(event : IEventCollision<any>, database : Database) {
@@ -80,26 +81,22 @@ export function resolveCollision(event : IEventCollision<any>, database : Databa
       continue
     }
 
-    // prevent parents from eating children and vice versa
-    if (organismA.parentUuid === organismB.uuid || organismA.uuid === organismB.parentUuid) {
-      continue
-    }
-
-      // prevent siblings from eating eachother
-    if (organismA.parentUuid && organismA.parentUuid === organismB.parentUuid) {
-      continue
-    }
+    // Check if organisms are related
+    const areRelated = (organismA.parentUuid === organismB.uuid || 
+                       organismA.uuid === organismB.parentUuid ||
+                       (organismA.parentUuid && organismA.parentUuid === organismB.parentUuid))
+    
     if (aCollidesB) {
-      onContact(organismA, organismB, typeA, pair.bodyA, pair.bodyB, database)
+      onContact(organismA, organismB, typeA, pair.bodyA, pair.bodyB, database, areRelated)
     }
 
     if (bCollidesA) {
-      onContact(organismB, organismA, typeB, pair.bodyB, pair.bodyA, database)
+      onContact(organismB, organismA, typeB, pair.bodyB, pair.bodyA, database, areRelated)
     }
   }
 }
 
-function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Body, bodyB : Body, database : Database) {
+function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Body, bodyB : Body, database : Database, areRelated : boolean) {
   const typeB = parseInt(bodyB.label.split(':')[1], 10)
   const behavior = getGeneCollisionBehavior(typeA)
   const absorption = getGeneEnergyAbsorption(typeA)
@@ -120,11 +117,15 @@ function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Bod
       break
       
     case 'kill':
-      orgB.die()
+      // Don't kill relatives
+      if (!areRelated) {
+        orgB.die()
+      }
       break
       
     case 'absorb':
-      if (absorption > 0) {
+      // Don't absorb from relatives
+      if (!areRelated && absorption > 0) {
         const energyDrain = bodyA.area * absorption
         
         // Use configured efficiency instead of hardcoded 90%
@@ -143,8 +144,8 @@ function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Bod
       break
       
     case 'infect':
-      // Check if target organism has infection immunity
-      if (!orgB.immuneToInfection) {
+      // Don't infect relatives, and check for immunity
+      if (!areRelated && !orgB.immuneToInfection) {
         orgA.infect(orgB)
       }
       break
@@ -203,8 +204,8 @@ function onContact(orgA : Organism, orgB : Organism, typeA : number, bodyA : Bod
       // BURGUNDY parasitic behavior - slow energy drain + sticky forces
       const parasiteDrain = bodyA.area * absorption
       
-      // Slow energy absorption
-      if (orgB.energy > parasiteDrain) {
+      // Don't parasitize relatives, but still allow sticking (physical interaction)
+      if (!areRelated && orgB.energy > parasiteDrain) {
         orgB.energy -= parasiteDrain
         orgA.energy += parasiteDrain * efficiency
         database.world.releaseCO2(parasiteDrain * (1 - efficiency))
