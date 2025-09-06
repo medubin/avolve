@@ -20,7 +20,7 @@ export default class Gene {
     gene.type = playableTypes[randomIndex]
     gene.x = rng(-100, 100) / 10
     gene.y = rng(-100, 100) / 10
-    gene.sides = rng(3, 10)
+    gene.sides = rng(2, 10)
     gene.radius = rngFloat(3, 15)
     gene.isBranch = rngBool()
     gene.length = rngFloat(8, 12)
@@ -68,7 +68,7 @@ export default class Gene {
         return gene
       }
       if (rngBool()) {
-        gene.sides = rng(3, 10)
+        gene.sides = rng(2, 10)
         return gene
       }
       if (rngBool()) {

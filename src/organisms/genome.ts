@@ -67,7 +67,6 @@ export default class Genome {
             damping: .1,
             length: gene.length,
             render: { strokeStyle: '#000000', lineWidth: .5, visible: true },
-
           }))
         }
       }
